@@ -1,0 +1,1918 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#4a8585">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="description"
+        content="Ponder on This — A compilation from the writings of Alice A. Bailey and the Tibetan Master Djwhal Khul">
+    <title>Ponder on This</title>
+    <style>
+        :root {
+            --spring: cubic-bezier(0.32, 0.72, 0, 1);
+            --teal: #4a8585;
+            --teal-dark: #3a6b6b;
+            --teal-light: #e8f4f4;
+            --cream: #f5f0e8;
+            --card: #ffffff;
+            --border: #e8e0d4;
+            --text: #1e293b;
+            --text2: #475569;
+            --text3: #94a3b8;
+            --rose: #e11d48;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+            --shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--cream);
+            color: var(--text);
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased
+        }
+
+        button,
+        input,
+        textarea {
+            font: inherit;
+            color: inherit
+        }
+
+        /* Progress bar */
+        .progress-track {
+            height: 3px;
+            background: transparent;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--teal);
+            width: 0%;
+            transition: width 0.5s var(--spring)
+        }
+
+        /* Header */
+        .app-header {
+            height: 52px;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(245, 240, 232, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            z-index: 50;
+            flex-shrink: 0;
+            position: sticky;
+            top: 0
+        }
+
+        .header-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text2);
+            transition: all 0.2s var(--spring)
+        }
+
+        .header-btn:hover {
+            background: var(--teal-light);
+            color: var(--teal);
+            border-color: var(--teal)
+        }
+
+        .header-btn:active {
+            transform: scale(0.92)
+        }
+
+        .header-title {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            overflow: hidden
+        }
+
+        .topic-pill {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--teal);
+            background: var(--teal-light);
+            padding: 4px 10px;
+            border-radius: 8px;
+            white-space: nowrap;
+            flex-shrink: 0
+        }
+
+        .topic-name-header {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px
+        }
+
+        /* Segmented control — iOS style */
+        .segmented {
+            background: var(--cream);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 3px;
+            display: flex;
+            gap: 2px;
+            margin: 10px 16px;
+            flex-shrink: 0
+        }
+
+        .segment {
+            flex: 1;
+            padding: 7px 0;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text2);
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            transition: all 0.25s var(--spring);
+            position: relative;
+            white-space: nowrap
+        }
+
+        .segment:hover {
+            color: var(--text)
+        }
+
+        .segment.active {
+            background: var(--card);
+            color: var(--teal);
+            box-shadow: var(--shadow-sm)
+        }
+
+        /* Content area */
+        .content-area {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            touch-action: pan-y
+        }
+
+        .content-scroll {
+            height: 100%;
+            overflow-y: auto;
+            padding: 0 16px 24px;
+            scroll-behavior: smooth
+        }
+
+        /* Cards */
+        .matter-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s var(--spring)
+        }
+
+        .matter-card:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow)
+        }
+
+        .matter-num {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--teal);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px
+        }
+
+        .matter-text {
+            font-size: 15px;
+            line-height: 1.75;
+            color: var(--text2)
+        }
+
+        .matter-ref {
+            font-size: 11px;
+            color: var(--text3);
+            margin-top: 10px;
+            font-style: italic;
+            padding-top: 8px;
+            border-top: 1px dashed var(--border)
+        }
+
+        .keypoint-row {
+            display: flex;
+            gap: 12px;
+            padding: 14px 16px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            margin-bottom: 8px;
+            align-items: flex-start
+        }
+
+        .keypoint-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--teal);
+            margin-top: 7px;
+            flex-shrink: 0
+        }
+
+        .keypoint-text {
+            font-size: 14px;
+            line-height: 1.65;
+            color: var(--text2)
+        }
+
+        .summary-card {
+            background: var(--teal-light);
+            border: 1px solid #d4e8e8;
+            border-radius: 16px;
+            padding: 20px
+        }
+
+        .summary-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--teal);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px
+        }
+
+        .summary-text {
+            font-size: 15px;
+            line-height: 1.75;
+            color: var(--text2)
+        }
+
+        /* Next topic card */
+        .next-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin-top: 16px;
+            cursor: pointer;
+            transition: all 0.2s var(--spring)
+        }
+
+        .next-card:hover {
+            border-color: var(--teal);
+            background: var(--teal-light)
+        }
+
+        .next-card:active {
+            transform: scale(0.98)
+        }
+
+        .next-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px
+        }
+
+        .next-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text)
+        }
+
+        /* Notes */
+        .notes-section {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border)
+        }
+
+        .notes-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px
+        }
+
+        .notes-area {
+            width: 100%;
+            min-height: 100px;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: var(--card);
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.2s
+        }
+
+        .notes-area:focus {
+            border-color: var(--teal)
+        }
+
+        .saved-hint {
+            font-size: 11px;
+            color: var(--text3);
+            margin-top: 6px;
+            text-align: right;
+            opacity: 0;
+            transition: opacity 0.3s
+        }
+
+        .saved-hint.show {
+            opacity: 1
+        }
+
+        /* Context bar */
+        .context-bar {
+            padding: 6px 16px 0;
+            font-size: 12px;
+            color: var(--text3);
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center
+        }
+
+        /* Drawer */
+        .drawer-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.25);
+            z-index: 80;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s var(--spring);
+            backdrop-filter: blur(2px)
+        }
+
+        .drawer-overlay.open {
+            opacity: 1;
+            pointer-events: auto
+        }
+
+        .topic-drawer {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 320px;
+            background: var(--card);
+            z-index: 90;
+            transform: translateX(-100%);
+            transition: transform 0.35s var(--spring);
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border);
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.08)
+        }
+
+        .topic-drawer.open {
+            transform: translateX(0)
+        }
+
+        .drawer-header {
+            padding: 16px 20px 12px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .drawer-header h2 {
+            font-family: Georgia, serif;
+            font-size: 20px;
+            font-weight: 700;
+            flex: 1
+        }
+
+        .drawer-count {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text3);
+            background: var(--cream);
+            padding: 4px 10px;
+            border-radius: 8px
+        }
+
+        .drawer-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text2);
+            font-size: 18px;
+            line-height: 1
+        }
+
+        .drawer-search {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border)
+        }
+
+        .drawer-search input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--cream);
+            font-size: 14px;
+            outline: none
+        }
+
+        .drawer-search input:focus {
+            border-color: var(--teal)
+        }
+
+        .drawer-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px
+        }
+
+        .drawer-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-bottom: 3px;
+            transition: all 0.15s;
+            border: 1px solid transparent
+        }
+
+        .drawer-item:hover {
+            background: #f8f5f0;
+            border-color: var(--border)
+        }
+
+        .drawer-item.active {
+            background: var(--teal-light);
+            border-color: var(--teal)
+        }
+
+        .drawer-item.active .d-num {
+            background: var(--teal);
+            color: #fff
+        }
+
+        .d-num {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: var(--teal-light);
+            color: var(--teal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            flex-shrink: 0;
+            font-variant-numeric: tabular-nums
+        }
+
+        .d-name {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--text2);
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis
+        }
+
+        .d-chevron {
+            color: var(--text3);
+            flex-shrink: 0
+        }
+
+        .d-bookmark {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--rose);
+            flex-shrink: 0;
+            margin-left: 4px;
+            opacity: 0
+        }
+
+        .drawer-item.bookmarked .d-bookmark {
+            opacity: 1
+        }
+
+        /* Search overlay */
+        .search-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(15, 23, 42, 0.35);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 80px;
+            backdrop-filter: blur(4px)
+        }
+
+        .search-overlay.open {
+            opacity: 1;
+            pointer-events: auto
+        }
+
+        .search-modal {
+            width: 90%;
+            max-width: 480px;
+            background: var(--card);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            transform: translateY(-10px);
+            transition: transform 0.3s var(--spring)
+        }
+
+        .search-overlay.open .search-modal {
+            transform: translateY(0)
+        }
+
+        .search-input-wrap {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 10px;
+            align-items: center
+        }
+
+        .search-input-wrap input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 17px;
+            font-weight: 500;
+            outline: none;
+            color: var(--text)
+        }
+
+        .search-input-wrap input::placeholder {
+            color: var(--text3)
+        }
+
+        .search-cancel {
+            background: none;
+            border: none;
+            color: var(--teal);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer
+        }
+
+        .search-results {
+            max-height: 320px;
+            overflow-y: auto;
+            padding: 8px
+        }
+
+        .search-empty {
+            padding: 24px;
+            text-align: center;
+            color: var(--text3);
+            font-size: 14px
+        }
+
+        .search-result {
+            padding: 12px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-bottom: 3px;
+            transition: all 0.15s
+        }
+
+        .search-result:hover {
+            background: #f8f5f0
+        }
+
+        .search-result-num {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--teal);
+            margin-bottom: 2px
+        }
+
+        .search-result-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text)
+        }
+
+        .search-result-match {
+            font-size: 12px;
+            color: var(--text3);
+            margin-top: 2px
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--text);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.35s var(--spring);
+            z-index: 200;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15)
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0)
+        }
+
+        /* Bottom nav */
+        .bottom-nav {
+            height: 64px;
+            border-top: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            display: none;
+            flex-shrink: 0;
+            z-index: 50
+        }
+
+        .bottom-tab {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text3);
+            font-size: 10px;
+            font-weight: 600;
+            transition: color 0.2s
+        }
+
+        .bottom-tab.active {
+            color: var(--teal)
+        }
+
+        .bottom-tab svg {
+            width: 20px;
+            height: 20px
+        }
+
+        /* Layout */
+        .app-body {
+            flex: 1;
+            display: flex;
+            overflow: hidden
+        }
+
+        .reading-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden
+        }
+
+        /* Animations */
+        .fade-up {
+            animation: fadeUp 0.4s var(--spring) both
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .slide-left {
+            animation: slideLeft 0.3s var(--spring)
+        }
+
+        @keyframes slideLeft {
+            from {
+                opacity: 0.5;
+                transform: translateX(30px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0)
+            }
+        }
+
+        .slide-right {
+            animation: slideRight 0.3s var(--spring)
+        }
+
+        @keyframes slideRight {
+            from {
+                opacity: 0.5;
+                transform: translateX(-30px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0)
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px
+        }
+
+        /* Responsive */
+        @media(max-width:640px) {
+            .bottom-nav {
+                display: flex
+            }
+
+            .topic-drawer {
+                width: 85%
+            }
+
+            .app-header {
+                padding: 0 12px
+            }
+
+            .segmented {
+                margin: 8px 12px
+            }
+
+            .content-scroll {
+                padding: 0 12px 20px
+            }
+
+            .menu-btn {
+                display: flex !important
+            }
+        }
+
+        @media(min-width:641px) {
+            .bottom-nav {
+                display: none !important
+            }
+
+            .topic-drawer {
+                transform: translateX(0);
+                position: relative;
+                width: 300px;
+                border-right: 1px solid var(--border);
+                box-shadow: none;
+                z-index: 1
+            }
+
+            .drawer-overlay {
+                display: none !important
+            }
+
+            .drawer-close {
+                display: none
+            }
+
+            .menu-btn {
+                display: none !important
+            }
+        }
+    
+        /* ---------- Read aloud ---------- */
+        .listen-panel {
+            position: fixed; left: 50%; transform: translateX(-50%) translateY(20px);
+            bottom: 84px; z-index: 60;
+            display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+            max-width: min(92vw, 560px);
+            padding: 12px 16px;
+            background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(30, 41, 59, 0.18);
+            opacity: 0; pointer-events: none; transition: opacity 0.25s var(--spring), transform 0.25s var(--spring);
+            font-size: 13px;
+        }
+        .listen-panel.open { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+        .listen-panel .lp-btn {
+            font-family: inherit; font-size: 13px; padding: 7px 14px; border-radius: 999px;
+            border: 1px solid var(--teal); background: var(--teal-light); color: var(--teal-dark);
+            cursor: pointer; transition: all 0.15s;
+        }
+        .listen-panel .lp-btn:hover:not(:disabled) { background: var(--teal); color: #fff; }
+        .listen-panel .lp-btn:disabled { opacity: 0.4; cursor: default; }
+        .listen-panel select {
+            font-family: inherit; font-size: 12px; padding: 6px 8px; border-radius: 8px;
+            border: 1px solid var(--border); background: #fff; color: var(--text); max-width: 200px;
+        }
+        .listen-panel label { display: flex; align-items: center; gap: 5px; color: var(--text2); font-size: 12px; }
+        .listen-panel .lp-status { color: var(--text3); font-style: italic; font-size: 12px; flex-basis: 100%; }
+        #listenBtn.listening { color: var(--rose); }
+    </style>
+</head>
+
+<body style="display:flex;flex-direction:column;height:100vh;">
+
+    <!-- Progress -->
+    <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="app-header">
+        <button class="header-btn menu-btn" id="menuBtn" title="Topics" style="display:none">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round">
+                <path d="M3 12h18M3 6h18M3 18h18" />
+            </svg>
+        </button>
+        <div class="header-title">
+            <span class="topic-pill" id="topicPill">001</span>
+            <span class="topic-name-header" id="topicNameHeader">Some Basic Assumptions</span>
+        </div>
+        <div class="header-actions">
+            <button class="header-btn" id="prevBtn" title="Previous (←)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round">
+                    <path d="m15 18-6-6 6-6" />
+                </svg>
+            </button>
+            <button class="header-btn" id="bookmarkBtn" title="Bookmark (B)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round">
+                    <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+                </svg>
+            </button>
+            <a class="header-btn" id="downloadBtn" href="ponder-on-this.html" download title="Download this book (readable offline)" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:inherit;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <path d="m7 10 5 5 5-5" />
+                    <path d="M12 15V3" />
+                </svg>
+            </a>
+            <button class="header-btn" id="listenBtn" title="Read aloud">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 5 6 9H2v6h4l5 4V5z" />
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+                </svg>
+            </button>
+            <button class="header-btn" id="nextBtn" title="Next (→)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round">
+                    <path d="m9 18 6-6-6-6" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Body -->
+    <div class="app-body">
+        <!-- Drawer -->
+        <div class="drawer-overlay" id="drawerOverlay"></div>
+        <aside class="topic-drawer" id="topicDrawer">
+            <div class="drawer-header">
+                <h2>Topics</h2>
+                <span class="drawer-count" id="drawerCount">186</span>
+                <button class="drawer-close" id="closeDrawer">×</button>
+            </div>
+            <div class="drawer-search">
+                <input type="text" id="drawerSearch" placeholder="Filter topics or number..." autocomplete="off">
+            </div>
+            <div class="drawer-list" id="drawerList"></div>
+        </aside>
+
+        <!-- Reading -->
+        <div class="reading-area">
+            <div class="context-bar">
+                <span id="contextPos">Topic 1 of 186</span>
+                <span id="contextSaved" style="color:var(--rose);font-size:11px;opacity:0;transition:opacity 0.3s">●
+                    Saved</span>
+            </div>
+
+            <div class="segmented">
+                <button class="segment active" data-view="matter">Full matter</button>
+                <button class="segment" data-view="keypoints">Key points</button>
+                <button class="segment" data-view="summary">Summarise</button>
+            </div>
+
+            <div class="content-area" id="swipeArea">
+                <div class="content-scroll" id="contentScroll">
+                    <div id="contentBody"></div>
+
+                    <div class="notes-section">
+                        <div class="notes-label">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M12 20h9" />
+                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                            </svg>
+                            My notes
+                        </div>
+                        <textarea class="notes-area" id="notesInput"
+                            placeholder="Write your reflections on this topic..."></textarea>
+                        <div class="saved-hint" id="savedHint">Saved automatically</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Nav -->
+
+    <!-- Read-aloud panel -->
+    <div class="listen-panel" id="listenPanel">
+        <button class="lp-btn" id="listenPlay">&#9654; Read aloud</button>
+        <button class="lp-btn" id="listenStop" disabled>&#9632; Stop</button>
+        <select id="listenVoice" title="Voice"></select>
+        <select id="listenRate" title="Speed">
+            <option value="0.85">0.85&times;</option>
+            <option value="1" selected>1&times;</option>
+            <option value="1.15">1.15&times;</option>
+            <option value="1.3">1.3&times;</option>
+        </select>
+        <label><input type="checkbox" id="listenAuto" checked> Auto-advance</label>
+        <span class="lp-status" id="listenStatus"></span>
+    </div>
+    <nav class="bottom-nav" id="bottomNav">
+        <button class="bottom-tab active" data-tab="reading">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+            </svg>
+            <span>Reading</span>
+        </button>
+        <button class="bottom-tab" data-tab="topics" id="bottomTopics">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M3 12h18M3 6h18M3 18h18" />
+            </svg>
+            <span>Topics</span>
+        </button>
+        <button class="bottom-tab" data-tab="saved" id="bottomSaved">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+            </svg>
+            <span>Saved</span>
+        </button>
+        <button class="bottom-tab" data-tab="search" id="bottomSearch">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+            </svg>
+            <span>Search</span>
+        </button>
+    </nav>
+
+    <!-- Search Overlay -->
+    <div class="search-overlay" id="searchOverlay">
+        <div class="search-modal">
+            <div class="search-input-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.3-4.3" />
+                </svg>
+                <input type="text" id="searchModalInput" placeholder="Search topics..." autocomplete="off">
+                <button class="search-cancel" id="closeSearch">Cancel</button>
+            </div>
+            <div class="search-results" id="searchResults"></div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        /* ================= DATA ================= */
+        const topics = [
+            { id: 1, title: "Some Basic Assumptions", matter: [{ num: 1, text: "We are entering upon a course of study wherein the entire tendency will be to throw the student back upon himself, and thus upon that larger self which has only, in most cases, made its presence felt at rare and highly emotional intervals. When the self is known and not simply felt and, when the realisation is mental as well as sensory, then truly can the aspirant be prepared for initiation.", ref: "4 – 53" }, { num: 2, text: "Firstly, that the student is sincere in his aspiration, and is determined to go forward no matter what may be the reaction of and upon the lower self. Only those who can clearly differentiate between the two aspects of their nature, the real self and the illusory self, can work intelligently.", ref: "4 – 54" }, { num: 3, text: "Secondly, I am acting upon the assumption that all have lived long enough and battled sufficiently with deterrent forces of life, to have enabled them to develop a fairly true sense of values.", ref: "4 – 54" }, { num: 4, text: "Thirdly, I assume that those who set themselves seriously to benefit by the instructions in this book, are prepared to carry out the simple requirements, to read what is written thoughtfully, to attempt to organise their minds, and adhere to their meditation work.", ref: "4 – 54" }, { num: 5, text: "With these assumptions clearly understood, my words are for those who are seeking to measure up to the need for trained servers. Intention and effort are considered by us of prime importance, and are the two main requisites for all disciples, initiates and Masters, plus the power of persistence.", ref: "4 – 54" }], keypoints: ["The student must be sincere in aspiration", "A true sense of values comes from life experience", "Organising the mind is an all-day affair", "Intention and effort are of prime importance", "Persistence is as essential as intention"], summary: "This opening section establishes the foundational prerequisites for studying the Ageless Wisdom: sincere aspiration, a developed sense of values, willingness to organize the mind and maintain meditation practice, and above all — persistent effort." },
+            { id: 2, title: "Food for Thought", matter: [{ num: 1, text: "We have before us in this study, much food for thought. The subjects touched upon are deep, difficult to understand, and hard to grasp. Careful reading, however, quiet reflection, and a practical application of the sensed truth, and of the intuited idea, will gradually bring enlightenment.", ref: "15 – 289" }, { num: 2, text: "It is not material whether the reader receive the message of these pages as a spiritual appeal in an idealistic setting, a presentation of alleged facts, or a theory evolved by one student and presented for the consideration of fellow students.", ref: "1 – 2" }, { num: 3, text: "In these days of the shattering of old form and the building of the new, adaptability is needed. We must avert the danger of crystallisation, through pliability and expansion.", ref: "1 – 2" }, { num: 4, text: "Every religious faith holds out the promise that those who seek with earnestness shall find that which they are seeking; let us, therefore, seek.", ref: "1 – 26/7" }, { num: 5, text: "Goodness and altruism grow out of realisation and service, and holiness of character is the outcome of those expansions of consciousness which a man brings about within himself through strenuous effort and endeavour.", ref: "1 – 93" }, { num: 6, text: "The moment a man becomes consciously powerful on the mental plane, his power for good is a hundredfold increased.", ref: "1 – 172" }, { num: 7, text: "In the use of words comes limitation, and a clouding of the idea; words literally veil or hide thoughts, detract from their clarity, and confuse them by expression.", ref: "3 – 150" }, { num: 8, text: "The earth is an organism within a greater one, and this fact needs wider recognition.", ref: "3 – 177" }, { num: 9, text: "Most men do not as yet distinguish with accuracy between themselves as the thinker, persistent in time and space, and the vehicle through which they think, which is ephemeral and transient.", ref: "3 – 419" }, { num: 10, text: "No man is ever put into circumstances which are insurmountable, once he has reached the point where he has intelligently put himself on the side of evolution, or of God.", ref: "3 – 946" }, { num: 11, text: "Every step of the way has to be carved out by a man himself, and there is no short or easy road out of darkness into light.", ref: "4 – 60" }, { num: 12, text: "The whole secret of success in treading the occult path, depends upon an attitude of mind; when the attitude is one of concrete materialism, of concentration upon form, and a desire for the things of the present moment, little progress can be made.", ref: "4 – 84" }, { num: 13, text: "Nothing in heaven or hell, on earth or elsewhere, can prevent the progress of the man who has awakened to the illusion, who has glimpsed the reality beyond the glamour of the astral plane, and who has heard, even if only once, the clarion call of his own soul.", ref: "4 – 223" }, { num: 14, text: "The outcome of good is inevitable. It is, however, a question of a slow or a rapid realisation and liberation from the great world illusion.", ref: "4 – 224" }, { num: 15, text: "Each field of awareness in its boundaries constitute a prison, and the objective of all work of liberation, is to release the consciousness, and expand its field of contacts.", ref: "4 – 535" }, { num: 16, text: "Persist. Failure never prevents success. Difficulties develop the strength of the soul. The secret of success is ever to stand steady and to be impersonal.", ref: "4 – 559" }, { num: 17, text: "The great and fundamental law that 'energy follows thought', always holds good, and one of the conditions which is inducing the present stress and strain, is due to the fact that so many millions of people are beginning to think.", ref: "9 – 35" }, { num: 18, text: "Peace will be the result of understanding and sharing, and not the origin of them, as the pacifists so often imply.", ref: "9 – 98" }], keypoints: ["Careful reading and quiet reflection bring enlightenment", "Adaptability is essential in this time of transition", "Seeking with earnestness leads to finding", "Goodness grows from realisation and service", "Mental power increases goodness a hundredfold", "Words limit and veil ideas", "No circumstances are insurmountable once aligned with evolution", "There is no short road — each step must be carved individually", "Energy follows thought", "Peace comes from understanding"], summary: "This section offers foundational reflections on the spiritual path: the necessity of earnest seeking, the power of thought, the limitations of language, the importance of adaptability during planetary transition, and the invincible nature of the soul once awakened." },
+            { id: 3, title: "Abstruse Teachings", matter: [{ num: 1, text: "This treatise is, therefore, somewhat abstruse, and quite symbolical. It may appear difficult to comprehend, and it may mean little to some and nothing at all to others. If the disciples of the world are truly struggling, and if they are applying practically the teaching given, as far as in them lies, they will find as time elapses, and their reason and intuition awakens, that such symbolic and abstruse statements become clearer and clearer.", ref: "15 – 48/9" }, { num: 2, text: "'Ponder on this.' This is my frequent injunction, given because the activity of reflection is a potent means to revelation.", ref: "16 – 292" }, { num: 3, text: "You might here ask, why I deal here with these abstractions? I would reply, that in your effort to understand and to grasp the truth which lies beyond your reason, you are gradually developing an aspect of your mind which is much needed in the processes of realisation.", ref: "16 – 391" }, { num: 4, text: "Again, I have to repeat how vast is the subject with which we are dealing. But if you will have patience and will be willing to learn by absorption more than by analysis, you will later discover that you know much – intuitively and discriminately.", ref: "17 – 308" }, { num: 5, text: "Students should not be deceived by simplicity, and by the plain, direct statements. Yet the more advanced the teaching, very frequently the more simply is it expressed. Abstruseness is related to the ignorance of the student – not to the mode of presentation of the teacher.", ref: "17 – 629" }, { num: 6, text: "Much of what I have said above, will seem meaningless to you... but the effort you make to understand, will have its effect, even if the brain registers it not.", ref: "18 – 34" }, { num: 7, text: "The true understanding is, I realise, not possible for you, but much can be gained by your effort to comprehend.", ref: "18 – 304" }, { num: 8, text: "As you can see, we are venturing into realms far beyond your comprehension; but the effort to grasp the unattainable, and to exercise the mind along the line of abstract thought, is ever of value.", ref: "18 – 646" }], keypoints: ["Abstruse teachings become clear through practical application", "Reflection is a potent means to revelation", "Effort to understand develops the mind needed for initiation", "Learn by absorption more than by analysis", "Advanced teaching is often simply expressed", "The effort to comprehend has value even when the brain does not register it", "Exercising the mind in abstract thought is always valuable"], summary: "This section addresses the challenging nature of esoteric teachings. The Master explains that apparent abstruseness is often a reflection of the student's stage of development rather than the teaching itself." },
+            { id: 4, title: "Age of Disciples", matter: [], keypoints: [], summary: "Content available in the full edition. This topic explores the characteristics and responsibilities of disciples in the present age." },
+            { id: 5, title: "Agni", matter: [], keypoints: [], summary: "Content available in the full edition. Agni, the Lord of Fire, and the fiery nature of cosmic evolution." },
+            { id: 6, title: "Alignment", matter: [], keypoints: [], summary: "Content available in the full edition. The science of aligning the personality with the soul." },
+            { id: 7, title: "The Ancient Mysteries", matter: [], keypoints: [], summary: "Content available in the full edition. The mysteries of initiation in ancient and modern times." },
+            { id: 8, title: "Antahkarana", matter: [], keypoints: [], summary: "Content available in the full edition. The bridge of light between the personality and the Monad." },
+            { id: 9, title: "Aspirant", matter: [], keypoints: [], summary: "Content available in the full edition. The stage of the aspirant upon the Path." },
+            { id: 10, title: "The Astral (Emotional) Body", matter: [], keypoints: [], summary: "Content available in the full edition. The nature and control of the emotional vehicle." },
+            { id: 11, title: "Astral Phenomena", matter: [], keypoints: [], summary: "Content available in the full edition. Phenomena associated with the astral plane." },
+            { id: 12, title: "Astral Plane", matter: [], keypoints: [], summary: "Content available in the full edition. The nature, dangers, and proper use of the astral plane." },
+            { id: 13, title: "Astrology", matter: [], keypoints: [], summary: "Content available in the full edition. Esoteric astrology and the science of the zodiac." },
+            { id: 14, title: "Aura", matter: [], keypoints: [], summary: "Content available in the full edition. The human aura and its colours, qualities, and significance." },
+            { id: 15, title: "Breathing Exercises", matter: [], keypoints: [], summary: "Content available in the full edition. Pranayama and the science of breath." },
+            { id: 16, title: "The Buddha", matter: [], keypoints: [], summary: "Content available in the full edition. The Buddha and His message for humanity." },
+            { id: 17, title: "The Causal Body (The Egoic Lotus)", matter: [], keypoints: [], summary: "Content available in the full edition. The vehicle of the reincarnating ego." },
+            { id: 18, title: "Centres (Force)", matter: [], keypoints: [], summary: "Content available in the full edition. The chakras or force centres in the human body." },
+            { id: 19, title: "A Challenge", matter: [], keypoints: [], summary: "Content available in the full edition. The challenges facing the modern disciple." },
+            { id: 20, title: "The Christ", matter: [], keypoints: [], summary: "Content available in the full edition. The office and work of the Christ in the world." },
+            { id: 21, title: "The Christ: Reappearance of", matter: [], keypoints: [], summary: "Content available in the full edition. The imminent return and the work of the Christ." },
+            { id: 22, title: "Colour", matter: [], keypoints: [], summary: "Content available in the full edition. The esoteric significance of colour and sound." },
+            { id: 23, title: "Consciousness", matter: [], keypoints: [], summary: "Content available in the full edition. The expansion of consciousness and its stages." },
+            { id: 24, title: "The Constitution of Man", matter: [], keypoints: [], summary: "Content available in the full edition. The sevenfold nature of man and his vehicles." },
+            { id: 25, title: "Courage", matter: [], keypoints: [], summary: "Content available in the full edition. Spiritual courage and its development." },
+            { id: 26, title: "Cremation", matter: [], keypoints: [], summary: "Content available in the full edition. The process of cremation and its spiritual implications." },
+            { id: 27, title: "Crime", matter: [], keypoints: [], summary: "Content available in the full edition. The roots of crime and their spiritual cure." },
+            { id: 28, title: "Crisis", matter: [{ num: 1, text: "We are passing through one of the great natural transitional periods at this time. We are laying the foundation for the emergence of a new species of human being – a more highly evolved unit within the human family – hence much of our problem, and much of the present failure to meet the demands of the race, and to measure up to human need for development.", ref: "12 – 14" }, { num: 2, text: "Your vision is oft distorted by the pain and suffering to which the form is subjected (either your own or that of others, individually or en masse), so that you do not see clearly the purpose and the urgency of the life within the form.", ref: "12 – 111" }, { num: 3, text: "Accidents to individuals are the result, usually, of an explosion of force, and these explosions are caused by the hatreds and the unkind thoughts and the critical words of those involved in the accident.", ref: "13 – 62" }, { num: 4, text: "By holding, man loses; by relinquishing, he gains; by seeking to grasp that which he has, it must and will inevitably disappear.", ref: "13 – 83" }, { num: 5, text: "Be content with your duty and the immediate service which will lead you a step further upon the way to which you are ordained, and this way you can travel rapidly and with eager feet, or slowly and with lagging steps.", ref: "13 – 93" }, { num: 6, text: "A brief period of organised effort and, at the end, death, is of more vital usefulness today, than a futile doing of the things a man feels like doing in a leisurely way, and then meandering feebly down the years.", ref: "13 – 382" }, { num: 7, text: "Good must ultimately triumph, but the Hierarchy does not know what the immediate future holds for humanity, because men determine their own destiny.", ref: "5 – 74" }, { num: 8, text: "That which appears is not always that which truly is; that which rends and disrupts the personality life is frequently the agent of release, if rightly apprehended.", ref: "5 – 100" }], keypoints: ["We are in a great transitional period birthing a new species", "Pain distorts vision — look for the life within the form", "Accidents result from explosions of force caused by hatred and criticism", "By holding we lose; by relinquishing we gain", "Be content with immediate duty and service", "Organised effort is more useful than futile leisure", "Good must triumph, but humanity determines its own destiny", "What disrupts the personality is often the agent of release"], summary: "This section on Crisis reveals that our present world crises are part of a natural transition toward a more evolved humanity. The Master teaches that disruption often serves as release, that hatred and criticism create destructive forces, and that organized spiritual effort matters more than passive existence. Humanity's destiny is self-determined." },
+            { id: 29, title: "Criticism", matter: [{ num: 1, text: "One of the major faults of disciples today, is the paying of too close attention to the faults, errors and activities of other disciples, and too little attention to their own fulfilment of the law of love, and to their own dharma and work.", ref: "15 – 43/4" }, { num: 2, text: "Today, the neophyte must learn the same lesson of attention to personal perfection, and to personal work through the means of that inner silence which broods over the disciple, and forces him to attend to his own work and business, leaving others to do the same, and so learn the lesson of experience.", ref: "15 – 43/4" }, { num: 3, text: "Criticism is a virulent poison. It damages in every case eventually the one who criticises – owing to the fact of voiced direction– it hurts still more the one who is criticised.", ref: "15 – 617" }, { num: 4, text: "Unvoiced criticism is very dangerous, for it is powerfully focussed and strongly, though not individually directed; it issues continuously and as a steady stream, sent forth on the wings of jealousy, ambition, pride in a personal grasp of a supposed situation.", ref: "15 – 617" }, { num: 5, text: "Watch with care your thoughts anent each other, and kill out at once all suspicion, all criticism, and seek to hold each other unwaveringly in the light of love.", ref: "5 – 10" }], keypoints: ["Disciples pay too much attention to others' faults and too little to their own work", "Inner silence forces attention to personal work and dharma", "Criticism is a virulent poison that damages both sender and receiver", "Unvoiced criticism is powerfully focussed and dangerous", "Kill out suspicion and criticism; hold each other in the light of love"], summary: "This powerful section on Criticism warns that focusing on others' faults while neglecting one's own dharma is a major disciple failing. Criticism — whether voiced or silent — acts as a virulent poison carried on the wings of jealousy and ambition. The remedy is inner silence, self-attention, and holding all beings in the light of love." },
+            { id: 30, title: "Cycles (Cyclic Impulses)", matter: [], keypoints: [], summary: "Content available in the full edition. The law of cycles and rhythmic manifestation." },
+            { id: 31, title: "The Dark Forces", matter: [], keypoints: [], summary: "Content available in the full edition. The nature and methods of the forces of materiality." }
+        ];
+
+        /* ================= STATE ================= */
+        let currentId = parseInt(localStorage.getItem('pot_last_topic')) || 1;
+        let currentView = localStorage.getItem('pot_last_view') || 'matter';
+        let bookmarks = JSON.parse(localStorage.getItem('pot_bookmarks') || '[]');
+        let notes = JSON.parse(localStorage.getItem('pot_notes') || '{}');
+        let showingSaved = false;
+
+        const els = {
+            topicPill: document.getElementById('topicPill'),
+            topicNameHeader: document.getElementById('topicNameHeader'),
+            contentBody: document.getElementById('contentBody'),
+            contentScroll: document.getElementById('contentScroll'),
+            notesInput: document.getElementById('notesInput'),
+            savedHint: document.getElementById('savedHint'),
+            contextPos: document.getElementById('contextPos'),
+            contextSaved: document.getElementById('contextSaved'),
+            progressFill: document.getElementById('progressFill'),
+            drawer: document.getElementById('topicDrawer'),
+            drawerOverlay: document.getElementById('drawerOverlay'),
+            drawerList: document.getElementById('drawerList'),
+            drawerSearch: document.getElementById('drawerSearch'),
+            drawerCount: document.getElementById('drawerCount'),
+            searchOverlay: document.getElementById('searchOverlay'),
+            searchInput: document.getElementById('searchModalInput'),
+            searchResults: document.getElementById('searchResults'),
+            toast: document.getElementById('toast'),
+            bookmarkBtn: document.getElementById('bookmarkBtn'),
+            prevBtn: document.getElementById('prevBtn'),
+            nextBtn: document.getElementById('nextBtn'),
+            bottomNav: document.getElementById('bottomNav')
+        };
+
+        function pad(n) { return String(n).padStart(3, '0') }
+
+        function showToast(msg) {
+            els.toast.textContent = msg;
+            els.toast.classList.add('show');
+            setTimeout(() => els.toast.classList.remove('show'), 2000);
+        }
+
+        function updateProgress() {
+            const pct = (currentId / topics.length) * 100;
+            els.progressFill.style.width = pct + '%';
+            els.contextPos.textContent = `Topic ${currentId} of ${topics.length}`;
+        }
+
+        function updateBookmarkState() {
+            const saved = bookmarks.includes(currentId);
+            els.bookmarkBtn.innerHTML = saved
+                ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>'
+                : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>';
+            els.contextSaved.style.opacity = saved ? '1' : '0';
+        }
+
+        function renderContent(direction = 'none') {
+            const topic = topics.find(t => t.id === currentId);
+            if (!topic) return;
+            els.topicPill.textContent = pad(topic.id);
+            els.topicNameHeader.textContent = topic.title;
+            els.notesInput.value = notes[currentId] || '';
+            updateProgress();
+            updateBookmarkState();
+
+            let html = '';
+            const anim = direction === 'left' ? 'slide-left' : direction === 'right' ? 'slide-right' : 'fade-up';
+
+            if (currentView === 'matter') {
+                if (!topic.matter || topic.matter.length === 0) {
+                    html = `<div class="matter-card ${anim}"><div class="matter-text" style="color:var(--text3);font-style:italic">Full matter for this topic will be available in a future update.</div></div>`;
+                } else {
+                    topic.matter.forEach((m, i) => {
+                        html += `<div class="matter-card ${anim}" style="animation-delay:${i * 0.04}s"><div class="matter-num">Point ${m.num}</div><div class="matter-text">${m.text}</div><div class="matter-ref">Reference: ${m.ref}</div></div>`;
+                    });
+                }
+            } else if (currentView === 'keypoints') {
+                if (!topic.keypoints || topic.keypoints.length === 0) {
+                    html = `<div class="matter-card ${anim}"><div class="matter-text" style="color:var(--text3);font-style:italic">Key points for this topic will be available in a future update.</div></div>`;
+                } else {
+                    topic.keypoints.forEach((kp, i) => {
+                        html += `<div class="keypoint-row ${anim}" style="animation-delay:${i * 0.04}s"><span class="keypoint-dot"></span><span class="keypoint-text">${kp}</span></div>`;
+                    });
+                }
+            } else if (currentView === 'summary') {
+                if (!topic.summary) {
+                    html = `<div class="matter-card ${anim}"><div class="matter-text" style="color:var(--text3);font-style:italic">Summary for this topic will be available in a future update.</div></div>`;
+                } else {
+                    html = `<div class="summary-card ${anim}"><div class="summary-label">Summary</div><div class="summary-text">${topic.summary}</div></div>`;
+                }
+            }
+
+            const next = topics.find(t => t.id === currentId + 1);
+            if (next) {
+                html += `<div class="next-card" id="nextCard"><div><div class="next-label">Next topic</div><div class="next-name">${next.title}</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg></div>`;
+            }
+
+            els.contentBody.innerHTML = html;
+            els.contentScroll.scrollTop = 0;
+
+            const nc = document.getElementById('nextCard');
+            if (nc) nc.addEventListener('click', () => goTo(currentId + 1, 'left'));
+        }
+
+        function goTo(id, direction = 'none') {
+            if (id < 1 || id > topics.length) return;
+            currentId = id;
+            localStorage.setItem('pot_last_topic', id);
+            renderContent(direction);
+            renderDrawer();
+            if (window.innerWidth <= 640) closeDrawer();
+        }
+
+        function prevTopic() { goTo(currentId - 1, 'right'); }
+        function nextTopic() { goTo(currentId + 1, 'left'); }
+
+        function toggleBookmark() {
+            const idx = bookmarks.indexOf(currentId);
+            if (idx > -1) { bookmarks.splice(idx, 1); showToast('Removed from saved'); }
+            else { bookmarks.push(currentId); showToast('Saved'); }
+            localStorage.setItem('pot_bookmarks', JSON.stringify(bookmarks));
+            updateBookmarkState();
+            renderDrawer();
+        }
+
+        function renderDrawer() {
+            const filter = els.drawerSearch.value.toLowerCase();
+            const list = showingSaved ? topics.filter(t => bookmarks.includes(t.id)) : topics;
+            const filtered = list.filter(t => t.title.toLowerCase().includes(filter) || String(t.id).includes(filter));
+            els.drawerCount.textContent = filtered.length + (showingSaved ? ' saved' : '');
+            els.drawerList.innerHTML = '';
+            filtered.forEach(t => {
+                const div = document.createElement('div');
+                div.className = 'drawer-item' + (t.id === currentId ? ' active' : '') + (bookmarks.includes(t.id) ? ' bookmarked' : '');
+                div.innerHTML = `<span class="d-num">${pad(t.id)}</span><span class="d-name">${t.title}</span><span class="d-bookmark"></span><svg class="d-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>`;
+                div.onclick = () => { goTo(t.id); };
+                els.drawerList.appendChild(div);
+            });
+        }
+
+        function openDrawer() { els.drawer.classList.add('open'); els.drawerOverlay.classList.add('open'); }
+        function closeDrawer() { els.drawer.classList.remove('open'); els.drawerOverlay.classList.remove('open'); }
+
+        function openSearch() {
+            els.searchOverlay.classList.add('open');
+            setTimeout(() => els.searchInput.focus(), 100);
+            doSearch('');
+        }
+        function closeSearch() { els.searchOverlay.classList.remove('open'); els.searchInput.value = ''; }
+
+        function doSearch(q) {
+            const term = q.toLowerCase();
+            if (!term) { els.searchResults.innerHTML = '<div class="search-empty">Type to search topics, key points, or content</div>'; return; }
+            const matches = [];
+            topics.forEach(t => {
+                if (t.title.toLowerCase().includes(term)) matches.push({ t, reason: 'title' });
+                else if (t.matter) {
+                    const m = t.matter.find(x => x.text.toLowerCase().includes(term));
+                    if (m) matches.push({ t, reason: 'content', snippet: m.text.substring(0, 90) + '...' });
+                }
+            });
+            if (matches.length === 0) { els.searchResults.innerHTML = '<div class="search-empty">No matches found</div>'; return; }
+            els.searchResults.innerHTML = matches.map(m => `<div class="search-result" data-id="${m.t.id}"><div class="search-result-num">${pad(m.t.id)}</div><div class="search-result-title">${m.t.title}</div>${m.snippet ? `<div class="search-result-match">${m.snippet}</div>` : ''}</div>`).join('');
+            els.searchResults.querySelectorAll('.search-result').forEach(el => {
+                el.addEventListener('click', () => { goTo(parseInt(el.dataset.id)); closeSearch(); });
+            });
+        }
+
+        // Event wiring
+        document.getElementById('menuBtn').addEventListener('click', openDrawer);
+        document.getElementById('closeDrawer').addEventListener('click', closeDrawer);
+        els.drawerOverlay.addEventListener('click', closeDrawer);
+        els.prevBtn.addEventListener('click', prevTopic);
+        els.nextBtn.addEventListener('click', nextTopic);
+        els.bookmarkBtn.addEventListener('click', toggleBookmark);
+        els.drawerSearch.addEventListener('input', renderDrawer);
+
+        els.notesInput.addEventListener('input', () => {
+            notes[currentId] = els.notesInput.value;
+            localStorage.setItem('pot_notes', JSON.stringify(notes));
+            els.savedHint.classList.add('show');
+            setTimeout(() => els.savedHint.classList.remove('show'), 1500);
+        });
+
+        document.querySelectorAll('.segment').forEach(seg => {
+            seg.addEventListener('click', () => {
+                document.querySelectorAll('.segment').forEach(s => s.classList.remove('active'));
+                seg.classList.add('active');
+                currentView = seg.dataset.view;
+                localStorage.setItem('pot_last_view', currentView);
+                renderContent();
+            });
+        });
+
+        // Bottom nav
+        document.querySelectorAll('.bottom-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const mode = tab.dataset.tab;
+                document.querySelectorAll('.bottom-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                if (mode === 'topics') { showingSaved = false; openDrawer(); }
+                else if (mode === 'saved') { showingSaved = true; openDrawer(); }
+                else if (mode === 'search') { openSearch(); }
+            });
+        });
+
+        // Search
+        document.getElementById('closeSearch').addEventListener('click', closeSearch);
+        els.searchInput.addEventListener('input', e => doSearch(e.target.value));
+
+        // Swipe gestures
+        let touchStartX = 0;
+        const swipeArea = document.getElementById('swipeArea');
+        swipeArea.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+        swipeArea.addEventListener('touchend', e => {
+            const endX = e.changedTouches[0].screenX;
+            if (touchStartX - endX > 60) nextTopic();
+            else if (endX - touchStartX > 60) prevTopic();
+        }, { passive: true });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', e => {
+            if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+            if (e.key === 'ArrowLeft') prevTopic();
+            if (e.key === 'ArrowRight') nextTopic();
+            if (e.key === 'b' || e.key === 'B') toggleBookmark();
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
+        });
+
+        // Init
+        document.querySelectorAll('.segment').forEach(s => s.classList.toggle('active', s.dataset.view === currentView));
+        renderDrawer();
+        renderContent();
+
+        /* ---------- Read aloud (prefers Indian English voices) ---------- */
+        (function () {
+            const listenBtn = document.getElementById('listenBtn');
+            const panel = document.getElementById('listenPanel');
+            const voiceSel = document.getElementById('listenVoice');
+            const rateSel = document.getElementById('listenRate');
+            const playBtn = document.getElementById('listenPlay');
+            const stopBtn = document.getElementById('listenStop');
+            const autoChk = document.getElementById('listenAuto');
+            const status = document.getElementById('listenStatus');
+
+            if (!('speechSynthesis' in window)) { listenBtn.style.display = 'none'; return; }
+
+            let voices = [];
+            let listening = false;
+            let paused = false;
+            let gen = 0;
+
+            function score(v) {
+                const l = (v.lang || '').toLowerCase().replace('_', '-');
+                if (l.indexOf('en-in') === 0) return 3;
+                if (l === 'en-gb') return 2;
+                return 1;
+            }
+
+            function loadVoices() {
+                const all = speechSynthesis.getVoices();
+                const en = all.filter(v => v.lang && v.lang.toLowerCase().indexOf('en') === 0);
+                voices = (en.length ? en : all).slice().sort((a, b) => score(b) - score(a));
+                voiceSel.innerHTML = '';
+                voices.forEach((v, i) => {
+                    const opt = document.createElement('option');
+                    opt.value = i;
+                    const isIndian = (v.lang || '').toLowerCase().replace('_', '-').indexOf('en-in') === 0;
+                    opt.textContent = v.name + ' (' + v.lang + ')' + (isIndian ? ' — Indian accent' : '');
+                    voiceSel.appendChild(opt);
+                });
+                const idx = voices.findIndex(v => (v.lang || '').toLowerCase().replace('_', '-').indexOf('en-in') === 0);
+                voiceSel.value = idx >= 0 ? idx : 0;
+                if (!listening) {
+                    status.textContent = idx >= 0
+                        ? 'Indian English voice ready.'
+                        : 'No Indian English voice on this device — closest English voice selected.';
+                }
+            }
+            speechSynthesis.onvoiceschanged = loadVoices;
+            loadVoices();
+
+            function topicText() {
+                const t = topics.find(x => x.id === currentId);
+                if (!t) return '';
+                const parts = ['Topic ' + t.id + '. ' + t.title + '.'];
+                if (currentView === 'matter') (t.matter || []).forEach(m => parts.push(m.text));
+                else if (currentView === 'keypoints') (t.keypoints || []).forEach(k => parts.push(k));
+                else if (t.summary) parts.push(t.summary);
+                return parts.join(' ');
+            }
+
+            function chunk(text) {
+                const parts = text.match(/[^.!?\u2026]+[.!?\u2026]+["')\]]*\s*/g) || [text];
+                const out = [];
+                let buf = '';
+                parts.forEach(seg => {
+                    if ((buf + seg).length > 220) { if (buf) out.push(buf); buf = seg; }
+                    else buf += seg;
+                });
+                if (buf) out.push(buf);
+                return out;
+            }
+
+            function speak() {
+                const text = topicText();
+                if (text.length < 40) {
+                    if (listening && autoChk.checked && currentId < topics.length) {
+                        status.textContent = 'Topic ' + currentId + ' has no text — skipping…';
+                        setTimeout(() => { if (listening) goTo(currentId + 1, 'left'); }, 600);
+                    } else setUi(false);
+                    return;
+                }
+                const myGen = ++gen;
+                speechSynthesis.cancel();
+                const pieces = chunk(text);
+                const v = voices[parseInt(voiceSel.value, 10)];
+                pieces.forEach((c, i) => {
+                    const u = new SpeechSynthesisUtterance(c);
+                    if (v) { u.voice = v; u.lang = v.lang; }
+                    u.rate = parseFloat(rateSel.value);
+                    if (i === pieces.length - 1) {
+                        u.onend = () => {
+                            if (!listening || myGen !== gen) return;
+                            if (autoChk.checked && currentId < topics.length) goTo(currentId + 1, 'left');
+                            else setUi(false);
+                        };
+                    }
+                    speechSynthesis.speak(u);
+                });
+                status.textContent = 'Reading topic ' + currentId + ' of ' + topics.length + '…';
+            }
+
+            function setUi(on) {
+                listening = on;
+                paused = false;
+                listenBtn.classList.toggle('listening', on);
+                playBtn.innerHTML = on ? '&#10074;&#10074; Pause' : '&#9654; Read aloud';
+                stopBtn.disabled = !on;
+                if (!on) status.textContent = 'Stopped.';
+            }
+
+            // Re-speak whenever the displayed topic/view changes while listening
+            const origRenderContent = renderContent;
+            renderContent = function (direction) {
+                origRenderContent(direction);
+                if (listening) speak();
+            };
+
+            // Chrome desktop occasionally stalls long speech queues — nudge it.
+            setInterval(() => {
+                if (listening && !paused && speechSynthesis.speaking) speechSynthesis.resume();
+            }, 10000);
+
+            listenBtn.addEventListener('click', () => panel.classList.toggle('open'));
+            playBtn.addEventListener('click', () => {
+                if (!listening) { setUi(true); panel.classList.add('open'); speak(); return; }
+                if (paused) { speechSynthesis.resume(); paused = false; playBtn.innerHTML = '&#10074;&#10074; Pause'; }
+                else { speechSynthesis.pause(); paused = true; playBtn.innerHTML = '&#9654; Resume'; }
+            });
+            stopBtn.addEventListener('click', () => { gen++; speechSynthesis.cancel(); setUi(false); });
+            voiceSel.addEventListener('change', () => { if (listening) speak(); });
+            rateSel.addEventListener('change', () => { if (listening) speak(); });
+        })();
+
+    </script>
+
+<style id="sel-search-css">
+#sel-search-tip{position:fixed;z-index:99999;display:none;background:#2E2A24;color:#F7F1E3;border-radius:10px;padding:6px 8px;box-shadow:0 6px 18px rgba(0,0,0,.28);font:13px/1.2 system-ui,-apple-system,sans-serif;transform:translateX(-50%)}
+#sel-search-tip.show{display:block}
+#sel-search-tip button{background:none;border:none;color:#ffd98a;cursor:pointer;font:inherit;padding:2px 6px;white-space:nowrap}
+#sel-search-tip button:hover{color:#ffe9b8}
+#sel-search-tip::after{content:"";position:absolute;top:100%;left:50%;margin-left:-6px;border:6px solid transparent;border-top-color:#2E2A24}
+#sel-search-bar{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:99999;display:none;align-items:center;gap:10px;background:#2E2A24;color:#F7F1E3;border-radius:12px;padding:9px 14px;box-shadow:0 8px 24px rgba(0,0,0,.32);font:13px system-ui,-apple-system,sans-serif;max-width:92vw}
+#sel-search-bar.show{display:flex}
+#sel-search-bar button{background:#b8893a;border:none;color:#fff;border-radius:8px;padding:5px 12px;cursor:pointer;font:inherit;white-space:nowrap}
+#sel-search-bar button:hover{background:#c99a48}
+#sel-search-bar a{color:#ffd98a}
+</style>
+
+<script>
+(function(){
+  if (window.__selSearch) return; window.__selSearch = true;
+  var tip = document.createElement('div');
+  tip.id = 'sel-search-tip';
+  tip.innerHTML = '<button id="sel-search-btn" type="button">&#128269; Search DuckDuckGo</button>';
+  document.body.appendChild(tip);
+  var bar = document.createElement('div');
+  bar.id = 'sel-search-bar';
+  bar.innerHTML = '<span id="sel-search-msg">Search opened in a popup window.</span>' +
+    '<button id="sel-search-close" type="button">&#10005; Close search window</button>';
+  document.body.appendChild(bar);
+  var popup = null, term = '', lastUrl = '';
+
+  function hideTip(){ tip.classList.remove('show'); }
+  function hideBar(){ bar.classList.remove('show'); }
+
+  function showTipForSelection(){
+    var sel = window.getSelection();
+    var txt = sel && !sel.isCollapsed ? sel.toString().trim() : '';
+    if (txt.length >= 2 && txt.length <= 160){
+      term = txt;
+      var r = sel.getRangeAt(0).getBoundingClientRect();
+      var top = r.top - 46;
+      if (top < 8) top = r.bottom + 10;
+      var left = r.left + r.width / 2;
+      left = Math.max(90, Math.min(window.innerWidth - 90, left));
+      tip.style.left = left + 'px';
+      tip.style.top = top + 'px';
+      tip.classList.add('show');
+    } else {
+      hideTip();
+    }
+  }
+
+  document.addEventListener('mouseup', function(e){
+    if (tip.contains(e.target) || bar.contains(e.target)) return;
+    setTimeout(showTipForSelection, 10);
+  });
+  document.addEventListener('keyup', function(e){
+    if (e.shiftKey) setTimeout(showTipForSelection, 10);
+  });
+  document.addEventListener('mousedown', function(e){
+    if (!tip.contains(e.target)) hideTip();
+  });
+  document.addEventListener('scroll', hideTip, true);
+
+  document.getElementById('sel-search-btn').addEventListener('click', function(){
+    if (!term) return;
+    lastUrl = 'https://duckduckgo.com/?q=' + encodeURIComponent(term);
+    popup = window.open(lastUrl, 'ddg_search_popup', 'width=920,height=700,menubar=no,toolbar=no,location=no,status=no');
+    hideTip();
+    var msg = document.getElementById('sel-search-msg');
+    if (popup){
+      msg.textContent = 'Search opened in a popup window.';
+    } else {
+      msg.innerHTML = 'Popup blocked — <a href="' + lastUrl.replace(/"/g, '&quot;') + '" target="_blank" rel="noopener">open the search in a new tab</a>.';
+    }
+    bar.classList.add('show');
+  });
+
+  document.getElementById('sel-search-close').addEventListener('click', function(){
+    if (popup && !popup.closed) popup.close();
+    popup = null;
+    hideBar();
+  });
+})();
+</script>
+
+<style id="sl-chat-css">
+#sl-chat-fab{position:fixed;right:18px;bottom:18px;z-index:99998;width:52px;height:52px;border-radius:50%;border:none;background:#2E2A24;color:#F7F1E3;font-size:22px;cursor:pointer;box-shadow:0 8px 22px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center}
+#sl-chat-fab:hover{background:#453e33}
+#sl-chat-panel{position:fixed;right:18px;bottom:82px;z-index:99998;width:380px;max-width:92vw;height:540px;max-height:72vh;display:none;flex-direction:column;background:#FDFAF3;border:1px solid #E3D9C6;border-radius:18px;box-shadow:0 16px 44px rgba(0,0,0,.3);overflow:hidden;font:14px/1.45 system-ui,-apple-system,sans-serif;color:#2E2A24}
+#sl-chat-panel.show{display:flex}
+#sl-chat-head{display:flex;align-items:center;justify-content:space-between;background:#2E2A24;color:#F7F1E3;padding:10px 14px;font-weight:600;font-size:13px;letter-spacing:.4px}
+#sl-chat-head button{background:none;border:none;color:#CBBEA6;cursor:pointer;font-size:15px;padding:2px 6px}
+#sl-chat-head button:hover{color:#fff}
+#sl-chat-settings{display:none;padding:10px 14px;background:#F6EEDC;border-bottom:1px solid #E3D9C6;font-size:12px}
+#sl-chat-settings.show{display:block}
+#sl-chat-settings input{width:100%;box-sizing:border-box;margin:3px 0;padding:6px 8px;border:1px solid #D8CCB2;border-radius:8px;font-size:12px;background:#fff}
+#sl-chat-settings .row{display:flex;gap:8px;align-items:center;margin-top:4px}
+#sl-chat-settings button{background:#2E2A24;color:#F7F1E3;border:none;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:12px}
+#sl-chat-settings .hint{color:#8A7F6A;font-size:11px;line-height:1.4;margin-top:4px}
+#sl-chat-body{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.sl-msg{max-width:88%;padding:9px 12px;border-radius:14px;font-size:13px;white-space:pre-wrap;word-wrap:break-word}
+.sl-msg.user{align-self:flex-end;background:#2E2A24;color:#F7F1E3;border-bottom-right-radius:4px}
+.sl-msg.bot{align-self:flex-start;background:#fff;border:1px solid #E7DECB;border-bottom-left-radius:4px}
+.sl-msg a{color:#A6743A}
+.sl-ref{display:block;margin-top:6px;padding:7px 9px;background:#F6EEDC;border-radius:10px;font-size:12px;cursor:pointer;border:none;width:100%;text-align:left}
+.sl-ref:hover{background:#EFE3CC}
+.sl-ref b{display:block;color:#2E2A24}
+.sl-ref span{color:#8A7F6A;font-size:11px}
+.sl-ref .go{color:#A6743A;font-weight:600}
+#sl-chat-inputrow{display:flex;gap:8px;padding:10px 12px;border-top:1px solid #E7DECB;background:#fff}
+#sl-chat-input{flex:1;border:none;outline:none;font-size:13px;background:transparent;color:#2E2A24}
+#sl-chat-send{background:#B8893A;border:none;color:#fff;border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+#sl-chat-send:disabled{opacity:.4}
+.sl-thinking{font-size:11px;color:#A99E88;font-style:italic}
+</style>
+
+<script>
+(function(){
+  if (window.__slChat) return; window.__slChat = true;
+  var CFG_KEY = 'sl_llm_config';
+  function loadCfg(){
+    try { var raw = localStorage.getItem(CFG_KEY); if (raw) return JSON.parse(raw); } catch(e){}
+    return { endpoint:'https://api.openai.com/v1/chat/completions', key:'', model:'gpt-4o-mini' };
+  }
+  var cfg = loadCfg();
+
+  var fab = document.createElement('button');
+  fab.id = 'sl-chat-fab'; fab.type = 'button'; fab.title = 'Library assistant';
+  fab.textContent = '\uD83D\uDCAC';
+  document.body.appendChild(fab);
+
+  var panel = document.createElement('div');
+  panel.id = 'sl-chat-panel';
+  panel.innerHTML =
+    '<div id="sl-chat-head"><span>\u2728 Library Assistant</span>' +
+    '<span><button id="sl-chat-clear" type="button" title="Clear chat">\uD83D\uDDD1</button>' +
+    '<button id="sl-chat-gear" type="button" title="LLM settings">\u2699</button>' +
+    '<button id="sl-chat-x" type="button" title="Close">\u2715</button></span></div>' +
+    '<div id="sl-chat-settings">' +
+    '<b>LLM configuration (any OpenAI-compatible API)</b>' +
+    '<input id="sl-cfg-endpoint" placeholder="Endpoint, e.g. https://api.openai.com/v1/chat/completions">' +
+    '<input id="sl-cfg-key" type="password" placeholder="API key (stored only in this browser)">' +
+    '<input id="sl-cfg-model" placeholder="Model, e.g. gpt-4o-mini">' +
+    '<div class="row"><button id="sl-cfg-save" type="button">Save</button>' +
+    '<button id="sl-cfg-test" type="button">Test</button><span id="sl-cfg-status"></span></div>' +
+    '<div class="hint">Works with OpenAI, OpenRouter, Groq, Mistral, Ollama (http://localhost:11434/v1/chat/completions), LM Studio. Without a key I search this book locally and DuckDuckGo externally.</div>' +
+    '</div>' +
+    '<div id="sl-chat-body"></div>' +
+    '<div id="sl-chat-inputrow"><input id="sl-chat-input" placeholder="Ask about this book, or the web\u2026">' +
+    '<button id="sl-chat-send" type="button" title="Send">\u27A4</button></div>';
+  document.body.appendChild(panel);
+
+  var body = panel.querySelector('#sl-chat-body');
+  var input = panel.querySelector('#sl-chat-input');
+  var sendBtn = panel.querySelector('#sl-chat-send');
+  var busy = false;
+
+  function scrollBody(){ body.scrollTop = body.scrollHeight; }
+  function addMsg(role, html){
+    var d = document.createElement('div');
+    d.className = 'sl-msg ' + role;
+    d.innerHTML = html;
+    body.appendChild(d); scrollBody();
+    return d;
+  }
+  function esc(t){ var d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+
+  addMsg('bot', 'Namaste. Ask me anything \u2014 I can search <b>this book</b> page by page, answer with your configured LLM, or run an external DuckDuckGo search.');
+
+  function pageText(p){
+    var d = document.createElement('div'); d.innerHTML = p.html; return d.textContent || '';
+  }
+
+  function searchBook(q){
+    var terms = q.toLowerCase().split(/[^a-z0-9]+/).filter(function(t){ return t.length > 2; });
+    if (!terms.length) return [];
+    var out = [];
+    for (var i = 0; i < PAGES.length; i++){
+      var txt = pageText(PAGES[i]).toLowerCase();
+      var score = 0;
+      for (var k = 0; k < terms.length; k++){
+        var hits = txt.split(terms[k]).length - 1;
+        if (hits) score += hits;
+      }
+      if (score) out.push({ i: i, score: score });
+    }
+    out.sort(function(a,b){ return b.score - a.score; });
+    return out.slice(0, 5);
+  }
+
+  function snippet(i, q){
+    var txt = pageText(PAGES[i]).replace(/\s+/g,' ');
+    var terms = q.toLowerCase().split(/[^a-z0-9]+/).filter(function(t){ return t.length > 2; });
+    var pos = -1;
+    for (var k = 0; k < terms.length; k++){ pos = txt.toLowerCase().indexOf(terms[k]); if (pos >= 0) break; }
+    if (pos < 0) pos = 0;
+    var start = Math.max(0, pos - 60);
+    return (start ? '\u2026' : '') + txt.slice(start, start + 170) + '\u2026';
+  }
+
+  function goToPage(i){
+    try { current = i; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    catch(e){ console.warn('jump failed', e); }
+  }
+
+  function callLlm(q, context){
+    return fetch(cfg.endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (cfg.key || '') },
+      body: JSON.stringify({
+        model: cfg.model,
+        messages: [
+          { role: 'system', content: 'You are the assistant inside a spiritual book reader. Answer concisely. When book excerpts are provided, ground the answer in them and cite the page labels. If the question needs current external facts, say so and suggest an external search.' },
+          { role: 'user', content: context ? 'Book excerpts:\n' + context + '\n\nQuestion: ' + q : q }
+        ],
+        temperature: 0.4
+      })
+    }).then(function(res){
+      if (!res.ok) return res.text().then(function(t){ throw new Error('LLM error ' + res.status + ': ' + t.slice(0,180)); });
+      return res.json();
+    }).then(function(data){
+      var c = data.choices && data.choices[0] && data.choices[0].message;
+      return (c && c.content || '(empty response)').trim();
+    });
+  }
+
+  function handleSend(){
+    var q = input.value.trim();
+    if (!q || busy) return;
+    input.value = '';
+    addMsg('user', esc(q));
+    busy = true; sendBtn.disabled = true;
+    var thinking = document.createElement('div');
+    thinking.className = 'sl-thinking'; thinking.textContent = 'Thinking\u2026';
+    body.appendChild(thinking); scrollBody();
+
+    var hits = searchBook(q);
+    var finish = function(){ busy = false; sendBtn.disabled = false; thinking.remove(); };
+
+    function renderRefs(){
+      if (!hits.length) return '';
+      var h = '';
+      hits.forEach(function(hit, n){
+        h += '<button class="sl-ref" data-page="' + hit.i + '" type="button"><b>' + esc(PAGES[hit.i].label) +
+             ' \u00b7 page ' + (hit.i + 1) + '</b><span>' + esc(snippet(hit.i, q)) + '</span>' +
+             '<span class="go">Go to page \u2192</span></button>';
+      });
+      return h;
+    }
+
+    var done = function(html){ finish(); var m = addMsg('bot', html);
+      m.querySelectorAll('.sl-ref').forEach(function(b){
+        b.addEventListener('click', function(){ goToPage(parseInt(b.getAttribute('data-page'), 10)); });
+      });
+    };
+
+    if (cfg.key){
+      var ctx = hits.slice(0,3).map(function(hit){
+        return '[' + PAGES[hit.i].label + ', page ' + (hit.i + 1) + '] ' + pageText(PAGES[hit.i]).replace(/\s+/g,' ').slice(0, 900);
+      }).join('\n');
+      callLlm(q, ctx).then(function(ans){ done(esc(ans) + renderRefs()); })
+      .catch(function(err){ done(esc(String(err.message || err)) + renderRefs()); });
+    } else if (hits.length){
+      done('I found ' + hits.length + ' relevant page' + (hits.length > 1 ? 's' : '') + ' in this book. Tap one to jump there, or add an LLM API key in \u2699 Settings for a synthesized answer.' + renderRefs());
+    } else {
+      var url = 'https://duckduckgo.com/?q=' + encodeURIComponent(q);
+      done('Nothing in this book matched. <a href="' + url + '" target="_blank" rel="noopener">Search the web for \u201c' + esc(q) + '\u201d on DuckDuckGo \u2197</a> \u2014 or add an LLM key in \u2699 Settings and I can answer directly.');
+    }
+  }
+
+  fab.addEventListener('click', function(){ panel.classList.toggle('show'); });
+  panel.querySelector('#sl-chat-x').addEventListener('click', function(){ panel.classList.remove('show'); });
+  panel.querySelector('#sl-chat-clear').addEventListener('click', function(){ body.innerHTML = ''; addMsg('bot', 'Chat cleared. Ask me anything.'); });
+  panel.querySelector('#sl-chat-gear').addEventListener('click', function(){
+    var st = panel.querySelector('#sl-chat-settings');
+    st.classList.toggle('show');
+    panel.querySelector('#sl-cfg-endpoint').value = cfg.endpoint || '';
+    panel.querySelector('#sl-cfg-key').value = cfg.key || '';
+    panel.querySelector('#sl-cfg-model').value = cfg.model || '';
+  });
+  panel.querySelector('#sl-cfg-save').addEventListener('click', function(){
+    cfg = {
+      endpoint: panel.querySelector('#sl-cfg-endpoint').value.trim(),
+      key: panel.querySelector('#sl-cfg-key').value.trim(),
+      model: panel.querySelector('#sl-cfg-model').value.trim()
+    };
+    localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
+    panel.querySelector('#sl-cfg-status').textContent = 'Saved.';
+  });
+  panel.querySelector('#sl-cfg-test').addEventListener('click', function(){
+    var status = panel.querySelector('#sl-cfg-status');
+    status.textContent = 'Testing\u2026';
+    cfg = {
+      endpoint: panel.querySelector('#sl-cfg-endpoint').value.trim(),
+      key: panel.querySelector('#sl-cfg-key').value.trim(),
+      model: panel.querySelector('#sl-cfg-model').value.trim()
+    };
+    fetch(cfg.endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (cfg.key || '') },
+      body: JSON.stringify({ model: cfg.model, messages: [{ role: 'user', content: 'Say OK' }], max_tokens: 5 })
+    }).then(function(res){ status.textContent = res.ok ? 'Connected.' : 'Failed: HTTP ' + res.status; })
+    .catch(function(err){ status.textContent = 'Failed: ' + err.message; });
+  });
+  sendBtn.addEventListener('click', handleSend);
+  input.addEventListener('keydown', function(e){ if (e.key === 'Enter') handleSend(); });
+})();
+</script>
+<style id="sl-sel-css">
+#sl-sel-tip{position:fixed;z-index:99999;display:none;align-items:center;gap:2px;padding:5px;background:#2E2A24;border-radius:12px;box-shadow:0 10px 28px rgba(0,0,0,.35);font:13px/1.2 system-ui,-apple-system,sans-serif}
+#sl-sel-tip.show{display:flex}
+#sl-sel-tip button{display:flex;align-items:center;gap:6px;border:none;background:transparent;color:#F7F1E3;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:12.5px;white-space:nowrap}
+#sl-sel-tip button:hover{background:#4A4234}
+#sl-sel-tip .sl-sep{width:1px;height:18px;background:#55493A;margin:0 2px}
+#sl-sel-toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(10px);background:#2E2A24;color:#F7F1E3;padding:10px 18px;border-radius:999px;font:13px system-ui,-apple-system,sans-serif;z-index:99999;opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease;box-shadow:0 8px 22px rgba(0,0,0,.3);max-width:90vw;text-align:center}
+#sl-sel-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+<script>
+(function(){
+  if (window.__slSelTools) return; window.__slSelTools = true;
+
+  /* Compatibility shim: topic-based readers (e.g. Ponder on This) expose
+     `topics` + `goTo(id)` instead of `PAGES` + `render()`. Build the PAGES
+     interface so the embedded assistant's search and page jumps work there too. */
+  try {
+    if (typeof PAGES === 'undefined' && typeof topics !== 'undefined' && Array.isArray(topics)) {
+      window.PAGES = topics.map(function(t){
+        return {
+          label: 'Topic ' + t.id + ' \u2014 ' + t.title,
+          html: '<div>' + (t.matter || []).map(function(m){ return '<p>' + m.text + '</p>'; }).join('') + '</div>'
+        };
+      });
+      window.render = function(){
+        try { if (typeof goTo === 'function') goTo(topics[window.current || 0].id); } catch(e){}
+      };
+    }
+  } catch(e){}
+
+  var NOTES_KEY = 'sl_my_notes';
+
+  var tip = document.createElement('div');
+  tip.id = 'sl-sel-tip';
+  tip.setAttribute('role', 'toolbar');
+  tip.setAttribute('aria-label', 'Selection actions');
+  tip.innerHTML =
+    '<button type="button" data-act="ask">\u2728 Ask AI</button>' +
+    '<span class="sl-sep"></span>' +
+    '<button type="button" data-act="note">\uD83D\uDCDD Add to my note</button>';
+  document.body.appendChild(tip);
+
+  var toast = document.createElement('div');
+  toast.id = 'sl-sel-toast';
+  document.body.appendChild(toast);
+  var toastTimer = null;
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2400);
+  }
+
+  var selText = '';
+
+  function hideTip(){ tip.classList.remove('show'); }
+
+  function insideUi(node){
+    var el = node && (node.nodeType === 1 ? node : node.parentElement);
+    while (el) {
+      if (el.id === 'sl-chat-panel' || el.id === 'sl-sel-tip' ||
+          el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') return true;
+      el = el.parentElement;
+    }
+    return false;
+  }
+
+  function showTip(){
+    var sel = window.getSelection();
+    var text = sel && !sel.isCollapsed ? sel.toString().replace(/\s+/g, ' ').trim() : '';
+    if (text.length < 3 || insideUi(sel.anchorNode)) { hideTip(); return; }
+    var rect;
+    try { rect = sel.getRangeAt(0).getBoundingClientRect(); } catch(e){ hideTip(); return; }
+    if (!rect || (rect.width === 0 && rect.height === 0)) { hideTip(); return; }
+    selText = text;
+    tip.classList.add('show');
+    var w = tip.offsetWidth, h = tip.offsetHeight;
+    var x = rect.left + rect.width / 2 - w / 2;
+    var y = rect.top - h - 8;
+    if (y < 6) y = Math.min(window.innerHeight - h - 6, rect.bottom + 8);
+    x = Math.max(6, Math.min(window.innerWidth - w - 6, x));
+    tip.style.left = x + 'px';
+    tip.style.top = y + 'px';
+  }
+
+  document.addEventListener('mouseup', function(){ setTimeout(showTip, 10); });
+  document.addEventListener('touchend', function(){ setTimeout(showTip, 350); });
+  document.addEventListener('mousedown', function(e){ if (!tip.contains(e.target)) hideTip(); });
+  document.addEventListener('scroll', hideTip, true);
+  window.addEventListener('resize', hideTip);
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') hideTip(); });
+
+  /* Keep the text selection alive when the user taps a tooltip button */
+  tip.addEventListener('mousedown', function(e){ e.preventDefault(); });
+  tip.addEventListener('touchend', function(e){ e.preventDefault(); }, { passive: false });
+
+  function askAi(text){
+    var panel = document.getElementById('sl-chat-panel');
+    var input = document.getElementById('sl-chat-input');
+    var send = document.getElementById('sl-chat-send');
+    if (!panel || !input || !send) return;
+    panel.classList.add('show');
+    var trimmed = text.length > 600 ? text.slice(0, 600) + '\u2026' : text;
+    input.value = 'Explain this passage: \u201C' + trimmed + '\u201D';
+    send.click();
+    input.focus();
+  }
+
+  function currentLocation(){
+    try {
+      if (typeof PAGES !== 'undefined' && typeof current !== 'undefined' && PAGES[current]) {
+        return PAGES[current].label || '';
+      }
+    } catch(e){}
+    try {
+      if (typeof topics !== 'undefined' && typeof currentId !== 'undefined') {
+        var t = topics.find(function(x){ return x.id === currentId; });
+        if (t) return 'Topic ' + t.id + ' \u2014 ' + t.title;
+      }
+    } catch(e){}
+    return '';
+  }
+
+  function addNote(text){
+    var notes = [];
+    try { notes = JSON.parse(localStorage.getItem(NOTES_KEY) || '[]'); } catch(e){}
+    if (!Array.isArray(notes)) notes = [];
+    notes.unshift({
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+      book: document.title,
+      page: currentLocation(),
+      text: text,
+      url: location.pathname.split('/').pop(),
+      ts: Date.now()
+    });
+    try { localStorage.setItem(NOTES_KEY, JSON.stringify(notes.slice(0, 500))); } catch(e){}
+    showToast('Saved to My Notes \u2014 view it on the library home page');
+  }
+
+  tip.addEventListener('click', function(e){
+    var btn = e.target && e.target.closest ? e.target.closest('button[data-act]') : null;
+    if (!btn) return;
+    var text = selText;
+    hideTip();
+    if (btn.getAttribute('data-act') === 'ask') askAi(text);
+    else addNote(text);
+  });
+})();
+</script>
+
+</body>
+
+</html>

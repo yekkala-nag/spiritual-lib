@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Voice of the Silence</title>
+<style>
+/* ============ Design tokens ============
+   Palette: parchment cream #F7F1E3, ink #2E2A24, gilt gold #B8963E,
+            deep violet accent (devotion) #6B5691, rose accent (affection) #C1567B,
+            soft border #E4D9BE
+   Type: display "Cormorant Garamond" (Victorian book serif), body "EB Garamond",
+         utility/caption "Cormorant" small caps
+   Layout: single centered "book leaf" card, aurora/aura corner glow, page-turn transitions
+   Signature: an animated soft-glowing aura halo behind the folio number, echoing the
+   book's own theme of radiating thought-vibrations.
+*/
+:root{
+  --parchment:#F7F1E3;
+  --parchment-2:#EFE6CE;
+  --ink:#2E2A24;
+  --ink-soft:#5A5346;
+  --gold:#B8963E;
+  --gold-soft:#D8C186;
+  --violet:#6B5691;
+  --rose:#C1567B;
+  --border:#E1D3AA;
+  --card:#FFFDF6;
+  --shadow: 0 20px 60px -20px rgba(60,45,10,0.35), 0 2px 10px rgba(60,45,10,0.08);
+}
+*{box-sizing:border-box;}
+html,body{
+  margin:0; padding:0;
+  background:
+    radial-gradient(ellipse 900px 500px at 15% -10%, #f3e8c9 0%, transparent 60%),
+    radial-gradient(ellipse 900px 600px at 110% 110%, #ecdcc0 0%, transparent 55%),
+    var(--parchment);
+  color:var(--ink);
+  font-family: "EB Garamond", "Cormorant Garamond", Georgia, serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+@font-face{
+  font-family:'Cinzel-fallback'; src:local('Georgia');
+}
+.app{
+  max-width:980px;
+  margin:0 auto;
+  padding:28px 20px 60px;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ---------- Header ---------- */
+header.top{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:16px;
+  margin-bottom:18px;
+  flex-wrap:wrap;
+}
+.brand{
+  display:flex; align-items:center; gap:12px;
+}
+.brand .glyph{
+  width:40px;height:40px;border-radius:50%;
+  background: radial-gradient(circle at 35% 30%, #fff6df 0%, var(--gold-soft) 45%, var(--gold) 100%);
+  box-shadow: 0 0 18px 2px rgba(184,150,62,0.45), inset 0 0 6px rgba(255,255,255,0.6);
+  flex-shrink:0;
+}
+.brand h1{
+  font-family:"Cormorant Garamond", Georgia, serif;
+  font-weight:600;
+  font-size:1.35rem;
+  letter-spacing:0.04em;
+  margin:0;
+  color:var(--ink);
+}
+.brand p{
+  margin:0; font-size:0.8rem; letter-spacing:0.14em; text-transform:uppercase;
+  color:var(--ink-soft); font-family: Georgia, serif;
+}
+.progress-wrap{
+  display:flex; align-items:center; gap:10px;
+  font-size:0.82rem; color:var(--ink-soft); letter-spacing:0.04em;
+}
+.progress-bar{
+  width:150px; height:5px; border-radius:3px; background:var(--parchment-2);
+  overflow:hidden; box-shadow:inset 0 1px 2px rgba(0,0,0,0.08);
+}
+.progress-fill{
+  height:100%; border-radius:3px;
+  background:linear-gradient(90deg, var(--gold-soft), var(--gold));
+  transition:width .5s cubic-bezier(.4,0,.2,1);
+}
+
+/* ---------- Table of contents rail ---------- */
+.toc-toggle{
+  border:1px solid var(--border); background:var(--card); color:var(--ink);
+  border-radius:8px; padding:7px 14px; font-family:inherit; font-size:0.85rem;
+  letter-spacing:0.05em; cursor:pointer; box-shadow:var(--shadow);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.toc-toggle:hover{ transform: translateY(-1px); }
+.toc-panel{
+  position:fixed; top:0; right:-360px; width:340px; height:100%;
+  background:var(--card); border-left:1px solid var(--border);
+  box-shadow:-20px 0 50px rgba(60,45,10,0.18);
+  z-index:50; transition:right .35s cubic-bezier(.4,0,.2,1);
+  overflow-y:auto; padding:24px 18px 40px;
+}
+.toc-panel.open{ right:0; }
+.toc-panel h2{
+  font-family:"Cormorant Garamond",serif; font-size:1.1rem; letter-spacing:0.08em;
+  text-transform:uppercase; color:var(--gold); margin:0 0 14px;
+  border-bottom:1px solid var(--border); padding-bottom:10px;
+}
+.toc-close{
+  position:absolute; top:16px; right:16px; background:none; border:none;
+  font-size:1.3rem; color:var(--ink-soft); cursor:pointer; line-height:1;
+}
+.toc-section{
+  margin-bottom:6px;
+}
+.toc-section-title{
+  font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;
+  color:var(--violet); margin:16px 0 6px; font-weight:600;
+}
+.toc-item{
+  display:block; width:100%; text-align:left; background:none; border:none;
+  padding:6px 8px; font-family:"EB Garamond",serif; font-size:0.95rem;
+  color:var(--ink); cursor:pointer; border-radius:6px;
+  transition: background .15s ease;
+}
+.toc-item:hover{ background:var(--parchment-2); }
+.toc-item.active{
+  background: linear-gradient(90deg, rgba(184,150,62,0.16), transparent);
+  color:var(--gold); font-weight:600;
+}
+.scrim{
+  position:fixed; inset:0; background:rgba(40,30,10,0.25); z-index:40;
+  opacity:0; pointer-events:none; transition:opacity .3s ease;
+}
+.scrim.show{ opacity:1; pointer-events:auto; }
+
+/* ---------- The book leaf / page card ---------- */
+.stage{
+  flex:1;
+  display:flex; align-items:flex-start; justify-content:center;
+  position:relative;
+}
+.leaf{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  box-shadow:var(--shadow);
+  width:100%;
+  padding:46px 54px 40px;
+  position:relative;
+  min-height:420px;
+  animation: fadeIn .5s ease;
+}
+.leaf::before{
+  content:"";
+  position:absolute; inset:10px;
+  border:1px solid rgba(184,150,62,0.28);
+  border-radius:8px;
+  pointer-events:none;
+}
+@keyframes fadeIn{
+  from{opacity:0; transform:translateY(10px);}
+  to{opacity:1; transform:translateY(0);}
+}
+@media (max-width:700px){
+  .leaf{ padding:30px 20px 28px; }
+}
+
+.eyebrow{
+  font-size:0.72rem; letter-spacing:0.18em; text-transform:uppercase;
+  color:var(--violet); margin:0 0 6px; font-weight:600;
+}
+.leaf h2.page-title{
+  font-family:"Cormorant Garamond", Georgia, serif;
+  font-size:2rem; font-weight:600; margin:0 0 22px; color:var(--ink);
+  line-height:1.15; border-bottom:2px solid var(--gold-soft); padding-bottom:14px;
+}
+.leaf .content p{
+  font-size:1.09rem; line-height:1.75; margin:0 0 1.1em; color:var(--ink);
+  text-align:justify; hyphens:auto;
+}
+.leaf .content p.footnote{
+  font-size:0.92rem; color:var(--ink-soft); font-style:italic;
+  border-left:2px solid var(--gold-soft); padding-left:14px;
+}
+.leaf .content p.signature{
+  text-align:right; font-style:italic; letter-spacing:0.05em; color:var(--ink-soft);
+}
+.leaf .content p.printer-line{
+  text-align:center; font-size:0.85rem; color:var(--ink-soft); letter-spacing:0.06em;
+}
+.leaf .content h3.subhead{
+  font-family:"Cormorant Garamond",serif; font-size:1.15rem; color:var(--violet);
+  margin:22px 0 10px; letter-spacing:0.03em;
+}
+.leaf .content ol.principles{ padding-left:1.4em; }
+.leaf .content ol.principles li{ margin-bottom:6px; font-size:1.05rem; }
+
+/* Title page flourishes */
+.book-title{
+  font-family:"Cormorant Garamond",serif; text-align:center; font-size:2.6rem;
+  letter-spacing:0.12em; margin:18px 0 6px; color:var(--ink);
+}
+.book-authors{
+  text-align:center; font-size:1.05rem; letter-spacing:0.1em; font-weight:400;
+  color:var(--violet); margin:0 0 26px;
+}
+.pub-line{ text-align:center; font-size:0.78rem; color:var(--ink-soft); letter-spacing:0.04em; }
+.pub-house{ text-align:center; font-size:0.95rem; color:var(--ink-soft); margin:8px 0 26px; line-height:1.6; }
+.print-table{ margin:0 auto 26px; font-size:0.9rem; color:var(--ink-soft); border-collapse:collapse; }
+.print-table td{ padding:2px 10px; }
+.printer-line{ text-align:center; font-size:0.85rem; color:var(--ink-soft); margin-top:20px; line-height:1.6; }
+
+/* Colour key table */
+.key-table{ overflow-x:auto; margin:18px 0; }
+.key-table table{ border-collapse:collapse; width:100%; font-size:0.88rem; }
+.key-table th, .key-table td{ border:1px solid var(--border); padding:8px 10px; text-align:left; vertical-align:top; }
+.key-table th{ background:var(--parchment-2); color:var(--gold); width:28px; text-align:center; }
+.caption-label{ text-align:center; letter-spacing:0.1em; text-transform:uppercase; font-size:0.85rem; color:var(--ink-soft); }
+
+/* TOC / illustrations tables */
+.toc-table, .toc-table.small{ width:100%; border-collapse:collapse; font-size:0.98rem; }
+.toc-table td{ padding:5px 6px; border-bottom:1px dotted var(--border); }
+.toc-table td:last-child{ text-align:right; color:var(--ink-soft); width:80px; }
+.toc-table tr.indent td:first-child{ padding-left:22px; }
+.toc-table tr.indent2 td:first-child{ padding-left:44px; font-style:italic; }
+.toc-table.small td{ font-size:0.88rem; }
+.illus-note{ margin-bottom:14px; }
+.illus-note p{ font-size:0.85rem; color:var(--ink-soft); font-style:italic; }
+
+/* ---------- Images / figure gallery ---------- */
+.figures{
+  display:flex; flex-wrap:wrap; gap:22px; margin:26px 0 10px; justify-content:center;
+}
+.figure-card{
+  background:var(--parchment-2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:12px;
+  max-width:360px;
+  flex:1 1 260px;
+  text-align:center;
+  box-shadow: 0 8px 22px -12px rgba(60,45,10,0.25);
+}
+.figure-card img{
+  max-width:100%; height:auto; border-radius:5px;
+  border:1px solid rgba(0,0,0,0.08);
+  background:#111;
+  cursor:zoom-in;
+  transition: transform .25s ease;
+}
+.figure-card img:hover{ transform:scale(1.015); }
+.figure-cap{
+  margin-top:9px; font-size:0.85rem; color:var(--ink-soft);
+  font-style:italic; letter-spacing:0.02em;
+}
+
+/* Lightbox */
+.lightbox{
+  position:fixed; inset:0; background:rgba(20,15,5,0.82);
+  display:none; align-items:center; justify-content:center; z-index:100;
+  padding:30px;
+}
+.lightbox.open{ display:flex; }
+.lightbox img{ max-width:100%; max-height:85vh; border-radius:6px; box-shadow:0 20px 60px rgba(0,0,0,0.5); }
+.lightbox-close{
+  position:absolute; top:22px; right:28px; background:none; border:none;
+  color:#f6ecd2; font-size:2rem; cursor:pointer; line-height:1;
+}
+
+/* ---------- Footer nav ---------- */
+nav.pager{
+  position:sticky; bottom:0;
+  margin-top:26px;
+  display:flex; align-items:center; justify-content:space-between; gap:14px;
+  background:linear-gradient(180deg, rgba(247,241,227,0) 0%, var(--parchment) 30%);
+  padding-top:18px;
+}
+.pager-btn{
+  display:flex; align-items:center; gap:8px;
+  background:var(--card); border:1px solid var(--border); color:var(--ink);
+  padding:11px 20px; border-radius:10px; font-family:inherit; font-size:0.95rem;
+  cursor:pointer; box-shadow:var(--shadow); letter-spacing:0.02em;
+  transition: transform .15s ease, opacity .15s ease;
+}
+.pager-btn:hover:not(:disabled){ transform:translateY(-2px); }
+.pager-btn:disabled{ opacity:0.35; cursor:default; }
+.pager-btn.next{ background:linear-gradient(135deg, var(--gold-soft), var(--gold)); color:#3a2c08; border:none; }
+.folio{
+  position:relative;
+  font-family:"Cormorant Garamond",serif; font-size:0.95rem; color:var(--ink-soft);
+  text-align:center; letter-spacing:0.05em;
+}
+.folio .halo{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:70px; height:70px; border-radius:50%;
+  background: radial-gradient(circle, rgba(184,150,62,0.30) 0%, transparent 70%);
+  animation: pulse 3.2s ease-in-out infinite;
+  z-index:-1;
+}
+@keyframes pulse{
+  0%,100%{ transform:translate(-50%,-50%) scale(0.9); opacity:0.5; }
+  50%{ transform:translate(-50%,-50%) scale(1.25); opacity:0.9; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .leaf{ animation:none; }
+  .folio .halo{ animation:none; }
+}
+
+/* PDF-exact content classes */
+.leaf .content h3.pdf-heading{
+  font-family:"Cormorant Garamond",serif; font-size:1.2rem; letter-spacing:0.06em;
+  text-transform:uppercase; color:var(--violet); margin:20px 0 10px;
+}
+.leaf .content p.pdf-caption{
+  font-size:0.92rem; letter-spacing:0.05em; text-transform:uppercase;
+  color:var(--gold); text-align:center; font-weight:600; margin:16px 0 10px;
+}
+.leaf .content p.empty-note{
+  text-align:center; color:var(--ink-soft); font-size:1rem; padding:30px 0;
+}
+
+/* section pill on top of card */
+.section-pill{
+  position:absolute; top:-13px; left:50px;
+  background:linear-gradient(135deg, var(--violet), #8875ac);
+  color:#fff; font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase;
+  padding:5px 14px; border-radius:20px; box-shadow:0 6px 14px -6px rgba(107,86,145,0.6);
+}
+@media (max-width:700px){
+  .section-pill{ left:20px; }
+}
+
+/* ---------- Read aloud ---------- */
+.listen-bar{
+  display:none; align-items:center; gap:10px; flex-wrap:wrap;
+  padding:12px 18px; margin-bottom:16px;
+  background:var(--card); border:1px solid var(--border); border-radius:14px;
+  box-shadow:var(--shadow); font-family:Georgia, serif; font-size:0.85rem;
+}
+.listen-bar.open{ display:flex; }
+.listen-bar button{
+  font-family:inherit; font-size:0.85rem; padding:7px 14px; border-radius:999px;
+  border:1px solid var(--gold); background:linear-gradient(180deg,#fffdf6,#f3ead2);
+  color:var(--ink); cursor:pointer; letter-spacing:0.02em;
+}
+.listen-bar button:hover:not(:disabled){ background:var(--gold); color:#fff; }
+.listen-bar button:disabled{ opacity:0.45; cursor:default; }
+.listen-bar select{
+  font-family:inherit; font-size:0.82rem; padding:6px 8px; border-radius:8px;
+  border:1px solid var(--border); background:#fff; color:var(--ink);
+  max-width:230px;
+}
+.listen-bar label{ display:flex; align-items:center; gap:6px; color:var(--ink-soft); }
+.listen-bar .status{ color:var(--ink-soft); font-style:italic; flex-basis:100%; }
+
+.search-bar, .notes-panel { display:none; padding:10px 24px; background:#f8f3e7; border-bottom:1px solid #e3d8c3; align-items:center; gap:10px; flex-wrap:wrap; }
+.search-bar.open, .notes-panel.open { display:flex; }
+.search-bar input { flex:1; min-width:180px; padding:7px 12px; border:1px solid #d8cbb0; border-radius:8px; background:#fffdf7; font-family:inherit; font-size:14px; color:#3a3227; }
+.search-bar input:focus { outline:2px solid #b29a5b; }
+.search-bar .sbtn { padding:7px 12px; border:1px solid #d8cbb0; border-radius:8px; background:#fffdf7; cursor:pointer; font-family:inherit; font-size:13px; color:#3a3227; }
+.search-bar .sbtn:hover { background:#f0e7d3; }
+#search-info { font-size:13px; color:#7a6c50; white-space:nowrap; }
+mark.search-hit { background:#ffe9a8; color:inherit; padding:0 1px; border-radius:2px; }
+.notes-panel { display:none; }
+.notes-panel.open { display:block; }
+#notes-body { max-width:820px; margin:0 auto; font-size:14.5px; line-height:1.65; color:#3a3227; }
+#notes-body h3 { font-size:15px; margin:0 0 8px; color:#5c4a1e; letter-spacing:0.02em; }
+#notes-body h4 { font-size:13px; text-transform:uppercase; letter-spacing:0.08em; color:#8a744a; margin:14px 0 6px; }
+#notes-body p { margin:0 0 10px; }
+#notes-body ul { margin:0; padding-left:20px; }
+#notes-body li { margin-bottom:5px; }
+#notes-body .notes-empty { color:#8a7c62; font-style:italic; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <div class="glyph"></div>
+      <div>
+        <h1>The Voice of the Silence</h1>
+        <p>H. P. Blavatsky &middot; 1889 &middot; complete text</p>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:14px;">
+      <div class="progress-wrap">
+        <span id="progress-label">Page 1</span>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:1.8%"></div></div>
+      </div>
+      <button class="toc-toggle" id="listen-toggle" style="margin-right:10px;" title="Read aloud">&#128266; Listen</button><a class="toc-toggle dl-btn" href="the-voice-of-the-silence.pdf" download title="Download this book as PDF" style="text-decoration:none;">&#10515; Download</a>
+      <button class="toc-toggle" id="search-toggle" title="Search this book">&#128269; Search</button>
+      <button class="toc-toggle" id="notes-toggle" title="Chapter summary and key points">&#128221; Notes</button>
+      <button class="toc-toggle" id="toc-toggle">&#9776; Contents</button>
+    </div>
+  </header>
+
+<div class="search-bar" id="search-bar">
+  <input type="text" id="search-input" placeholder="Search this book..." autocomplete="off">
+  <button class="sbtn" id="search-prev">&#8593; Prev</button>
+  <button class="sbtn" id="search-next">Next &#8595;</button>
+  <span id="search-info"></span>
+  <button class="sbtn" id="search-close" title="Close">&#10005;</button>
+</div>
+<div class="notes-panel" id="notes-panel">
+  <div id="notes-body"></div>
+</div>
+
+
+  <div class="listen-bar" id="listen-bar">
+    <button id="listen-play">&#9654; Read aloud</button>
+    <button id="listen-stop" disabled>&#9632; Stop</button>
+    <select id="voice-select" title="Voice"></select>
+    <select id="rate-select" title="Speed">
+      <option value="0.85">0.85&times;</option>
+      <option value="1" selected>1&times;</option>
+      <option value="1.15">1.15&times;</option>
+      <option value="1.3">1.3&times;</option>
+    </select>
+    <label><input type="checkbox" id="listen-auto" checked> Auto-advance pages</label>
+    <span class="status" id="listen-status"></span>
+  </div>
+
+
+  <div class="stage">
+    <div class="leaf" id="leaf">
+      <div class="section-pill" id="section-pill">PDF Page</div>
+      <div class="eyebrow" id="eyebrow"></div>
+      <h2 class="page-title" id="page-title"></h2>
+      <div class="content" id="content"></div>
+      <div class="figures" id="figures"></div>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <button class="pager-btn prev" id="prev-btn">&larr; Previous</button>
+    <div class="folio"><div class="halo"></div><span id="folio-label"></span></div>
+    <button class="pager-btn next" id="next-btn">Next &rarr;</button>
+  </nav>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="toc-panel" id="toc-panel">
+  <button class="toc-close" id="toc-close">&times;</button>
+  <h2>Contents</h2>
+  <div id="toc-list"></div>
+</aside>
+
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightbox-close">&times;</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<script id="pages-data" type="application/json">[{"pdf_page_index": 0, "pdf_page_number": 1, "label": "Title", "html": "<div style=\"text-align:center;padding-top:60px\"><h1 style=\"font-size:2rem\">The Voice of the Silence<\/h1><p style=\"margin-top:16px;font-style:italic\">H. P. Blavatsky<\/p><p>1889<\/p><\/div>", "images": []}, {"pdf_page_index": 1, "pdf_page_number": 2, "label": "Preface", "html": "<h3 class=\"pdf-heading\">Preface<\/h3><p>The following pages are derived from “The Book of the Golden Precepts,” one of the works put into the hands of mystic students in the East. The knowledge of them is obligatory in that school, the teachings of which are accepted by many Theosophists. Therefore, as I know many of these Precepts by heart, the work of translating has been relatively an easy task for me.<\/p><p>It is well known that, in India, the methods of psychic development differ with the Gurus (teachers or masters), not only because of their belonging to different schools of philosophy, of which there are six, but because every Guru has his own system, which he generally keeps very secret. But beyond the Himalayas the method in the Esoteric Schools does not differ, unless the Guru is simply a Lama, but little more learned than those he teaches.<\/p>", "images": []}, {"pdf_page_index": 2, "pdf_page_number": 3, "label": "Preface", "html": "<p>The work from which I here translate forms part of the same series as that from which the “Stanzas” of the Book of Dzyan were taken, on which the Secret Doctrine is based. Together with the great mystic work called Paramârtha, which, the legend of Nâgârjuna tells us, was delivered to the great Arhat by the Nâgas or “Serpents” (in truth a name given to the ancient Initiates), the “Book of the Golden Precepts” claims the same origin. Yet its maxims and ideas, however noble and original, are often found under different forms in Sanskrit works, such as the Jñâneśvari, that superb mystic treatise in which Krishna describes to Arjuna in glowing colours the condition of a fully illumined Yogi; and again in certain Upanishads. This is but natural, since most, if not all, of the greatest Arhats, the first followers of Gautama Buddha were Hindus and Âryans, not Mongolians, especially those who emigrated into Tibet. The works left by Âryâsanga alone are very numerous.<\/p>", "images": []}, {"pdf_page_index": 3, "pdf_page_number": 4, "label": "Preface", "html": "<p>The original Precepts are engraved on thin oblong squares; copies very often on discs. These discs, or plates, are generally preserved on the altars of the temples attached to centres where the so-called “contemplative” or Mahâyâna (Yogâchâra) schools are established. They are written variously, sometimes in Tibetan but mostly in ideographs. The sacerdotal language (Senzar), besides an alphabet of its own, may be rendered in several modes of writing in cypher characters, which partake more of the nature of ideographs than of syllables. Another method (lug, in Tibetan) is to use the numerals and colours, each of which corresponds to a letter of the Tibetan alphabet (thirty simple and seventy-four compound letters) thus forming a complete cryptographic alphabet. When the ideographs are used there is a definite mode of reading the text; as in this case the symbols and signs used in astrology, namely the twelve zodiacal animals and the seven primary colours, each a triplet in shade, i.e. the light, the primary, and the dark — stand for the thirty-three letters of the simple alphabet, for words and sentences. For in this method, the twelve “animals” five times repeated and coupled with the five elements and the seven colours, furnish a whole alphabet composed of sixty sacred letters and twelve signs. A sign placed at the beginning of the text determines whether the reader has to spell it according to the Indian mode, when every word is simply a Sanskrit adaptation, or according to the Chinese principle of reading the ideographs. The easiest way however, is that which allows the reader to use no special, or any language he likes, as the signs and symbols were, like the Arabian numerals or figures, common and international property among initiated mystics and their followers. The same peculiarity is characteristic of one of the Chinese modes of writing, which can be read with equal facility by any one acquainted with the character: for instance, a Japanese can read it in his own language as readily as a Chinaman in his.<\/p>", "images": []}, {"pdf_page_index": 4, "pdf_page_number": 5, "label": "Preface", "html": "<p>The Book of the Golden Precepts — some of which are pre-Buddhistic while others belong to a later date — contains about ninety distinct little treatises. Of these I learnt thirty-nine by heart, years ago. To translate the rest, I should have to resort to notes scattered among a too large number of papers and memoranda collected for the last twenty years and never put in order, to make of it by any means an easy task. Nor could they be all translated and given to a world too selfish and too much attached to objects of sense to be in any way prepared to receive such exalted ethics in the right spirit. For, unless a man perseveres seriously in the pursuit of self-knowledge, he will never lend a willing ear to advice of this nature.<\/p><p>And yet such ethics fill volumes upon volumes in Eastern literature, especially in the Upanishads. “Kill out all desire of life,” says Krishna to Arjuna. That desire lingers only in the body, the vehicle of the embodied Self, not in the SELF which is “eternal, indestructible, which kills not nor is it killed” (Katha Upanishad). “Kill out sensation,” teaches Sutta Nipâta; “look alike on pleasure and pain, gain and loss, victory and defeat.” Again, “Seek shelter in the eternal alone” (ibid). ”Destroy the sense of separateness,” repeats Krishna under every form. “The Mind (Manas) which follows the rambling senses, makes the Soul (Buddhi) as helpless as the boat which the wind leads astray upon the waters” (Bhagavadgîtâ II. 70).<\/p>", "images": []}, {"pdf_page_index": 5, "pdf_page_number": 6, "label": "Fragment I. The Voice of the Silence", "html": "<p>Therefore it has been thought better to make a judicious selection only from those treatises which will best suit the few real mystics in the Theosophical Society, and which are sure to answer their needs. It is only these who will appreciate these words of Krishna-Christos, the “Higher Self”: —<\/p><p>“Sages do not grieve for the living nor the dead. Never did I not exist, nor you, nor these rulers of men; nor will any one of us ever hereafter cease to be.” (Bhagavadgîtâ II. 27).<\/p><p>In this translation, I have done my best to preserve the poetical beauty of language and imagery which characterise the original. How far this effort has been successful, is for the reader to judge. — “H.P.B.”<\/p><h3 class=\"pdf-heading\">Fragment I. The Voice of the Silence<\/h3><p>These instructions are for those ignorant of the dangers of the lower IDDHI[1].<\/p><p>He who would hear the voice of Nâda[2], “the Soundless Sound,” and comprehend it, he has to learn the nature of Dhâranâ[3].<\/p><p>Having become indifferent to objects of perception, the pupil must seek out the râja of the senses, the Thought-Producer, he who awakes illusion.<\/p><p>The Mind is the great Slayer of the Real.<\/p><p>Let the Disciple slay the Slayer.<\/p><p>For: —When to himself his form appears unreal, as do on waking all the forms he sees in dreams;<\/p><p>When he has ceased to hear the many, he may discern the ONE — the inner sound which kills the outer.<\/p><p>Then only, not till then, shall he forsake the region of Asat, the false, to come unto the realm of Sat, the true.<\/p>", "images": []}, {"pdf_page_index": 6, "pdf_page_number": 7, "label": "Fragment I. The Voice of the Silence", "html": "<p>Before the soul can see, the Harmony within must be attained, and fleshly eyes be rendered blind to all illusion.<\/p><p>Before the Soul can hear, the image (man) has to become as deaf to roarings as to whispers, to cries of bellowing elephants as to the silvery buzzing of the golden fire-fly.<\/p><p>Before the soul can comprehend and may remember, she must unto the Silent Speaker be united just as the form to which the clay is modelled, is first united with the potter’s mind.<\/p><p>For then the soul will hear, and will remember.<\/p><p>And then to the inner ear will speak —<\/p><p>THE VOICE OF THE SILENCE<\/p><p>And say: —<\/p><p>If thy soul smiles while bathing in the Sunlight of thy Life; if thy soul sings within her chrysalis of flesh and matter; if thy soul weeps inside her castle of illusion; if thy soul struggles to break the silver thread that binds her to the MASTER[4]; know, O Disciple, thy Soul is of the earth.<\/p><p>When to the World’s turmoil thy budding soul[5] lends ear; when to the roaring voice of the great illusion thy Soul responds[6]; when frightened at the sight of the hot tears of pain, when deafened by the cries of distress, thy soul withdraws like the shy turtle within the carapace of SELFHOOD, learn, O Disciple, of her Silent “God,” thy Soul is an unworthy shrine.<\/p>", "images": []}, {"pdf_page_index": 7, "pdf_page_number": 8, "label": "Fragment I. The Voice of the Silence", "html": "<p>When waxing stronger, thy Soul glides forth from her secure retreat: and breaking loose from the protecting shrine, extends her silver thread and rushes onward; when beholding her image on the waves of Space she whispers, “This is I,” — declare, O Disciple, that thy soul is caught in the webs of delusion[7].<\/p><p>This Earth, Disciple, is the Hall of Sorrow, wherein are set along the Path of dire probations, traps to ensnare thy EGO by the delusion called “Great Heresy”[8].<\/p><p>This earth, O ignorant Disciple, is but the dismal entrance leading to the twilight that precedes the valley of true light — that light which no wind can extinguish, that light which burns without a wick or fuel.<\/p><p>Saith the Great Law: — “In order to become the knower of ALL SELF[9] thou hast first of self to be the knower.” To reach the knowledge of that self, thou hast to give up Self to Non-Self, Being to Non-Being, and then thou canst repose between the wings of the GREAT BIRD. Aye, sweet is rest between the wings of that which is not born, nor dies, but is the AUM[10] throughout eternal ages[11].<\/p><p>Bestride the Bird of Life, if thou would’st know[12].<\/p><p>Give up thy life, if thou would’st live[13].<\/p><p>Three Halls, O weary pilgrim, lead to the end of toils. Three Halls, O conqueror of Mâra, will bring thee through three states[14] into the fourth[15] and thence into the seven worlds[16], the worlds of Rest Eternal.<\/p><p>If thou would’st learn their names, then hearken, and remember.<\/p>", "images": []}, {"pdf_page_index": 8, "pdf_page_number": 9, "label": "Fragment I. The Voice of the Silence", "html": "<p>The name of the first Hall is IGNORANCE — Avidyâ.<\/p><p>It is the Hall in which thou saw’st the light, in which thou livest and shalt die[17].<\/p><p>The name of Hall the second is the Hall of Learning.[18] In it thy Soul will find the blossoms of life, but under every flower a serpent coiled[19].<\/p><p>The name of the third Hall is Wisdom, beyond which stretch the shoreless waters of AKSHARA, the indestructible Fount of Omniscience[20].<\/p><p>If thou would’st cross the first Hall safely, let not thy mind mistake the fires of lust that burn therein for the Sunlight of life.<\/p><p>If thou would’st cross the second safely, stop not the fragrance of its stupefying blossoms to inhale. If freed thou would’st be from the Karmic chains, seek not for thy Guru in those Mâyâvic regions.<\/p><p>The WISE ONES tarry not in pleasure-grounds of senses.<\/p><p>The WISE ONES heed not the sweet-tongued voices of illusion.<\/p><p>Seek for him who is to give thee birth[21], in the Hall of Wisdom, the Hall which lies beyond, wherein all shadows are unknown, and where the light of truth shines with unfading glory.<\/p>", "images": []}, {"pdf_page_index": 9, "pdf_page_number": 10, "label": "Fragment I. The Voice of the Silence", "html": "<p>That which is uncreate abides in thee, Disciple, as it abides in that Hall. If thou would’st reach it and blend the two, thou must divest thyself of thy dark garments of illusion. Stifle the voice of flesh, allow no image of the senses to get between its light and thine that thus the twain may blend in one. And having learnt thine own Ajñâna[22], flee from the Hall of Learning. This Hall is dangerous in its perfidious beauty, is needed but for thy probation. Beware, Lanoo, lest dazzled by illusive radiance thy Soul should linger and be caught in its deceptive light.<\/p><p>This light shines from the jewel of the Great Ensnarer, (Mâra)[23]. The senses it bewitches, blinds the mind, and leaves the unwary an abandoned wreck.<\/p><p>The moth attracted to the dazzling flame of thy night-lamp is doomed to perish in the viscid oil. The unwary Soul that fails to grapple with the mocking demon of illusion, will return to earth the slave of Mâra.<\/p><p>Behold the Hosts of Souls. Watch how they hover o’er the stormy sea of human life, and how exhausted, bleeding, broken-winged, they drop one after other on the swelling waves. Tossed by the fierce winds, chased by the gale, they drift into the eddies and disappear within the first great vortex.<\/p><p>If through the Hall of Wisdom, thou would’st reach the Vale of Bliss, Disciple, close fast thy senses against the great dire heresy of separateness that weans thee from the rest.<\/p>", "images": []}, {"pdf_page_index": 10, "pdf_page_number": 11, "label": "Fragment I. The Voice of the Silence", "html": "<p>Let not thy “Heaven-born,” merged in the sea of Mâyâ, break from the Universal Parent (SOUL), but let the fiery power retire into the inmost chamber, the chamber of the Heart[24] and the abode of the World’s Mother[25].<\/p><p>Then from the heart that Power shall rise into the sixth, the middle region, the place between thine eyes, when it becomes the breath of the ONE-SOUL, the voice which filleth all, thy Master’s voice.<\/p><p>‘Tis only then thou canst become a “Walker of the Sky”[26] who treads the winds above the waves, whose step touches not the waters.<\/p><p>Before thou set’st thy foot upon the ladder’s upper rung, the ladder of the mystic sounds, thou hast to hear the voice of thy inner GOD[27] in seven manners.<\/p><p>The first is like the nightingale’s sweet voice chanting a song of parting to its mate.<\/p><p>The second comes as the sound of a silver cymbal of the Dhyânis, awakening the twinkling stars.<\/p><p>The next is as the plaint melodious of the ocean-sprite imprisoned in its shell.<\/p><p>And this is followed by the chant of Vînâ[28].<\/p><p>The fifth like sound of bamboo-flute shrills in thine ear.<\/p><p>It changes next into a trumpet-blast.<\/p><p>The last vibrates like the dull rumbling of a thunder-cloud.<\/p><p>The seventh swallows all the other sounds. They die, and then are heard no more.<\/p><p>When the six[29] are slain and at the Master’s feet are laid, then is the pupil merged into the ONE[30], becomes that ONE and lives therein.<\/p>", "images": []}, {"pdf_page_index": 11, "pdf_page_number": 12, "label": "Fragment I. The Voice of the Silence", "html": "<p>Before that path is entered, thou must destroy thy lunar body[31], cleanse thy mind-body[32] and make clean thy heart.<\/p><p>Eternal life’s pure waters, clear and crystal, with the monsoon tempest’s muddy torrents cannot mingle.<\/p><p>Heaven’s dew-drop glittering in the morn’s first sun-beam within the bosom of the lotus, when dropped on earth becomes a piece of clay; behold, the pearl is now a speck of mire.<\/p><p>Strive with thy thoughts unclean before they overpower thee. Use them as they will thee, for if thou sparest them and they take root and grow, know well, these thoughts will overpower and kill thee. Beware, Disciple, suffer not, e’en though it be their shadow, to approach. For it will grow, increase in size and power, and then this thing of darkness will absorb thy being before thou hast well realized the black foul monster’s presence.<\/p><p>Before the “mystic Power”[33]* can make of thee a god, Lanoo, thou must have gained the faculty to slay thy lunar form at will.<\/p><p>The Self of matter and the SELF of Spirit can never meet. One of the twain must disappear; there is no place for both.<\/p><p>Ere thy Soul’s mind can understand, the bud of personality must be crushed out, the worm of sense destroyed past resurrection.<\/p><p>Thou canst not travel on the Path before thou hast become that Path itself[34].<\/p><p>Let thy Soul lend its ear to every cry of pain like as the lotus bares its heart to drink the morning sun.<\/p><p>Let not the fierce Sun dry one tear of pain before thyself hast wiped it from the sufferer’s eye.<\/p>", "images": []}, {"pdf_page_index": 12, "pdf_page_number": 13, "label": "Fragment I. The Voice of the Silence", "html": "<p>But let each burning human tear drop on thy heart and there remain, nor ever brush it off, until the pain that caused it is removed.<\/p><p>These tears, O thou of heart most merciful, these are the streams that irrigate the fields of charity immortal. ‘Tis on such soil that grows the midnight blossom of Buddha[35] more difficult to find, more rare to view than is the flower of the Vogay tree. It is the seed of freedom from rebirth. It isolates the Arhat both from strife and lust, it leads him through the fields of Being unto the peace and bliss known only in the land of Silence and Non-Being.<\/p><p>Kill out desire; but if thou killest it take heed lest from the dead it should again arise.<\/p><p>Kill love of life, but if thou slayest tanhâ[36], let this not be for thirst of life eternal, but to replace the fleeting by the everlasting.<\/p><p>Desire nothing. Chafe not at Karma, nor at Nature’s changeless laws. But struggle only with the personal, the transitory, the evanescent and the perishable.<\/p><p>Help Nature and work on with her; and Nature will regard thee as one of her creators and make obeisance.<\/p><p>And she will open wide before thee the portals of her secret chambers, lay bare before thy gaze the treasures hidden in the very depths of her pure virgin bosom. Unsullied by the hand of matter she shows her treasures only to the eye of Spirit — the eye which never closes, the eye for which there is no veil in all her kingdoms.<\/p>", "images": []}, {"pdf_page_index": 13, "pdf_page_number": 14, "label": "Fragment I. The Voice of the Silence", "html": "<p>Then will she show thee the means and way, the first gate and the second, the third, up to the very seventh. And then, the goal — beyond which lie, bathed in the sunlight of the Spirit, glories untold, unseen by any save the eye of Soul.<\/p><p>There is but one road to the Path; at its very end alone the “Voice of the Silence” can be heard. The ladder by which the candidate ascends is formed of rungs of suffering and pain; these can be silenced only by the voice of virtue. Woe, then, to thee, Disciple, if there is one single vice thou hast not left behind. For then the ladder will give way and overthrow thee; its foot rests in the deep mire of thy sins and failings, and ere thou canst attempt to cross this wide abyss of matter thou hast to lave thy feet in Waters of Renunciation. Beware lest thou should’st set a foot still soiled upon the ladder’s lowest rung. Woe unto him who dares pollute one rung with miry feet. The foul and viscous mud will dry, become tenacious, then glue his feet unto the spot, and like a bird caught in the wily fowler’s lime, he will be stayed from further progress. His vices will take shape and drag him down. His sins will raise their voices like as the jackal’s laugh and sob after the sun goes down; his thoughts become an army, and bear him off a captive slave.<\/p><p>Kill thy desires, Lanoo, make thy vices impotent, ere the first step is taken on the solemn journey.<\/p><p>Strangle thy sins, and make them dumb for ever, before thou dost lift one foot to mount the ladder.<\/p>", "images": []}, {"pdf_page_index": 14, "pdf_page_number": 15, "label": "Fragment I. The Voice of the Silence", "html": "<p>Silence thy thoughts and fix thy whole attention on thy Master whom yet thou dost not see, but whom thou feelest.<\/p><p>Merge into one sense thy senses, if thou would’st be secure against the foe. ‘Tis by that sense alone which lies concealed within the hollow of thy brain, that the steep path which leadeth to thy Master may be disclosed before thy Soul’s dim eyes.<\/p><p>Long and weary is the way before thee, O Disciple. One single thought about the past that thou hast left behind, will drag thee down and thou wilt have to start the climb anew.<\/p><p>Kill in thyself all memory of past experiences. Look not behind or thou art lost.<\/p><p>Do not believe that lust can ever be killed out if gratified or satiated, for this is an abomination inspired by Mâra. It is by feeding vice that it expands and waxes strong, like to the worm that fattens on the blossom’s heart.<\/p><p>The rose must re-become the bud born of its parent stem, before the parasite has eaten through its heart and drunk its life-sap.<\/p><p>The golden tree puts forth its jewel-buds before its trunk is withered by the storm.<\/p><p>The pupil must regain the child-state he has lost ’ere the first sound can fall upon his ear.<\/p><p>The light from the ONE Master, the one unfading golden light of Spirit, shoots its effulgent beams on the disciple from the very first. Its rays thread through the thick dark clouds of matter.<\/p>", "images": []}, {"pdf_page_index": 15, "pdf_page_number": 16, "label": "Fragment I. The Voice of the Silence", "html": "<p>Now here, now there, these rays illumine it, like sun-sparks light the earth through the thick foliage of the jungle growth. But, O Disciple, unless the flesh is passive, head cool, the soul as firm and pure as flaming diamond, the radiance will not reach the chamber[37], its sunlight will not warm the heart, nor will the mystic sounds of the Âkâśic heights[38] reach the ear, however eager, at the initial stage.<\/p><p>Unless thou hearest, thou canst not see.<\/p><p>Unless thou seest thou canst not hear. To hear and see this is the second stage.<\/p><p>************<\/p><p>When the disciple sees and hears, and when he smells and tastes, eyes closed, ears shut, with mouth and nostrils stopped; when the four senses blend and ready are to pass into the fifth, that of the inner touch — then into stage the fourth he hath passed on.<\/p><p>And in the fifth, O slayer of thy thoughts, all these again have to be killed beyond reanimation[39].<\/p><p>Withhold thy mind from all external objects, all external sights. Withhold internal images, lest on thy Soul-light a dark shadow they should cast.<\/p><p>Thou art now in DHÂRANÂ[40], the sixth stage.<\/p>", "images": []}, {"pdf_page_index": 16, "pdf_page_number": 17, "label": "Fragment I. The Voice of the Silence", "html": "<p>When thou hast passed into the seventh, O happy one, thou shalt perceive no more the sacred three[41], for thou shalt have become that three thyself. Thyself and mind, like twins upon a line, the star which is thy goal, burns overhead[42]. The three that dwell in glory and in bliss ineffable, now in the world of Mâyâ have lost their names. They have become one star, the fire that burns but scorches not, that fire which is the Upâdhi[43] of the Flame.<\/p><p>And this, O Yogi of success, is what men call Dhyâna[44], the right precursor of Samâdhi[45].<\/p><p>And now thy Self is lost in SELF, thyself unto THYSELF, merged in THAT SELF from which thou first didst radiate.<\/p><p>Where is thy individuality, Lanoo, where the Lanoo himself? It is the spark lost in the fire, the drop within the ocean, the ever-present Ray become the all and the eternal radiance.<\/p><p>And now, Lanoo, thou art the doer and the witness, the radiator and the radiation, Light in the Sound, and the Sound in the Light.<\/p><p>Thou art acquainted with the five impediments, O blessed one. Thou art their conqueror, the Master of the sixth, deliverer of the four modes of Truth[46]. The light that falls upon them shines from thyself, O thou who wast disciple but art Teacher now.<\/p><p>And of these modes of Truth: —<\/p><p>Hast thou not passed through knowledge of all misery — Truth the first?<\/p><p>Hast thou not conquered the Mâras’ King at Tsi, the portal of assembling — truth the second?[47].<\/p><p>Hast thou not sin at the third gate destroyed and truth the third attained?<\/p>", "images": []}, {"pdf_page_index": 17, "pdf_page_number": 18, "label": "Fragment II. The Two Paths", "html": "<p>Hast not thou entered Tao, “the Path” that leads to knowledge — the fourth truth?[48].<\/p><p>And now, rest ‘neath the Bodhi tree, which is perfection of all knowledge, for, know, thou art the Master of SAMÂDHI — the state of faultless vision.<\/p><p>Behold! thou hast become the light, thou hast become the Sound, thou art thy Master and thy God. Thou art THYSELF the object of thy search: the VOICE unbroken, that resounds throughout eternities, exempt from change, from sin exempt, the seven sounds in one, the<\/p><p>VOICE OF THE SILENCE<\/p><p>Om Tat Sat<\/p><h3 class=\"pdf-heading\">Fragment II. The Two Paths<\/h3><p>And now, O Teacher of Compassion, point thou the way to other men. Behold, all those who knocking for admission, await in ignorance and darkness, to see the gate of the Sweet Law flung open!<\/p><p>The voice of the Candidates:<\/p><p>Shalt not thou, Master of thine own Mercy, reveal the Doctrine of the Heart?[49] Shalt thou refuse to lead thy Servants unto the Path of Liberation?<\/p><p>Quoth the Teacher:<\/p><p>The Paths are two; the great Perfections three; six are the Virtues that transform the body into the Tree of Knowledge[50].<\/p><p>Who shall approach them?<\/p><p>Who shall first enter them?<\/p><p>Who shall first hear the doctrine of two Paths in one, the truth unveiled about the Secret Heart?[51] The Law which, shunning learning, teaches Wisdom, reveals a tale of woe.<\/p><p>Alas, alas, that all men should possess Alaya, be one with the great Soul, and that possessing it, Alaya should so little avail them!<\/p>", "images": []}, {"pdf_page_index": 18, "pdf_page_number": 19, "label": "Fragment II. The Two Paths", "html": "<p>Behold how like the moon, reflected in the tranquil waves, Alaya is reflected by the small and by the great, is mirrored in the tiniest atoms, yet fails to reach the heart of all. Alas, that so few men should profit by the gift, the priceless boon of learning truth, the right perception of existing things, the Knowledge of the non-existent!<\/p><p>Saith the pupil:<\/p><p>O Teacher, what shall I do to reach to Wisdom?<\/p><p>O Wise one, what, to gain perfection?<\/p><p>Search for the Paths. But, O Lanoo, be of clean heart before thou startest on thy journey. Before thou takest thy first step learn to discern the real from the false, the ever-fleeting from the everlasting. Learn above all to separate Head-learning from Soul-Wisdom, the “Eye” from the “Heart” doctrine.<\/p><p>Yea, ignorance is like unto a closed and airless vessel; the soul a bird shut up within. It warbles not, nor can it stir a feather; but the songster mute and torpid sits, and of exhaustion dies.<\/p><p>But even ignorance is better than Head-learning with no Soul-wisdom to illuminate and guide it.<\/p><p>The seeds of Wisdom cannot sprout and grow in airless space. To live and reap experience the mind needs breadth and depth and points to draw it towards the Diamond Soul[52]. Seek not those points in Mâyâ’s realm; but soar beyond illusions, search the eternal and the changeless sat[53], mistrusting fancy’s false suggestions.<\/p>", "images": []}, {"pdf_page_index": 19, "pdf_page_number": 20, "label": "Fragment II. The Two Paths", "html": "<p>For mind is like a mirror; it gathers dust while it reflects[54]. It needs the gentle breezes of Soul-Wisdom to brush away the dust of our illusions. Seek O Beginner, to blend thy Mind and Soul.<\/p><p>Shun ignorance, and likewise shun illusion. Avert thy face from world deceptions; mistrust thy senses, they are false. But within thy body — the shrine of thy sensations — seek in the Impersonal for the “eternal man”[55]; and having sought him out, look inward: thou art Buddha[56].<\/p><p>Shun praise, O Devotee. Praise leads to self-delusion. Thy body is not self, thy self is in itself without a body, and either praise or blame affects it not.<\/p><p>Self-gratulation, O disciple, is like unto a lofty tower, up which a haughty fool has climbed. Thereon he sits in prideful solitude and unperceived by any but himself.<\/p><p>False learning is rejected by the Wise, and scattered to the Winds by the good Law. Its wheel revolves for all, the humble and the proud. The “Doctrine of the Eye”[57] is for the crowd, the “Doctrine of the Heart,” for the elect. The first repeat in pride: “Behold, I know,” the last, they who in humbleness have garnered, low confess, “thus have I heard”[58].<\/p><p>“Great Sifter” is the name of the “Heart Doctrine,” O disciple.<\/p><p>The wheel of the good Law moves swiftly on. It grinds by night and day. The worthless husks it drives from out the golden grain, the refuse from the flour. The hand of Karma guides the wheel; the revolutions mark the beatings of the Karmic heart.<\/p>", "images": []}, {"pdf_page_index": 20, "pdf_page_number": 21, "label": "Fragment II. The Two Paths", "html": "<p>True knowledge is the flour, false learning is the husk. If thou would’st eat the bread of Wisdom, thy flour thou hast to knead with Amrita’s[59] clear waters. But if thou kneadest husks with Mâyâ’s dew, thou canst create but food for the black doves of death, the birds of birth, decay and sorrow.<\/p><p>If thou art told that to become Arhan thou hast to cease to love all beings — tell them they lie.<\/p><p>If thou art told that to gain liberation thou hast to hate thy mother and disregard thy son; to disavow thy father and call him “householder”[60]; for man and beast all pity to renounce — tell them their tongue is false.<\/p><p>Thus teach the Tîrthikas, the unbelievers.[61]<\/p><p>If thou art taught that sin is born of action and bliss of absolute inaction, then tell them that they err. Non-permanence of human action; deliverance of mind from thraldom by the cessation of sin and faults, are not for “Deva Egos.”[62] Thus saith the “Doctrine of the Heart.”<\/p><p>The Dharma of the “Eye” is the embodiment of the external, and the non-existing.<\/p><p>The Dharma of the “Heart” is the embodiment of Bodhi,[63] the Permanent and Everlasting.<\/p><p>The Lamp burns bright when wick and oil are clean. To make them clean a cleaner is required. The flame feels not the process of the cleaning. “The branches of a tree are shaken by the wind; the trunk remains unmoved.”<\/p><p>Both action and inaction may find room in thee; thy body agitated, thy mind tranquil, thy Soul as limpid as a mountain lake.<\/p>", "images": []}, {"pdf_page_index": 21, "pdf_page_number": 22, "label": "Fragment II. The Two Paths", "html": "<p>Would’st thou become a Yogi of “Time’s Circle”? Then, O Lanoo: —<\/p><p>Believe thou not that sitting in dark forests, in proud seclusion and apart from men; believe thou not that life on roots and plants, that thirst assuaged with snow from the great Range — believe thou not, O Devotee, that this will lead thee to the goal of final liberation.<\/p><p>Think not that breaking bone, that rending flesh and muscle, unites thee to thy “silent Self”[64]. Think not, that when the sins of thy gross form are conquered, O Victim of thy Shadows[65], thy duty is accomplished by nature and by man.<\/p><p>The blessed ones have scorned to do so. The Lion of the Law, the Lord of Mercy,[66] perceiving the true cause of human woe, immediately forsook the sweet but selfish rest of quiet wilds. From Âranyaka[67] He became the Teacher of mankind. After Julai[68] had entered the Nirvâna, He preached on mount and plain, and held discourses in the cities, to Devas, men and gods[69].<\/p><p>Sow kindly acts and thou shalt reap their fruition. Inaction in a deed of mercy becomes an action in a deadly sin.<\/p><p>Thus saith the Sage.<\/p><p>Shalt thou abstain from action? Not so shall gain thy soul her freedom. To reach Nirvâna one must reach Self-Knowledge, and Self-Knowledge is of loving deeds the child.<\/p><p>Have patience, Candidate, as one who fears no failure, courts no success. Fix thy Soul’s gaze upon the star whose ray thou art[70], the flaming star that shines within the lightless depths of ever-being, the boundless fields of the Unknown.<\/p>", "images": []}, {"pdf_page_index": 22, "pdf_page_number": 23, "label": "Fragment II. The Two Paths", "html": "<p>Have perseverance as one who doth for evermore endure. Thy shadows live and vanish[71]; that which in thee shall live for ever, that which in thee knows, for it is knowledge[72], is not of fleeing life: it is the man that was, that is, and will be, for whom the hour shall never strike.<\/p><p>If thou would’st reap sweet peace and rest, Disciple, sow with the seeds of merit the fields of future harvests. Accept the woes of birth.<\/p><p>Step out from sunlight into shade, to make more room for others. The tears that water the parched soil of pain and sorrow, bring forth the blossoms and the fruits of Karmic retribution. Out of the furnace of man’s life and its black smoke, winged flames arise, flames purified, that soaring onward, ‘neath the Karmic eye, weave in the end the fabric glorified of the three vestures of the Path[73].<\/p><p>These vestures are: Nirmânakâya, Sambhogakâya, and Dharmakâya, robe Sublime[74].<\/p><p>The Shangna robe[75], ‘tis true, can purchase light eternal. The Shangna robe alone gives the Nirvâna of destruction; it stops rebirth, but, O Lanoo, it also kills — compassion. No longer can the perfect Buddhas, who don the Dharmakâya glory, help man’s salvation. Alas! shall selves be sacrificed to Self; mankind, unto the weal of Units?<\/p><p>Know, O beginner, this is the Open Path, the way to selfish bliss, shunned by the Bodhisattvas of the “Secret Heart,” the Buddhas of Compassion.<\/p><p>To live to benefit mankind is the first step. To practise the six glorious virtues[76] is the second.<\/p>", "images": []}, {"pdf_page_index": 23, "pdf_page_number": 24, "label": "Fragment II. The Two Paths", "html": "<p>To don Nirmânakâya’s humble robe is to forego eternal bliss for Self, to help on man’s salvation. To reach Nirvâna’s bliss, but to renounce it, is the supreme, the final step — the highest on Renunciation’s Path.<\/p><p>Know, O Disciple, this is the Secret Path, selected by the Buddhas of Perfection, who sacrificed The SELF to weaker Selves.<\/p><p>Yet, if the “Doctrine of the Heart” is too high-winged for thee. If thou need’st help thyself and fearest to offer help to others, — then, thou of timid heart, be warned in time: remain content with the “Eye Doctrine” of the Law. Hope still. For if the “Secret Path” is unattainable this “day,” it is within thy reach “to-morrow.”[77]. Learn that no efforts, not the smallest — whether in right or wrong direction — can vanish from the world of causes. E’en wasted smoke remains not traceless. “A harsh word uttered in past lives, is not destroyed but ever comes again.”[78] The pepper plant will not give birth to roses, nor the sweet jessamine’s silver star to thorn or thistle turn.<\/p><p>Thou canst create this “day” thy chances for thy “morrow.” In the “Great Journey,”[79] causes sown each hour bear each its harvest of effects, for rigid Justice rules the World. With mighty sweep of never erring action, it brings to mortals lives of weal or woe, the Karmic progeny of all our former thoughts and deeds.<\/p>", "images": []}, {"pdf_page_index": 24, "pdf_page_number": 25, "label": "Fragment II. The Two Paths", "html": "<p>Take then as much as merit hath in store for thee, O thou of patient heart. Be of good cheer and rest content with fate. Such is thy Karma, the Karma of the cycle of thy births, the destiny of those, who, in their pain and sorrow, are born along with thee, rejoice and weep from life to life, chained to thy previous actions.<\/p><p>*************<\/p><p>Act thou for them to “day,” and they will act for thee “to morrow.”<\/p><p>‘Tis from the bud of Renunciation of the Self, that springeth the sweet fruit of final Liberation.<\/p><p>To perish doomed is he, who out of fear of Mâra refrains from helping man, lest he should act for Self. The pilgrim who would cool his weary limbs in running waters, yet dares not plunge for terror of the stream, risks to succumb from heat. Inaction based on selfish fear can bear but evil fruit.<\/p><p>The Selfish devotee lives to no purpose. The man who does not go through his appointed work in life — has lived in vain.<\/p><p>Follow the wheel of life; follow the wheel of duty to race and kin, to friend and foe, and close thy mind to pleasures as to pain. Exhaust the law of Karmic retribution. Gain Siddhis for thy future birth.<\/p><p>If Sun thou can’st not be, then be the humble planet. Aye, if thou art debarred from flaming like the noon-day Sun upon the snow-capped mount of purity eternal, then choose, O Neophyte, a humbler course.<\/p><p>Point out the “Way” — however dimly, and lost among the host — as does the evening star to those who tread their path in darkness.<\/p>", "images": []}, {"pdf_page_index": 25, "pdf_page_number": 26, "label": "Fragment II. The Two Paths", "html": "<p>Behold Migmar,[80] as in his crimson veils his “Eye” sweeps over slumbering Earth. Behold the fiery aura of the “Hand” of Lhagpa[81] extended in protecting love over the heads of his ascetics. Both are now servants to Nyima[82] left in his absence silent watchers in the night. Yet both in Kalpas past were bright Nyimas, and may in future “Days” again become two Suns. Such are the falls and rises of the Karmic Law in nature.<\/p><p>Be, O Lanoo, like them. Give light and comfort to the toiling pilgrim, and seek out him who knows still less than thou; who in his wretched desolation sits starving for the bread of Wisdom and the bread which feeds the shadow, without a Teacher, hope or consolation, and — let him hear the Law.<\/p><p>Tell him, O Candidate, that he who makes of pride and self-regard bond-maidens to devotion; that he, who cleaving to existence, still lays his patience and submission to the Law, as a sweet flower at the feet of Shakya-Thub-pa,[83] becomes a Srotâpatti[84] in this birth. The Siddhis of perfection may loom far, far away; but the first step is taken, the stream is entered, and he may gain the eye-sight of the mountain eagle, the hearing of the timid doe.<\/p><p>Tell him, O Aspirant, that true devotion may bring him back the knowledge, that knowledge which was his in former births. The deva-sight and deva-hearing are not obtained in one short birth.<\/p><p>Be humble, if thou would’st attain to Wisdom.<\/p><p>Be humbler still, when Wisdom thou hast mastered.<\/p>", "images": []}, {"pdf_page_index": 26, "pdf_page_number": 27, "label": "Fragment II. The Two Paths", "html": "<p>Be like the Ocean which receives all streams and rivers. The Ocean’s mighty calm remains unmoved; it feels them not.<\/p><p>Restrain by thy Divine thy lower Self.<\/p><p>Restrain by the Eternal the Divine.<\/p><p>Aye, great is he, who is the slayer of desire.<\/p><p>Still greater he, in whom the Self Divine has slain the very knowledge of desire.<\/p><p>Guard thou the Lower lest it soil the Higher.<\/p><p>The way to final freedom is within thy self.<\/p><p>That way begins and ends outside of Self[85].<\/p><p>Unpraised by men and humble is the mother of all Rivers, in Tîrthika’s proud sight; empty the human form though filled with Amrita’s sweet waters, in the sight of fools. Withal, the birth-place of the sacred rivers is the sacred land[86], and he who Wisdom hath, is honoured by all men.<\/p><p>Arhans and Sages of the boundless Vision[87] are rare as is the blossom of the Udumbara tree. Arhans are born at midnight hour, together with the sacred plant of nine and seven stalks[88], the holy flower that opes and blooms in darkness, out of the pure dew and on the frozen bed of snow-capped heights, heights that are trodden by no sinful foot.<\/p><p>No Arhan, O Lanoo, becomes one in that birth when for the first the Soul begins to long for final liberation. Yet, O thou anxious one, no warrior volunteering fight in the fierce strife between the living and the dead[89], not one recruit can ever be refused the right to enter on the Path that leads toward the field of Battle.<\/p><p>For, either he shall win, or he shall fall.<\/p>", "images": []}, {"pdf_page_index": 27, "pdf_page_number": 28, "label": "Fragment II. The Two Paths", "html": "<p>Yea, if he conquers, Nirvâna shall be his. Before he casts his shadow off his mortal coil, that pregnant cause of anguish and illimitable pain — in him will men a great and holy Buddha honour.<\/p><p>And if he falls, e’en then he does not fall in vain; the enemies he slew in the last battle will not return to life in the next birth that will be his.<\/p><p>But if thou would’st Nirvâna reach, or cast the prize away[90], let not the fruit of action and inaction be thy motive, thou of dauntless heart.<\/p><p>Know that the Bodhisattva who liberation changes for Renunciation to don the miseries of “Secret Life,”[91] is called, “thrice Honoured,” O thou candidate for woe throughout the cycles.<\/p><p>The path is one, Disciple, yet in the end, twofold. Marked are its stages by four and seven Portals. At one end — bliss immediate, and at the other — bliss deferred. Both are of merit the reward: the choice is thine.<\/p><p>The One becomes the two, the Open and the Secret[92]. The first one leadeth to the goal, the second, to Self-Immolation.<\/p><p>When to the Permanent is sacrificed the Mutable, the prize is thine: the drop returneth whence it came. The Open path leads to the changeless change — Nirvâna, the glorious state of Absoluteness, the Bliss past human thought.<\/p><p>Thus, the first Path is liberation.<\/p><p>But Path the Second is — renunciation, and therefore called the “Path of Woe.”<\/p>", "images": []}, {"pdf_page_index": 28, "pdf_page_number": 29, "label": "Fragment II. The Two Paths", "html": "<p>That Secret Path leads the Arhan to mental woe unspeakable; woe for the living Dead[93], and helpless pity for the men of Karmic sorrow, the fruit of Karma Sages dare not still.<\/p><p>For it is written: “teach to eschew all causes; the ripple of effect, as the great tidal wave, thou shalt let run its course.”<\/p><p>The “Open Way,” no sooner hast thou reached its goal, will lead thee to reject the Bodhisattvic body and make thee enter the thrice glorious state of Dharmakâya[94] which is oblivion of the World and men for ever.<\/p><p>The “Secret Way” leads also to Paranirvânic bliss — but at the close of Kalpas without number; Nirvânas gained and lost from boundless pity and compassion for the world of deluded mortals.<\/p><p>But it is said “The last shall be the greatest,” Samyak Sambuddha, the Teacher of Perfection, gave up his SELF for the salvation of the World, by stopping at the threshold of Nirvâna — the pure state.<\/p><p>****************<\/p><p>Thou hast the knowledge now concerning the two Ways. Thy time will come for choice, O thou of eager Soul, when thou hast reached the end and passed the seven Portals. Thy mind is clear. No more art thou entangled in delusive thoughts, for thou hast learnèd all. Unveiled stands truth and looks thee sternly in the face. She says:<\/p><p>“Sweet are the fruits of Rest and Liberation for the sake of Self; but sweeter still the fruits of long and bitter duty. Aye, Renunciation for the sake of others, of suffering fellow men.”<\/p>", "images": []}, {"pdf_page_index": 29, "pdf_page_number": 30, "label": "Fragment III. The Seven Portals", "html": "<p>He, who becomes Pratyeka-Buddha[95], makes his obeisance but to his Self. The Bodhisattva who has won the battle, who holds the prize within his palm, yet says in his divine compassion:<\/p><p>“For others’ sake this great reward I yield” — accomplishes the greater Renunciation.<\/p><p>A Saviour of the World is he.<\/p><p>*****************<\/p><p>Behold! The goal of bliss and the long Path of Woe are at the furthest end. Thou canst choose either, O aspirant to Sorrow, throughout the coming cycles! . . . .<\/p><p>Om Vajrapâni hum.<\/p><h3 class=\"pdf-heading\">Fragment III. The Seven Portals<\/h3><p>“Upâdhyâya[96], the choice is made, I thirst for Wisdom. Now hast thou rent the veil before the secret Path and taught the greater Yâna[97]. Thy servant here is ready for thy guidance.”<\/p><p>‘Tis well, Śrâvaka[98]. Prepare thyself, for thou wilt have to travel on alone. The Teacher can but point the way. The Path is one for all, the means to reach the goal must vary with the Pilgrims.<\/p><p>Which wilt thou choose, O thou of dauntless heart? The Samtan[99] of “eye Doctrine,” four-fold Dhyâna, or thread thy way through Pâramitâs[100], six in number, noble gates of virtue leading to Bodhi and to Prajñâ, seventh step of Wisdom?<\/p><p>The rugged Path of four-fold Dhyâna winds on uphill. Thrice great is he who climbs the lofty top.<\/p><p>The Pâramitâ heights are crossed by a still steeper path. Thou hast to fight thy way through portals seven, seven strongholds held by cruel crafty Powers — passions incarnate.<\/p>", "images": []}, {"pdf_page_index": 30, "pdf_page_number": 31, "label": "Fragment III. The Seven Portals", "html": "<p>Be of good cheer, Disciple; bear in mind the golden rule. Once thou hast passed the gate Srotâpatti[101], “he who the stream hath entered”; once thy foot hath pressed the bed of the Nirvânic stream in this or any future life, thou hast but seven other births before thee, O thou of adamantine Will.<\/p><p>Look on. What see’st thou before thine eye, O aspirant to god-like Wisdom?<\/p><p>“The cloak of darkness is upon the deep of matter; within its folds I struggle. Beneath my gaze it deepens, Lord; it is dispelled beneath the waving of thy hand. A shadow moveth, creeping like the stretching serpent coils. . . . It grows, swells out and disappears in darkness.”<\/p><p>It is the shadow of thyself outside the Path, cast on the darkness of thy sins.<\/p><p>“Yea, Lord; I see the PATH; its foot in mire, its summits lost in glorious light Nirvânic. And now I see the ever narrowing Portals on the hard and thorny way to Jñâna.”[102]<\/p><p>Thou seest well, Lanoo. These Portals lead the aspirant across the waters on “to the other shore”[103]. Each Portal hath a golden key that openeth its gate; and these keys are: —<\/p><p>1. Dâna, the key of charity and love immortal.<\/p><p>2. Shîla, the key of Harmony in word and act, the key that counterbalances the cause and the effect, and leaves no further room for Karmic action.<\/p><p>3. Kshânti, patience sweet, that nought can ruffle.<\/p><p>4. Virâg’, indifference to pleasure and to pain, illusion conquered, truth alone perceived.<\/p>", "images": []}, {"pdf_page_index": 31, "pdf_page_number": 32, "label": "Fragment III. The Seven Portals", "html": "<p>5. Vîrya, the dauntless energy that fights its way to the supernal TRUTH, out of the mire of lies terrestrial.<\/p><p>6. Dhyâna, whose golden gate once opened leads the Naljor[104] toward the realm of Sat eternal and its ceaseless contemplation.<\/p><p>7. Prajñâ, the key to which makes of a man a god, creating him a Bodhisattva, son of the Dhyânis.<\/p><p>Such to the Portals are the golden keys.<\/p><p>Before thou canst approach the last, O weaver of thy freedom, thou hast to master these Pâramitâs of perfection — the virtues transcendental six and ten in number — along the weary Path.<\/p><p>For, O Disciple! Before thou wert made fit to meet thy Teacher face to face, thy MASTER light to light, what wert thou told?<\/p><p>Before thou canst approach the foremost gate thou hast to learn to part thy body from thy mind, to dissipate the shadow, and to live in the eternal. For this, thou hast to live and breathe in all, as all that thou perceivest breathes in thee; to feel thyself abiding in all things, all things in SELF.<\/p><p>Thou shalt not let thy senses make a playground of thy mind.<\/p><p>Thou shalt not separate thy being from BEING, and the rest, but merge the Ocean in the drop, the drop within the Ocean.<\/p><p>So shalt thou be in full accord with all that lives; bear love to men as though they were thy brother-pupils, disciples of one Teacher, the sons of one sweet mother.<\/p><p>Of teachers there are many; the MASTER-SOUL is one[105], Alaya, the Universal Soul. Live in that MASTER as Its ray in thee. Live in thy fellows as they live in It.<\/p>", "images": []}, {"pdf_page_index": 32, "pdf_page_number": 33, "label": "Fragment III. The Seven Portals", "html": "<p>Before thou standest on the threshold of the Path; before thou crossest the foremost Gate, thou hast to merge the two into the One and sacrifice the personal to SELF impersonal, and thus destroy the “path” between the two — Antahkarana[106].<\/p><p>Thou hast to be prepared to answer Dharma, the stern law, whose voice will ask thee at thy first, at thy initial step:<\/p><p>“Hast thou complied with all the rules, O thou of lofty hopes?”<\/p><p>“Hast thou attuned thy heart and mind to the great mind and heart of all mankind? For as the sacred River’s roaring voice whereby all Nature-sounds are echoed back[107], so must the heart of him ‘who in the stream would enter,’ thrill in response to every sigh and thought of all that lives and breathes.”<\/p><p>Disciples may be likened to the strings of the soul-echoing Vînâ; mankind, unto its sounding board; the hand that sweeps it to the tuneful breath of the great world-soul. The string that fails to answer ‘neath the Master’s touch in dulcet harmony with all the others, breaks — and is cast away. So the collective minds of Lanoo-Śrâvakas. They have to be attuned to the Upâdhyâya’s mind — one with the Over-Soul — or, break away.<\/p><p>Thus do the “Brothers of the Shadow” — the murderers of their Souls, the dread Dad-Dugpa clan[108].<\/p><p>Hast thou attuned thy being to Humanity’s great pain, O candidate for light?<\/p><p>Thou hast? . . . Thou mayest enter. Yet, ere thou settest foot upon the dreary Path of sorrow, ‘tis well thou should’st first learn the pitfalls on thy way.<\/p>", "images": []}, {"pdf_page_index": 33, "pdf_page_number": 34, "label": "Fragment III. The Seven Portals", "html": "<p>****************<\/p><p>Armed with the key of Charity, of love and tender mercy, thou art secure before the gate of Dâna, the gate that standeth at the entrance of the path.<\/p><p>Behold, O happy Pilgrim! The portal that faceth thee is high and wide, seems easy of access. The road that leads therethrough is straight and smooth and green. ‘Tis like a sunny glade in the dark forest depths, a spot on earth mirrored from Amitâbha’s paradise. There, nightingales of hope and birds of radiant plumage sing perched in green bowers, chanting success to fearless Pilgrims. They sing of Bodhisattvas’ virtues five, the fivefold source of Bodhi power, and of the seven steps in Knowledge.<\/p><p>Pass on! For thou hast brought the key; thou art secure.<\/p><p>And to the second gate the way is verdant too. But it is steep and winds up hill; yea, to its rocky top. Grey mists will over-hang its rough and stony height, and all be dark beyond. As on he goes, the song of hope soundeth more feeble in the pilgrim’s heart. The thrill of doubt is now upon him; his step less steady grows.<\/p><p>Beware of this, O candidate! Beware of fear that spreadeth, like the black and soundless wings of midnight bat, between the moonlight of thy Soul and thy great goal that loometh in the distance far away.<\/p><p>Fear, O disciple, kills the will and stays all action. If lacking in the Śîla virtue, — the pilgrim trips, and Karmic pebbles bruise his feet along the rocky path.<\/p>", "images": []}, {"pdf_page_index": 34, "pdf_page_number": 35, "label": "Fragment III. The Seven Portals", "html": "<p>Be of sure foot, O candidate. In Kshânti’s[109] essence bathe thy Soul; for now thou dost approach the portal of that name, the gate of fortitude and patience.<\/p><p>Close not thine eyes, nor lose thy sight of Dorje[110]; Mâra’s arrows ever smite the man who has not reached Virâga[111].<\/p><p>Beware of trembling. ‘Neath the breath of fear the key of Kshânti rusty grows: the rusty key refuseth to unlock.<\/p><p>The more thou dost advance, the more thy feet pitfalls will meet. The path that leadeth on, is lighted by one fire — the light of daring, burning in the heart. The more one dares, the more he shall obtain. The more he fears, the more that light shall pale — and that alone can guide. For as the lingering sunbeam, that on the top of some tall mountain shines, is followed by black night when out it fades, so is heart-light. When out it goes, a dark and threatening shade will fall from thine own heart upon the path, and root thy feet in terror to the spot.<\/p><p>Beware, disciple, of that lethal shade. No light that shines from Spirit can dispel the darkness of the nether Soul, unless all selfish thought has fled therefrom, and that the pilgrim saith: “I have renounced this passing frame; I have destroyed the cause: the shadows cast can, as effects, no longer be.”<\/p><p>For now the last great fight, the final war between the Higher and the Lower Self, hath taken place. Behold, the very battlefield is now engulphed in the great war, and is no more.<\/p>", "images": []}, {"pdf_page_index": 35, "pdf_page_number": 36, "label": "Fragment III. The Seven Portals", "html": "<p>But once that thou hast passed the gate of Kshânti, step the third is taken. Thy body is thy slave. Now, for the fourth prepare, the Portal of temptations which do ensnare the inner man.<\/p><p>Ere thou canst near that goal, before thine hand is lifted to upraise the fourth gate’s latch, thou must have mustered all the mental changes in thy Self and slain the army of the thought sensations that, subtle and insidious, creep unasked within the Soul’s bright shrine.<\/p><p>If thou would’st not be slain by them, then must thou harmless make thy own creations, the children of thy thoughts, unseen, impalpable, that swarm round humankind, the progeny and heirs to man and his terrestrial spoils. Thou hast to study the voidness of the seeming full, the fulness of the seeming void. O fearless Aspirant, look deep within the well of thine own heart, and answer. Knowest thou of Self the powers, O thou perceiver of external shadows?<\/p><p>If thou dost not — then art thou lost.<\/p><p>For, on Path fourth, the lightest breeze of passion or desire will stir the steady light upon the pure white walls of Soul. The smallest wave of longing or regret for Mâyâ’s gifts illusive, along Antahkarana — the path that lies between thy Spirit and thy self, the highway of sensations, the rude arousers of Ahankâra[112] — a thought as fleeting as the lightning flash will make thee thy three prizes forfeit — the prizes thou hast won.<\/p><p>For know, that the ETERNAL knows no change.<\/p>", "images": []}, {"pdf_page_index": 36, "pdf_page_number": 37, "label": "Fragment III. The Seven Portals", "html": "<p>“The eight dire miseries forsake for evermore. If not, to wisdom, sure, thou can’st not come, nor yet to liberation,” saith the great Lord, the Tathâgata of perfection, “he who has followed in the footsteps of his predecessors.”[113].<\/p><p>Stern and exacting is the virtue of Virâga. If thou its path would’st master, thou must keep thy mind and thy perceptions far freer than before from killing action.<\/p><p>Thou hast to saturate thyself with pure Alaya, become as one with Nature’s Soul-Thought. At one with it thou art invincible; in separation, thou becomest the playground of Samvriti[114], origin of all the world’s delusions.<\/p><p>All is impermanent in man except the pure bright essence of Alaya. Man is its crystal ray; a beam of light immaculate within, a form of clay material upon the lower surface. That beam is thy life-guide and thy true Self, the Watcher and the silent Thinker, the victim of thy lower Self. Thy Soul cannot be hurt but through thy erring body; control and master both, and thou art safe when crossing to the nearing “Gate of Balance.”<\/p><p>Be of good cheer, O daring pilgrim “to the other shore.” Heed not the whisperings of Mâra’s hosts; wave off the tempters, those ill-natured Sprites, the jealous Lhamayin[115] in endless space.<\/p><p>Hold firm! Thou nearest now the middle portal, the gate of Woe, with its ten thousand snares.<\/p><p>Have mastery o’er thy thoughts, O striver for perfection, if thou would’st cross its threshold.<\/p>", "images": []}, {"pdf_page_index": 37, "pdf_page_number": 38, "label": "Fragment III. The Seven Portals", "html": "<p>Have mastery o’er thy Soul, O seeker after truths undying, if thou would’st reach the goal.<\/p><p>Thy Soul-gaze centre on the One Pure Light, the Light that is free from affection, and use thy golden Key.   .   .   .<\/p><p>******************<\/p><p>The dreary task is done, thy labour well-nigh o’er. The wide abyss that gaped to swallow thee is almost spanned.   .   .   .<\/p><p>******************<\/p><p>Thou hast now crossed the moat that circles round the gate of human passions. Thou hast now conquered Mâra and his furious host.<\/p><p>Thou hast removed pollution from thine heart and bled it from impure desire. But, O thou glorious combatant, thy task is not yet done. Build high, Lanoo, the wall that shall hedge in the Holy Isle,[116] the dam that will protect thy mind from pride and satisfaction at thoughts of the great feat achieved.<\/p><p>A sense of pride would mar the work. Aye, build it strong, lest the fierce rush of battling waves, that mount and beat its shore from out the great World Mâyâ’s Ocean, swallow up the pilgrim and the isle — yea, even when the victory’s achieved.<\/p><p>Thine “Isle” is the deer, thy thoughts the hounds that weary and pursue his progress to the stream of Life. Woe to the deer that is o’ertaken by the barking fiends before he reach the Vale of Refuge — Jñâna Mârga, “path of pure knowledge” named.<\/p>", "images": []}, {"pdf_page_index": 38, "pdf_page_number": 39, "label": "Fragment III. The Seven Portals", "html": "<p>Ere thou canst settle in Jñâna Mârga[117] and call it thine, thy Soul has to become as the ripe mango fruit: as soft and sweet as its bright golden pulp for others’ woes, as hard as that fruit’s stone for thine own throes and sorrows, O Conqueror of Weal and Woe.<\/p><p>Make hard thy Soul against the snares of Self; deserve for it the name of “Diamond-Soul.”[118].<\/p><p>For, as the diamond buried deep within the throbbing heart of earth can never mirror back the earthly lights; so are thy mind and Soul; plunged in Jñâna Mârga, these must mirror nought of Mâyâ’s realm illusive.<\/p><p>When thou hast reached that state, the Portals that thou hast to conquer on the Path fling open wide their gates to let thee pass, and Nature’s strongest mights possess no power to stay thy course. Thou wilt be master of the sevenfold Path: but not till then, O candidate for trials passing speech.<\/p><p>Till then, a task far harder still awaits thee: thou hast to feel thyself ALL-THOUGHT, and yet exile all thoughts from out thy Soul.<\/p><p>Thou hast to reach that fixity of mind in which no breeze, however strong, can waft an earthly thought within. Thus purified, the shrine must of all action, sound, or earthly light be void; e’en as the butterfly, o’ertaken by the frost, falls lifeless at the threshold — so must all earthly thoughts fall dead before the fane.<\/p><p>Behold it written:<\/p>", "images": []}, {"pdf_page_index": 39, "pdf_page_number": 40, "label": "Fragment III. The Seven Portals", "html": "<p>“Ere the gold flame can burn with steady light, the lamp must stand well guarded in a spot free from all wind.”[119] Exposed to shifting breeze, the jet will flicker and the quivering flame cast shades deceptive, dark and ever-changing, on the Soul’s white shrine.<\/p><p>And then, O thou pursuer of the truth, thy Mind-Soul will become as a mad elephant, that rages in the jungle. Mistaking forest trees for living foes, he perishes in his attempts to kill the ever-shifting shadows dancing on the wall of sunlit rocks.<\/p><p>Beware, lest in the care of Self thy Soul should lose her foothold on the soil of Deva-knowledge.<\/p><p>Beware, lest in forgetting SELF, thy Soul lose o’er its trembling mind control, and forfeit thus the due fruition of its conquests.<\/p><p>Beware of change! For change is thy great foe. This change will fight thee off, and throw thee back, out of the Path thou treadest, deep into viscous swamps of doubt.<\/p><p>Prepare, and be forewarned in time. If thou hast tried and failed, O dauntless fighter, yet lose not courage: fight on and to the charge return again, and yet again.<\/p><p>The fearless warrior, his precious life-blood oozing from his wide and gaping wounds, will still attack the foe, drive him from out his stronghold, vanquish him, ere he himself expires. Act then, all ye who fail and suffer, act like him; and from the stronghold of your Soul, chase all your foes away — ambition, anger, hatred, e’en to the shadow of desire — when even you have failed. . .<\/p>", "images": []}, {"pdf_page_index": 40, "pdf_page_number": 41, "label": "Fragment III. The Seven Portals", "html": "<p>Remember, thou that fightest for man’s liberation[120], each failure is success, and each sincere attempt wins its reward in time. The holy germs that sprout and grow unseen in the disciple’s soul, their stalks wax strong at each new trial, they bend like reeds but never break, nor can they e’er be lost. But when the hour has struck they blossom forth[121]. . .<\/p><p>******************<\/p><p>But if thou cam’st prepared, then have no fear.<\/p><p>******************<\/p><p>Henceforth thy way is clear right through the Vîrya gate, the fifth one of the Seven Portals. Thou art now on the way that leadeth to the Dhyâna haven, the sixth, the Bodhi Portal.<\/p><p>The Dhyâna gate is like an alabaster vase, white and transparent; within there burns a steady golden fire, the flame of Prajñâ that radiates from Âtman.<\/p><p>Thou art that vase.<\/p><p>Thou hast estranged thyself from objects of the senses, travelled on the “Path of seeing,” on the “Path of hearing,” and standest in the light of Knowledge. Thou hast now reached Titikshâ state[122].<\/p><p>O Naljor thou art safe.<\/p><p>******************<\/p><p>Know, Conqueror of Sins, once that a Sowanee[123] hath cross’d the seventh Path, all Nature thrills with joyous awe and feels subdued. The silver star now twinkles out the news to the night-blossoms, the streamlet to the pebbles ripples out the tale; dark ocean-waves will roar it to the rocks surf-bound, scent-laden breezes sing it to the vales, and stately pines mysteriously whisper: “A Master has arisen, a master of the day.”[124].<\/p>", "images": []}, {"pdf_page_index": 41, "pdf_page_number": 42, "label": "Fragment III. The Seven Portals", "html": "<p>He standeth now like a white pillar to the west, upon whose face the rising Sun of thought eternal poureth forth its first most glorious waves. His mind, like a becalmed and boundless ocean, spreadeth out in shoreless space. He holdeth life and death in his strong hand.<\/p><p>Yea, He is mighty. The living power made free in him, that power which is himself, can raise the tabernacle of illusion high above the gods, above great Brahm and Indra. Now he shall surely reach his great reward!<\/p><p>Shall he not use the gifts which it confers for his own rest and bliss, his well-earn’d weal and glory — he, the subduer of the great Delusion?<\/p><p>Nay, O thou candidate for Nature’s hidden lore! If one would follow in the steps of holy Tathâgata, those gifts and powers are not for Self.<\/p><p>Would’st thou thus dam the waters born on Sumeru?[125] Shalt thou divert the stream for thine own sake, or send it back to its prime source along the crests of cycles?<\/p><p>If thou would’st have that stream of hard-earn’d knowledge, of Wisdom heaven-born, remain sweet running waters, thou should’st not leave it to become a stagnant pond.<\/p><p>Know, if of Amitâbha, the “Boundless Age,” thou would’st become co-worker, then must thou shed the light acquired, like to the Bodhisattvas twain[126], upon the span of all three worlds[127].<\/p><p>Know that the stream of superhuman knowledge and the Deva-Wisdom thou hast won, must, from thyself, the channel of Alaya, be poured forth into another bed.<\/p>", "images": []}, {"pdf_page_index": 42, "pdf_page_number": 43, "label": "Fragment III. The Seven Portals", "html": "<p>Know, O Naljor, thou of the Secret Path, its pure fresh waters must be used to sweeter make the Ocean’s bitter waves — that mighty sea of sorrow formed of the tears of men.<\/p><p>Alas! when once thou hast become like the fix’d star in highest heaven, that bright celestial orb must shine from out the spatial depths for all — save for itself; give light to all, but take from none.<\/p><p>Alas! when once thou hast become like the pure snow in mountain vales, cold and unfeeling to the touch, warm and protective to the seed that sleepeth deep beneath its bosom — ‘tis now that snow which must receive the biting frost, the northern blasts, thus shielding from their sharp and cruel tooth the earth that holds the promised harvest, the harvest that will feed the hungry.<\/p><p>Self-doomed to live through future Kalpas,[128] unthanked and unperceived by man; wedged as a stone with countless other stones which form the “Guardian Wall”[129], such is thy future if the seventh gate thou passest. Built by the hands of many Masters of Compassion, raised by their tortures, by their blood cemented, it shields mankind, since man is man, protecting it from further and far greater misery and sorrow.<\/p><p>Withal man sees it not, will not perceive it, nor will he heed the word of Wisdom . . . for he knows it not.<\/p><p>But thou hast heard it, thou knowest all, O thou of eager guileless Soul. . . . . and thou must choose. Then hearken yet again.<\/p>", "images": []}, {"pdf_page_index": 43, "pdf_page_number": 44, "label": "Fragment III. The Seven Portals", "html": "<p>On Sowan’s Path, O Srotâpatti,[130] thou art secure. Aye, on that Mârga,[131] where nought but darkness meets the weary pilgrim, where torn by thorns the hands drip blood, the feet are cut by sharp unyielding flints, and Mâra wields his strongest arms — there lies a great reward immediately beyond.<\/p><p>Calm and unmoved the Pilgrim glideth up the stream that to Nirvâna leads. He knoweth that the more his feet will bleed, the whiter will himself be washed. He knoweth well that after seven short and fleeting births Nirvâna will be his. . . .<\/p><p>Such is the Dhyâna Path, the haven of the Yogi, the blessed goal that Srotâpattis crave.<\/p><p>Not so when he hath crossed and won the Aryahata Path.[132]<\/p><p>There Kleśa[133] is destroyed for ever, Tanhâ’s[134] roots torn out. But stay, Disciple . . . Yet, one word. Canst thou destroy divine compassion? Compassion is no attribute. It is the LAW of laws — eternal Harmony, Alaya’s SELF; a shoreless universal essence, the light of everlasting Right, and fitness of all things, the law of love eternal.<\/p><p>The more thou dost become at one with it, thy being melted in its BEING, the more thy Soul unites with that which IS, the more thou wilt become Compassion Absolute[135].<\/p><p>Such is the Ârya Path, Path of the Buddhas of perfection.<\/p><p>Withal, what mean the sacred scrolls which make thee say?<\/p><p>“Om! I believe it is not all the Arhats that get of the Nirvânic Path the sweet fruition.”<\/p><p>“Om! I believe that the Nirvâna-Dharma is entered not by all the Buddhas”[136].<\/p>", "images": []}, {"pdf_page_index": 44, "pdf_page_number": 45, "label": "Footnotes", "html": "<p>“Yea; on the Ârya Path thou art no more Srotâpatti, thou art a Bodhisattva[137]. The stream is cross’d. ‘Tis true thou hast a right to Dharmakâya vesture; but Sambhogakâya is greater than a Nirvânî, and greater still is a Nirmânakâya — the Buddha of Compassion[138].<\/p><p>Now bend thy head and listen well, O Bodhisattva — Compassion speaks and saith: “Can there be bliss when all that lives must suffer? Shalt thou be saved and hear the whole world cry?”<\/p><p>Now thou hast heard that which was said.<\/p><p>Thou shalt attain the seventh step and cross the gate of final knowledge but only to wed woe — if thou would’st be Tathâgata, follow upon thy predecessor’s steps, remain unselfish till the endless end.<\/p><p>Thou art enlightened — Choose thy way.<\/p><p>***************<\/p><p>Behold, the mellow light that floods the Eastern sky. In signs of praise both heaven and earth unite. And from the four-fold manifested Powers a chant of love ariseth, both from the flaming Fire and flowing Water, and from sweet-smelling Earth and rushing Wind.<\/p><p>Hark! . . . from the deep unfathomable vortex of that golden light in which the Victor bathes, ALL NATURE’S wordless voice in thousand tones ariseth to proclaim:<\/p><p>Joy unto ye, O men of Myalba[139].<\/p><p>A Pilgram hath returned back “from the other shore.”<\/p><p>A new Arhan[140] is born. . . .<\/p><p>Peace to all beings[141].<\/p><p>THE END<\/p><p>↑ Back to top<\/p><h3 class=\"pdf-heading\">Footnotes<\/h3>", "images": []}, {"pdf_page_index": 45, "pdf_page_number": 46, "label": "Footnotes", "html": "<p>[1] The Pali word Iddhi, is the synonym of the Sanskrit Siddhis, or psychic faculties, the abnormal powers in man. There are two kinds of Siddhis. One group which embraces the lower, coarse, psychic and mental energies; the other is one which exacts the highest training of Spiritual powers. Says Krishna in Śrîmad Bhâgavatam: —<\/p><p>“He who is engaged in the performance of yoga, who has subdued his senses and who has concentrated his mind in me (Krishna), such yogis all the Siddhis stand ready to serve.”<\/p><p>[2] The ”Soundless Voice,” or the “Voice of the Silence.” Literally perhaps this would read “Voice in the Spiritual Sound,” as Nâda is the equivalent word in Sanskrit, for the Sen-sar term.<\/p><p>[3] Dhâranâ, is the intense and perfect concentration of the mind upon some one interior object, accompanied by complete abstraction from everything pertaining to the external Universe, or the world of the senses.<\/p><p>[4] The ”great Master” is the term used by lanoos or chelas to indicate one’s “Higher Self.” It is the equivalent of Avalokiteśvara, and the same as Âdi-Budha with the Buddhist Occultists, Âtman the “Self” (the Higher Self) with the Brahmins, and Christos with the ancient Gnostics.<\/p><p>[5] Soul is used here for the Human Ego or Manas, that which is referred to in our Occult Septenary division as the “Human Soul” (Vide the Secret Doctrine) in contradistinction to the Spiritual and Animal Souls.<\/p><p>[6] Mahâ Mâyâ ”Great Illusion,” the objective Universe.<\/p><p>[7] Sakkâyaditthi ”delusion” of personality.<\/p>", "images": []}, {"pdf_page_index": 46, "pdf_page_number": 47, "label": "Footnotes", "html": "<p>[8] Attavâda, the heresy of the belief in Soul or rather in the separateness of Soul or Self from the One Universal, infinite Self.<\/p><p>[9] The Tattvajñânin is the “knower” or discriminator of the principles in nature and in man; and Âtmajñânin is the knower of Âtman or the Universal, One Self.<\/p><p>[10] Kala Hamsa, the “Bird” or Swan (Vide No. 11). Says the Nâda-Bindu Upanishad (Rig Veda) translated by the Kumbakonam Theos. Society — “The syllable a is considered to be its (the bird Hamsa’s) right wing, u, its left, m, its tail, and the Ardha-mâtra (half metre) is said to be its head.”<\/p><p>[11] Eternity with the Orientals has quite another signification than it has with us. It stands generally for the 100 years or “age” of Brahmâ, the duration of a Kalpa or a period of 4,320,000,000 years.<\/p><p>[12] Says the same Nâda-Bindu, “A Yogi who bestrides the Hamsa (thus contemplates on Aum) is not affected by Karmic influences or crores of sins.”<\/p><p>[13] Give up the life of physical personality if you would live in spirit.<\/p><p>[14] The three states of consciousness, which are Jâgrat, the waking; Svapna, the dreaming; and Sushupti, the deep sleeping state. These three Yogi conditions, lead to the fourth, or —<\/p><p>[15] The Turîya, that beyond the dreamless state, the one above all, a state of high spiritual consciousness.<\/p>", "images": []}, {"pdf_page_index": 47, "pdf_page_number": 48, "label": "Footnotes", "html": "<p>[16] Some Sanskrit mystics locate seven planes of being, the seven spiritual lokas or worlds within the body of Kala Hamsa, the Swan out of Time and Space, convertible into the Swan in Time, when it becomes Brahmâ instead of Brahma (neuter).<\/p><p>[17] The phenomenal World of Senses and of terrestrial consciousness — only.<\/p><p>[18] The Hall of Probationary Learning.<\/p><p>[19] The astral region, the Psychic World of super-sensuous perceptions and of deceptive sights — the world of Mediums. It is the great “Astral Serpent” of Éliphas Lévi. No blossom plucked in those regions has ever yet been brought down on earth without its serpent coiled around the stem. It is the world of the Great Illusion.<\/p><p>[20] The region of the full Spiritual Consciousness beyond which there is no longer danger for him who has reached it.<\/p><p>[21] The Initiate who leads the disciple through the Knowledge given to him to his spiritual, or second, birth is called the Father guru or Master.<\/p><p>[22] Ajñâna is ignorance or non-wisdom the opposite of “Knowledge,” jñâna.<\/p><p>[23] Mâra is in exoteric religions a demon, an Asura, but in esoteric philosophy it is personified temptation through men’s vices, and translated literally means “that which kills” the Soul. It is represented as a King (of the Mâras) with a crown in which shines a jewel of such lustre that it blinds those who look at it, this lustre referring of course to the fascination exercised by vice upon certain natures.<\/p>", "images": []}, {"pdf_page_index": 48, "pdf_page_number": 49, "label": "Footnotes", "html": "<p>[24] The inner chamber of the Heart, called in Sanskrit Brahmapura. The “fiery power” is Kundalinî.<\/p><p>[25] The ”Power” and the “World-mother” are names given to Kundalinî — one of the mystic “Yogi powers.” It is Buddhi considered as an active instead of a passive principle (which it is generally, when regarded only as the vehicle, or casket of the Supreme Spirit Âtma). It is an electro-spiritual force, a creative power which when aroused into action can as easily kill as it can create.<\/p><p>[26] Khechara or “sky-walker” or “goer.” As explained in the 6th Adhyâya of that king of mystic works the Jñâneśvari — the body of the Yogi becomes as one formed of the wind; as “a cloud from which limbs have sprouted out,” after which — “he (the Yogi) beholds the things beyond the seas and stars; he hears the language of the Devas and comprehends it, and perceives what is passing in the mind of the ant.”<\/p><p>[27] The Higher SELF.<\/p><p>[28] Vînâ is an Indian stringed instrument like a lute.<\/p><p>[29] The six principles; meaning when the lower personality is destroyed and the inner individuality is merged into and lost in the Seventh or Spirit.<\/p><p>[30] The disciple is one with Brahmâ or the Âtman.<\/p><p>[31] The astral form produced by the Kâmic principle, the Kâma rûpa or body of desire.<\/p><p>[32] Mânasa rûpa. The first refers to the astral or personal Self; the second to the individuality or the reincarnating Ego whose consciousness on our plane or the lower Manas — has to be paralyzed.<\/p>", "images": []}, {"pdf_page_index": 49, "pdf_page_number": 50, "label": "Footnotes", "html": "<p>[33] Kundalinî (the “Serpent Power” or mystic fire.) is called the “Serpentine” or the annular power on account of its spiral-like working or progress in the body of the ascetic developing the power in himself. It is an electric fiery occult or Fohatic power, the great pristine force, which underlies all organic and inorganic matter.<\/p><p>[34] This ”Path” is mentioned in all the Mystic Works. As Krishna says in the Jñâneśvari: “When this Path is beheld . . . whether one sets out to the bloom of the east or to the chambers of the west, without moving, O holder of the bow, is the travelling in this road. In this path, to whatever place one would go, that place one’s own self becomes.” “Thou art the Path” is said to the adept guru and by the latter to the disciple, after initiation. “I am the way and the Path” says another Master.<\/p><p>[35] Adeptship — the “blossom of Bodhisattva.”<\/p><p>[36] Tanhâ — “the will to live,” the fear of death and love for life, that force or energy which causes the rebirths.<\/p><p>[37] The inner chamber of the Heart, called in Sanskrit Brahmapura. The “fiery power” is Kundalinî.<\/p><p>[38] These mystic sounds or the melody heard by the ascetic at the beginning of his cycle of meditation called Anâhata-śabda by the Yogis.<\/p><p>[39] This means that in the sixth stage of development which, in the occult system is Dhâranâ, every sense as an individual faculty has to be “killed” (or paralyzed) on this plane, passing into and merging with the Seventh sense, the most spiritual.<\/p>", "images": []}, {"pdf_page_index": 50, "pdf_page_number": 51, "label": "Footnotes", "html": "<p>[40] Dhâranâ, is the intense and perfect concentration of the mind upon some one interior object, accompanied by complete abstraction from everything pertaining to the external Universe, or the world of the senses.<\/p><p>[41] Every stage of development in Râja Yoga is symbolised by a geometrical figure. This one is the sacred Triangle and precedes Dhâranâ. The [triangle] is the sign of the high chelas, while another kind of triangle is that of high Initiates. It is the symbol “I” discoursed upon by Buddha and used by him as a symbol of the embodied form of Tathâgata when released from the three methods of the Prajñâ. Once the preliminary and lower stages passed, the disciple sees no more the [triangle] but the — the abbreviation of the —, the full Septenary. Its true form is not given here, as it is almost sure to be pounced upon by some charlatans and — desecrated in its use for fraudulent purposes.<\/p><p>[42] The star that burns overhead is the “the star of initiation.” The caste-mark of Śaivas, or devotees of the sect of Śiva, the great patron of all Yogins, is a black round spot, the symbol of the Sun now, perhaps, but that of the star of initiation, in Occultism, in days of old.<\/p><p>[43] The basis (upâdhi) of the ever unreachable ”flame,” so long as the ascetic is still in this life.<\/p>", "images": []}, {"pdf_page_index": 51, "pdf_page_number": 52, "label": "Footnotes", "html": "<p>[44] Dhyâna is the last stage before the final on this Earth unless one becomes a full mahatma. As said already in this state the Râja Yogi is yet spiritually conscious of Self, and the working of his higher principles. One step more, and he will be on the plane beyond the Seventh (or fourth according to some schools). These, after the practice of Pratyâhâra — a preliminary training, in order to control one’s mind and thoughts — count Dhâranâ, Dhyâna and Samâdhi and embraces the three under the generic name of Samyama.<\/p><p>[45] Samâdhi is the state in which the ascetic loses the consciousness of every individuality including his own. He becomes — the All.<\/p><p>[46] The ”four modes of truth” are, in Northern Buddhism, Ku ”suffering or misery”; Tu the assembling of temptations; Mu ”their destructions” and Tao, the “path.” The “five impediments” are the knowledge of misery, truth about human frailty, oppressive restraints, and the absolute necessity of separation from all the ties of passion and even of desires. The “Path of Salvation” — is the last one.<\/p><p>[47] At the portal of the “assembling” the King of the Mâras the Mahâ Mâra stands trying to blind the candidate by the radiance of his “Jewel.”<\/p><p>[48] This is the fourth “Path” out of the five paths of rebirth which lead and toss all human beings into perpetual states of sorrow and joy. These “paths” are but subdivisions of the One, the Path followed by Karma.<\/p>", "images": []}, {"pdf_page_index": 52, "pdf_page_number": 53, "label": "Footnotes", "html": "<p>[49] The two schools of Buddha’s doctrine, the esoteric and the exoteric, are respectively called the “Heart” and the “Eye” Doctrine. Bodhidharma called them in China — from whence the names reached Tibet — the Tsung-men (esoteric) and Kiau-men (exoteric school). It is so named, because it is the teaching which emanated from Gautama Buddha’s heart, whereas the “Eye” Doctrine was the work of his head or brain. The “Heart Doctrine” is also called “the seal of truth” or the “true seal,” a symbol found on the heading of almost all esoteric works.<\/p><p>[50] The ”tree of knowledge” is a title given by the followers of the Bodhidharma (Wisdom religion) to those who have attained the height of mystic knowledge — adepts. Nâgârjuna the founder of the Mâdhyamika School was called the “Dragon Tree,” Dragon standing as a symbol of Wisdom and Knowledge. The tree is honoured because it is under the Bodhi (wisdom) Tree that Buddha received his birth and enlightenment, preached his first sermon and died.<\/p><p>[51] “Secret Heart” is the esoteric doctrine.<\/p><p>[52] “Diamond Soul” “Vajrasattva,” a title of the supreme Buddha, the “Lord of all Mysteries,” called Vajradhara and Âdi-Buddha.<\/p><p>[53] Sat, the one eternal and Absolute Reality and Truth, all the rest being illusion.<\/p>", "images": []}, {"pdf_page_index": 53, "pdf_page_number": 54, "label": "Footnotes", "html": "<p>[54] From Shen-hsiu’s Doctrine, who teaches that the human mind is like a mirror which attracts and reflects every atom of dust, and has to be, like that mirror, watched over and dusted every day. Shen-hsiu was the sixth Patriarch of North China who taught the esoteric doctrine of Bodhidharma.<\/p><p>[55] The reincarnating Ego is called by the Northern Buddhists the “true man,” who becomes in union with his Higher-Self — a Buddha.<\/p><p>[56] “Buddha” means “Enlightened.”<\/p><p>[57] The exoteric Buddhism of the masses.<\/p><p>[58] The usual formula that precedes the Buddhist Scriptures, meaning, that that which follows is what has been recorded by direct oral tradition from Buddha and the Arhats.<\/p><p>[59] Immortality.<\/p><p>[60] Rathapâla the great Arhat thus addresses his father in the legend called Rathapâla Sûtrasanne. But as all such legends are allegorical (e.g. Rathapâla’s father has a mansion with seven doors) hence the reproof, to those who accept them literally.<\/p><p>[61] Brahman ascetics.<\/p><p>[62] The reincarnating Ego.<\/p><p>[63] True, divine Wisdom.<\/p><p>[64] The ”Higher Self” the “seventh” principle.<\/p><p>[65] Our physical bodies are called “Shadows” in the mystic schools.<\/p><p>[66] Buddha.<\/p><p>[67] A hermit who retires to the jungles and lives in a forest, when becoming a Yogi.<\/p><p>[68] Julai the Chinese name for Tathâgata, a title applied to every Buddha.<\/p>", "images": []}, {"pdf_page_index": 54, "pdf_page_number": 55, "label": "Footnotes", "html": "<p>[69] All the Northern and Southern traditions agree in showing Buddha quitting his solitude as soon as he had resolved the problem of life — i.e., received the inner enlightenment — and teaching mankind publicly.<\/p><p>[70] Every spiritual Ego is a ray of a “Planetary Spirit” according to esoteric teaching.<\/p><p>[71] “Personalities” or physical bodies called “shadows” are evanescent.<\/p><p>[72] Mind (Manas) the thinking Principle or Ego in man, is referred to “Knowledge” itself, because the human Egos are called Mânasa-putras the sons of (universal) Mind.<\/p><p>[73] Vide Part III. Glossary, paragraph 34 et seq.<\/p><p>[74] Ibid.<\/p><p>[75] The Shangna robe, from Shangnavasu of Râjagriha the third great Arhat or “Patriarch” as the Orientalists call the hierarchy of the 33 Arhats who spread Buddhism. “Shangna robe” means metaphorically, the acquirement of Wisdom with which the Nirvâna of destruction (of personality) is entered. Literally, the “initiation robe” of the Neophytes. Edkins states that this “grass cloth” was brought to China from Tibet in the Tong Dynasty. “When an Arhan is born this plant is found growing in a clean spot” says the Chinese as also the Tibetan legend.<\/p><p>[76] To ”practise the Pâramitâ Path” means to become a Yogi with a view of becoming an ascetic.<\/p><p>[77] “To-morrow” means the following rebirth or reincarnation.<\/p><p>[78] Precepts of the Prasanga School.<\/p><p>[79] “Great Journey” or the whole complete cycle of existences, in one “Round.”<\/p><p>[80] Mars.<\/p><p>[81] Mercury.<\/p>", "images": []}, {"pdf_page_index": 55, "pdf_page_number": 56, "label": "Footnotes", "html": "<p>[82] The Sun. Nyima, the Sun in Tibetan Astrology. Migmar or Mars is symbolized by an “Eye,” and Lhagpa or Mercury by a “Hand.”<\/p><p>[83] Buddha.<\/p><p>[84] Srotâpatti or “he who enters in the stream” of Nirvâna, unless he reaches the goal owing to some exceptional reasons, can rarely attain Nirvâna in one birth. Usually a Chela is said to begin the ascending effort in one life and end or reach it only in his seventh succeeding birth.<\/p><p>[85] Meaning the personal lower “Self.”<\/p><p>[86] Tîrthikas are the Brahmanical Sectarians “beyond” the Himalayas called “infidels” by the Buddhists in the sacred land, Tibet, and vice versa.<\/p><p>[87] Boundless Vision or psychic, superhuman sight. An Arhan is credited with “seeing” and knowing all at a distance as well as on the spot.<\/p><p>[88] Vide supra 22: Shangna plant.<\/p><p>[89] The ”living” is the immortal Higher Ego, and the “dead” — the lower personal Ego.<\/p><p>[90] Vide infra Part III. par. 34.<\/p><p>[91] The ”Secret Life” is life as a Nirmânakâya.<\/p><p>[92] The ”Open” and the “Secret Path” — or the one taught to the layman, the exoteric and the generally accepted, and the other the Secret Path — the nature of which is explained at initiation.<\/p><p>[93] Men ignorant of the Esoteric truths and Wisdom are called “the living Dead.”<\/p><p>[94] Vide infra Part III. 34.<\/p>", "images": []}, {"pdf_page_index": 56, "pdf_page_number": 57, "label": "Footnotes", "html": "<p>[95] Pratyeka Buddhas are those Bodhisattvas who strive after and often reach the Dharmakâya robe after a series of lives. Caring nothing for the woes of mankind or to help it, but only for their own bliss, they enter Nirvâna and — disappear from the sight and the hearts of men. In Northern Buddhism a “Pratyeka Buddha” is a synonym of spiritual Selfishness.<\/p><p>[96] Upâdhyâya is a spiritual preceptor, a Guru. The Northern Buddhists choose these generally among the “Naljor,” saintly men, learned in gotrabhû-ñâna and ñâna-dassana-suddhi teachers of the Secret Wisdom.<\/p><p>[97] Yâna — vehicle: thus Mahâyâna is the “Great Vehicle,” and Hînayâna, the “Lesser Vehicle,” the names for two schools of religious and philosophical learning in Northern Buddhism.<\/p><p>[98] Śrâvaka — a listener, or student who attends to the religious instructions. From the root “Śru.” When from theory they go into practice or performance of asceticism, they become Śramanas, “exercisers,” from Śrama, action. As Hardy shows, the two appellations answer to the words akoustikoi and asketai of the Greeks.<\/p><p>[99] Samtan (Tibetan), the same as the Sanskrit Dhyâna, or the state of meditation, of which there are four degrees.<\/p><p>[100] Pâramitâs, the six transcendental virtues; for the priests there are ten.<\/p>", "images": []}, {"pdf_page_index": 57, "pdf_page_number": 58, "label": "Footnotes", "html": "<p>[101] Srotâpatti — (lit.) “he who has entered the stream” that leads to the Nirvânic ocean. This name indicates the first Path. The name of the second is the Path of Sakridâgâmin, “he who will receive birth (only) once more.” The third is called Anâgâmin, “he who will be reincarnated no more,” unless he so desires in order to help mankind. The fourth Path is known as that of Rahat or Arhat. This is the highest. An Arhat sees Nirvâna during his life. For him it is no post-mortem state, but Samâdhi, during which he experiences all Nirvânic bliss. (How little one can rely upon the Orientalists for the exact words and meaning, is instanced in the case of three “alleged” authorities. Thus the four names just explained are given by R. Spence Hardy as: 1. Sowân; 2. Sakradâgâmi; 3. Anâgâmi, and 4. Arya. By the Rev. J. Edkins they are given as: 1. Srôtâpanna; 2. Sagardagam; 3. Anagamin, and 4. Arhan. Schlagintweit again spells them differently, each, moreover, giving another and a new variation in the meaning of the terms.)<\/p><p>[102] Knowledge, Wisdom.<\/p><p>[103] “Arrival at the shore” is with the Northern Buddhists synonymous with reaching Nirvâna through the exercise of the six and the ten Pâramitâs (virtues).<\/p><p>[104] A saint, an adept.<\/p><p>[105] The ”MASTER-SOUL” is Alaya, the Universal Soul or Âtman, each man having a ray of it in him and being supposed to be able to identify himself with and to merge himself into it.<\/p>", "images": []}, {"pdf_page_index": 58, "pdf_page_number": 59, "label": "Footnotes", "html": "<p>[106] Antahkarana is the lower Manas, the Path of communication or communion between the personality and the higher Manas or human Soul. At death it is destroyed as a Path or medium of communication, and its remains survive in a form as the Kâmarûpa — the “shell.”<\/p><p>[107] The Northern Buddhists, and all Chinamen, in fact, find in the deep roar of some of the great and sacred rivers the key-note of Nature. Hence the simile. It is a well-known fact in Physical Science, as well as in Occultism, that the aggregate sound of Nature — such as heard in the roar of great rivers, the noise produced by the waving tops of trees in large forests, or that of a city heard at a distance — is a definite single tone of quite an appreciable pitch. This is shown by physicists and musicians. Thus Prof. Rice (Chinese Music) shows that the Chinese recognized the fact thousands of years ago by saying that “the waters of the Hoang-ho rushing by, intoned the kung” called “the great tone” in Chinese music; and he shows this tone corresponding with the F, “considered by modern physicists to be the actual tonic of Nature.” Professor B. Silliman mentions it, too, in his Principles of Physics, saying that “this tone is held to be the middle F of the piano; which may, therefore, be considered the key-note of Nature.”<\/p>", "images": []}, {"pdf_page_index": 59, "pdf_page_number": 60, "label": "Footnotes", "html": "<p>[108] The Bons or Dugpas, the sect of the “Red Caps,” are regarded as the most versed in sorcery. They inhabit Western and little Tibet and Bhutan. They are all Tântrikas. It is quite ridiculous to find Orientalists who have visited the borderlands of Tibet, such as Schlagintweit and others, confusing the rites and disgusting practices of these with the religious beliefs of the Eastern Lamas, the “Yellow Caps,” and their Naljors or holy men. The following is an instance.<\/p><p>[109] Kshânti, “patience,” vide supra the enumeration of the golden keys.<\/p><p>[110] Dorje is the Sanskrit Vajra, a weapon or instrument in the hands of some gods (the Tibetan Dragshed, the Devas who protect men), and is regarded as having the same occult power of repelling evil influences by purifying the air as Ozone in chemistry. It is also a Mudrâ a gesture and posture used in sitting for meditation. It is, in short, a symbol of power over invisible evil influences, whether as a posture or a talisman. The Bons or Dugpas, however, having appropriated the symbol, misuse it for purposes of Black Magic. With the “Yellow Caps,” or Gelugpas, it is a symbol of power, as the Cross is with the Christians, while it is in no way more “superstitious.” With the Dugpas, it is like the double triangle reversed, the sign of sorcery.<\/p><p>[111] Virâga is that feeling of absolute indifference to the objective universe, to pleasure and to pain. “Disgust” does not express its meaning, yet it is akin to it.<\/p>", "images": []}, {"pdf_page_index": 60, "pdf_page_number": 61, "label": "Footnotes", "html": "<p>[112] Ahankâra — the “I” or feeling of one’s personality, the “I-am-ness.”<\/p><p>[113] “One who walks in the steps of his predecessors” or “those who came before him,” is the true meaning of the name Tathâgata.<\/p><p>[114] Samvriti is that one of the two truths which demonstrates the illusive character or emptiness of all things. It is relative truth in this case. The Mahâyâna school teaches the difference between these two truths — Paramârthasatya and Samvritisatya (Satya, “truth”). This is the bone of contention between the Mâdhyamikas and the Yogâchâras, the former denying and the latter affirming that every object exists owing to a previous cause or by a concatenation. The Mâdhyamikas are the great Nihilists and Deniers, for whom everything is parikalpita, an illusion and an error in the world of thought and the subjective, as much as in the objective universe. The Yogâchâras are the great spiritualists. Samvriti, therefore, as only relative truth, is the origin of all illusion.<\/p><p>[115] Lhamayin are elementals and evil spirits adverse to men and their enemies.<\/p><p>[116] The Higher Ego, or Thinking Self.<\/p><p>[117] Jñâna-Mârga is the “Path of Jñâna,” literally; or the Path of pure knowledge, of Paramârtha or (Sanskrit) Svasamvedana ”the self-evident or self-analysing reflection.”<\/p><p>[118] Vide Glossary of Part II., Number 4. “Diamond-Soul” or Vajradhara presides over the Dhyâni-Buddhas.<\/p><p>[119] Bhagavadgîtâ.<\/p>", "images": []}, {"pdf_page_index": 61, "pdf_page_number": 62, "label": "Footnotes", "html": "<p>[120] This is an allusion to a well-known belief in the East (as in the West, too, for the matter of that) that every additional Buddha or Saint is a new soldier in the army of those who work for the liberation or salvation of mankind. In Northern Buddhist countries, where the doctrine of Nirmânakâyas — those Bodhisattvas who renounce well-earned Nirvâna or the Dharmakâya vesture (both of which shut them out for ever from the world of men) in order to invisibly assist mankind and lead it finally to Paranirvâna — is taught, every new Bodhisattva or initiated great Adept is called the “liberator of mankind.” The statement made by Schlagintweit in his “Buddhism in Tibet” to the effect that Prulpai Ku or “Nirmânakâya” is “the body in which the Buddhas or Bodhisattvas appear upon earth to teach men” — is absurdly inaccurate and explains nothing.<\/p><p>[121] A reference to human passions and sins which are slaughtered during the trials of the novitiate, and serve as well-fertilized soil in which “holy germs” or seeds of transcendental virtues may germinate. Pre-existing or innate virtues, talents or gifts are regarded as having been acquired in a previous birth. Genius is without exception a talent or aptitude brought from another birth.<\/p>", "images": []}, {"pdf_page_index": 62, "pdf_page_number": 63, "label": "Footnotes", "html": "<p>[122] Titikshâ is the fifth state of Râja Yoga — one of supreme indifference; submission, if necessary, to what is called “pleasures and pains for all,” but deriving neither pleasure nor pain from such submission — in short, the becoming physically, mentally, and morally indifferent and insensible to either pleasure or pain.<\/p><p>[123] Sowanee is one who practices Sowan, the first path in Jñâna, a Srotâpatti.<\/p><p>[124] “Day” means here a whole Manvantara, a period of incalculable duration.<\/p><p>[125] Mount Meru, the sacred mountain of the Gods.<\/p><p>[126] In the Northern Buddhist symbology, Amitâbha or “Boundless Space” (Parabrahm) is said to have in his paradise two Bodhisattvas — Kwan-shi-yin and Tashishi — who ever radiate light over the three worlds where they lived, including our own (vide 27), in order to help with this light (of knowledge) in the instruction of Yogis, who will, in their turn, save men. Their exalted position in Amitâbha’s realm is due to deeds of mercy performed by the two, as such Yogis, when on earth, says the allegory.<\/p><p>[127] These three worlds are the three planes of being, the terrestrial, astral and the spiritual.<\/p><p>[128] Cycles of ages.<\/p><p>[129] The ”Guardian Wall” or the “Wall of Protection.” It is taught that the accumulated efforts of long generations of Yogis, Saints and Adepts, especially of the Nirmânakâyas — have created, so to say, a wall of protection around mankind, which wall shields mankind invisibly from still worse evils.<\/p>", "images": []}, {"pdf_page_index": 63, "pdf_page_number": 64, "label": "Footnotes", "html": "<p>[130] Sowan and Srotâpatti are synonymous terms.<\/p><p>[131] Mârga — “Path.”<\/p><p>[132] From the Sanskrit Arhat or Arhan.<\/p><p>[133] Kleśa is the love of pleasure or of worldly enjoyment, evil or good.<\/p><p>[134] Tanhâ, the will to live, that which causes rebirth.<\/p><p>[135] This ”compassion” must not be regarded in the same light as “God, the divine love” of the Theists. Compassion stands here as an abstract, impersonal law whose nature, being absolute Harmony, is thrown into confusion by discord, suffering and sin.<\/p><p>[136] In the Northern Buddhist phraseology all the great Arhats, Adepts and Saints are called Buddhas.<\/p><p>[137] A Bodhisattva is, in the hierarchy, less than a “perfect Buddha.” In the exoteric parlance these two are very much confused. Yet the innate and right popular perception, owing to that self-sacrifice, has placed a Bodhisattva higher in its reverence than a Buddha.<\/p>", "images": []}, {"pdf_page_index": 64, "pdf_page_number": 65, "label": "Footnotes", "html": "<p>[138] This same popular reverence calls “Buddhas of Compassion” those Bodhisattvas who, having reached the rank of an Arhat (i.e., having completed the fourth or seventh Path), refuse to pass into the Nirvânic state or “don the Dharmakâya robe and cross to the other shore,” as it would then become beyond their power to assist men even so little as Karma permits. They prefer to remain invisibly (in Spirit, so to speak) in the world, and contribute toward man’s salvation by influencing them to follow the Good Law, i.e., lead them on the Path of Righteousness. It is part of the exoteric Northern Buddhism to honour all such great characters as Saints, and to offer even prayers to them, as the Greeks and Catholics do to their Saints and Patrons; on the other hand, the esoteric teachings countenance no such thing. There is a great difference between the two teachings. The exoteric layman hardly knows the real meaning of the word Nirmânakâya — hence the confusion and inadequate explanations of the Orientalists. For example Schlagintweit believes that Nirmânakâya-body, means the physical form assumed by the Buddhas when they incarnate on earth — “the least sublime of their earthly encumbrances” (vide ”Buddhism in Tibet”) — and he proceeds to give an entirely false view on the subject. The real teaching is, however, this: —<\/p><p>The three Buddhic bodies or forms are styled: —<\/p><p>1. Nirmânakâya.2. Sambhogakâya.3. Dharmakâya.<\/p>", "images": []}, {"pdf_page_index": 65, "pdf_page_number": 66, "label": "Footnotes", "html": "<p>The first is that ethereal form which one would assume when leaving his physical he would appear in his astral body — having in addition all the knowledge of an Adept. The Bodhisattva develops it in himself as he proceeds on the Path. Having reached the goal and refused its fruition, he remains on Earth, as an Adept; and when he dies, instead of going into Nirvâna, he remains in that glorious body he has woven for himself, invisible to uninitiated mankind, to watch over and protect it.<\/p><p>Sambhogakâya is the same, but with the additional lustre of “three perfections,” one of which is entire obliteration of all earthly concerns.<\/p><p>The Dharmakâya body is that of a complete Buddha, i.e., no body at all, but an ideal breath: Consciousness merged in the Universal Consciousness, or Soul devoid of every attribute. Once a Dharmakâya, an Adept or Buddha leaves behind every possible relation with, or thought for this earth. Thus, to be enabled to help humanity, an Adept who has won the right to Nirvâna, “renounces the Dharmakâya body” in mystic parlance; keeps, of the Sambhogakâya, only the great and complete knowledge, and remains in his Nirmânakâya body. The esoteric school teaches that Gautama Buddha with several of his Arhats is such a Nirmânakâya, higher than whom, on account of the great renunciation and sacrifice to mankind there is none known.<\/p>", "images": []}, {"pdf_page_index": 66, "pdf_page_number": 67, "label": "Footnotes", "html": "<p>[139] Myalba is our earth — pertinently called “Hell,” and the greatest of all Hells, by the esoteric school. The esoteric doctrine knows of no hell or place of punishment other than on a man-bearing planet or earth. Avîchi is a state and not a locality.<\/p><p>[140] Meaning that a new and additional Saviour of mankind is born, who will lead men to final Nirvâna i.e., after the end of the life-cycle.<\/p><p>[141] This is one of the variations of the formula that invariably follows every treatise, invocation or Instruction. “Peace to all beings,” “Blessings on all that Lives,” &amp;c., &amp;c.<\/p>", "images": []}]</script>
+<script id="images-data" type="application/json">{}</script>
+<script id="notes-data" type="application/json">{"Preface": {"s": "Blavatsky introduces this translation of three fragments from the Book of the Golden Precepts, a mystical work studied by her Eastern teachers, and explains that the verses guide the disciple from the life of the senses toward the “Voice of the Silence” — the inner divine Self.", "p": ["The fragments come from the Book of the Golden Precepts, memorized by her teachers", "The work is addressed to disciples seeking the Path", "The “Voice of the Silence” is the voice of the higher Self within"]}, "Fragment I. The Voice of the Silence": {"s": "The first fragment teaches the stilling of the senses and mind so the inner voice may be heard. It contrasts the fleeting personality with the eternal individuality and describes the early stages of interior awakening.", "p": ["The mind must become still before the inner voice can be heard", "The personality is transient; the individuality endures", "Shamballa and the sacred land are named as spiritual guardians of the teaching"]}, "Fragment II. The Two Paths": {"s": "This fragment presents the two paths open to the aspirant: the open path of liberation-for-self and the secret path of renunciation, where the liberated one remains to help humanity. It urges compassion as the soul of the Path.", "p": ["Two paths: the “open” path to nirvana and the “secret” path of self-sacrifice", "Compassion is the supreme law of the Path", "The Bodhisattva ideal: renouncing nirvana to serve mankind"]}, "Fragment III. The Seven Portals": {"s": "The final fragment describes seven portals — the paramitas and mystical stages — through which the candidate must pass, culminating in the crossing of the great waters and the attainment of the “other shore”.", "p": ["Seven portals correspond to the transcendent virtues (paramitas)", "Each gate tests the candidate’s purity, courage, and detachment", "The goal is Prajna — direct wisdom — and crossing to the “other shore”"]}, "Footnotes": {"s": "Blavatsky’s notes explaining Sanskrit and Tibetan terms, schools, and doctrines referenced in the verses.", "p": ["Definitions of key Buddhist and esoteric terms", "References to the Arhat, Bodhisattva, and Dhyani traditions"]}}</script>
+<script id="chapter-map" type="application/json">[null, "Preface", "Preface", "Preface", "Preface", "Fragment I. The Voice of the Silence", "Fragment I. The Voice of the Silence", "Fragment I. The Voice of the Silence", "Fragment I. The Voice of the Silence", "Fragment I. The Voice of the Silence", "Fragment I. The Voice of the Silence", "Fragment I. The Voice of the Silence", "Fragment I. The Voice of the Silence", "Fragment I. The Voice of the Silence", "Fragment I. The Voice of the Silence", "Fragment I. The Voice of the Silence", "Fragment I. The Voice of the Silence", "Fragment II. The Two Paths", "Fragment II. The Two Paths", "Fragment II. The Two Paths", "Fragment II. The Two Paths", "Fragment II. The Two Paths", "Fragment II. The Two Paths", "Fragment II. The Two Paths", "Fragment II. The Two Paths", "Fragment II. The Two Paths", "Fragment II. The Two Paths", "Fragment II. The Two Paths", "Fragment II. The Two Paths", "Fragment III. The Seven Portals", "Fragment III. The Seven Portals", "Fragment III. The Seven Portals", "Fragment III. The Seven Portals", "Fragment III. The Seven Portals", "Fragment III. The Seven Portals", "Fragment III. The Seven Portals", "Fragment III. The Seven Portals", "Fragment III. The Seven Portals", "Fragment III. The Seven Portals", "Fragment III. The Seven Portals", "Fragment III. The Seven Portals", "Fragment III. The Seven Portals", "Fragment III. The Seven Portals", "Fragment III. The Seven Portals", "Footnotes", "Footnotes", "Footnotes", "Footnotes", "Footnotes", "Footnotes", "Footnotes", "Footnotes", "Footnotes", "Footnotes", "Footnotes", "Footnotes", "Footnotes", "Footnotes", "Footnotes", "Footnotes", "Footnotes", "Footnotes", "Footnotes", "Footnotes", "Footnotes", "Footnotes", "Footnotes"]</script>
+<script>
+const PAGES = JSON.parse(document.getElementById('pages-data').textContent);
+const IMAGES = JSON.parse(document.getElementById('images-data').textContent);
+
+let current = 0;
+
+function imgSrc(file){
+  return 'data:image/jpeg;base64,' + IMAGES[file];
+}
+
+function render(){
+  const p = PAGES[current];
+  document.getElementById('section-pill').textContent = 'Page ' + p.pdf_page_number;
+  document.getElementById('eyebrow').textContent = 'Source: page ' + p.pdf_page_number + ' of ' + PAGES.length;
+  document.getElementById('page-title').textContent = p.label;
+  document.getElementById('content').innerHTML = p.html;
+
+  const figWrap = document.getElementById('figures');
+  figWrap.innerHTML = '';
+  p.images.forEach(im => {
+    const card = document.createElement('div');
+    card.className = 'figure-card';
+    const img = document.createElement('img');
+    img.src = imgSrc(im.file);
+    img.alt = im.caption;
+    img.addEventListener('click', () => openLightbox(img.src, im.caption));
+    const cap = document.createElement('div');
+    cap.className = 'figure-cap';
+    cap.textContent = im.caption;
+    card.appendChild(img);
+    card.appendChild(cap);
+    figWrap.appendChild(card);
+  });
+
+  document.getElementById('folio-label').textContent = 'Page ' + p.pdf_page_number + ' / ' + PAGES.length;
+  document.getElementById('progress-label').textContent = 'Page ' + p.pdf_page_number + ' of ' + PAGES.length;
+  document.getElementById('progress-fill').style.width = (((current+1)/PAGES.length)*100).toFixed(1) + '%';
+
+  document.getElementById('prev-btn').disabled = current === 0;
+  document.getElementById('next-btn').disabled = current === PAGES.length - 1;
+  document.getElementById('next-btn').textContent = current === PAGES.length -1 ? 'End' : 'Next \u2192';
+
+  document.getElementById('leaf').style.animation = 'none';
+  void document.getElementById('leaf').offsetWidth;
+  document.getElementById('leaf').style.animation = '';
+
+  updateActiveTocItem();
+  window.scrollTo({top:0, behavior:'smooth'});
+  if (window.__afterRender) window.__afterRender();
+}
+
+function openLightbox(src, alt){
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox-img').alt = alt;
+  document.getElementById('lightbox').classList.add('open');
+}
+document.getElementById('lightbox-close').addEventListener('click', () => {
+  document.getElementById('lightbox').classList.remove('open');
+});
+document.getElementById('lightbox').addEventListener('click', (e) => {
+  if (e.target.id === 'lightbox') document.getElementById('lightbox').classList.remove('open');
+});
+
+document.getElementById('prev-btn').addEventListener('click', () => {
+  if (current > 0){ current--; render(); }
+});
+document.getElementById('next-btn').addEventListener('click', () => {
+  if (current < PAGES.length -1){ current++; render(); }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight') document.getElementById('next-btn').click();
+  if (e.key === 'ArrowLeft') document.getElementById('prev-btn').click();
+  if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('open');
+});
+
+// ---------- TOC ----------
+function buildToc(){
+  const list = document.getElementById('toc-list');
+  PAGES.forEach((p, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'toc-item';
+    btn.dataset.idx = idx;
+    btn.textContent = 'p.' + p.pdf_page_number + '  —  ' + p.label;
+    btn.addEventListener('click', () => {
+      current = idx;
+      render();
+      closeToc();
+    });
+    list.appendChild(btn);
+  });
+}
+function updateActiveTocItem(){
+  document.querySelectorAll('.toc-item').forEach(el => {
+    el.classList.toggle('active', parseInt(el.dataset.idx) === current);
+  });
+}
+function openToc(){
+  document.getElementById('toc-panel').classList.add('open');
+  document.getElementById('scrim').classList.add('show');
+}
+function closeToc(){
+  document.getElementById('toc-panel').classList.remove('open');
+  document.getElementById('scrim').classList.remove('show');
+}
+document.getElementById('toc-toggle').addEventListener('click', openToc);
+document.getElementById('toc-close').addEventListener('click', closeToc);
+document.getElementById('scrim').addEventListener('click', closeToc);
+
+buildToc();
+render();
+
+// ---------- Read aloud (prefers Indian English voices) ----------
+(function(){
+  const listenBtn = document.getElementById('listen-toggle');
+  const bar = document.getElementById('listen-bar');
+  const voiceSel = document.getElementById('voice-select');
+  const rateSel = document.getElementById('rate-select');
+  const playBtn = document.getElementById('listen-play');
+  const stopBtn = document.getElementById('listen-stop');
+  const autoChk = document.getElementById('listen-auto');
+  const status = document.getElementById('listen-status');
+
+  if (!('speechSynthesis' in window)) {
+    listenBtn.style.display = 'none';
+    return;
+  }
+
+  let voices = [];
+  let listening = false;
+  let paused = false;
+  let gen = 0;
+
+  function score(v){
+    const l = (v.lang || '').toLowerCase().replace('_', '-');
+    if (l.indexOf('en-in') === 0) return 3;
+    if (l === 'en-gb') return 2;
+    return 1;
+  }
+
+  function loadVoices(){
+    const all = speechSynthesis.getVoices();
+    const en = all.filter(v => v.lang && v.lang.toLowerCase().indexOf('en') === 0);
+    voices = (en.length ? en : all).slice().sort((a, b) => score(b) - score(a));
+    voiceSel.innerHTML = '';
+    voices.forEach((v, i) => {
+      const opt = document.createElement('option');
+      opt.value = i;
+      const isIndian = (v.lang || '').toLowerCase().replace('_', '-').indexOf('en-in') === 0;
+      opt.textContent = v.name + ' (' + v.lang + ')' + (isIndian ? ' — Indian accent' : '');
+      voiceSel.appendChild(opt);
+    });
+    const idx = voices.findIndex(v => (v.lang || '').toLowerCase().replace('_', '-').indexOf('en-in') === 0);
+    voiceSel.value = idx >= 0 ? idx : 0;
+    if (!listening) {
+      status.textContent = idx >= 0
+        ? 'Indian English voice ready.'
+        : 'No Indian English voice found on this device — closest English voice selected.';
+    }
+  }
+  speechSynthesis.onvoiceschanged = loadVoices;
+  loadVoices();
+
+  function pageText(){
+    const p = PAGES[current];
+    const div = document.createElement('div');
+    div.innerHTML = p.html;
+    let t = (div.textContent || '').replace(/\s+/g, ' ').trim();
+    (p.images || []).forEach(im => { t += ' Figure on this page: ' + im.caption + '.'; });
+    return t;
+  }
+
+  function chunk(text){
+    const parts = text.match(/[^.!?\u2026]+[.!?\u2026]+["')\]]*\s*/g) || [text];
+    const out = [];
+    let buf = '';
+    parts.forEach(s => {
+      if ((buf + s).length > 220) { if (buf) out.push(buf); buf = s; }
+      else buf += s;
+    });
+    if (buf) out.push(buf);
+    return out;
+  }
+
+  function speak(){
+    const text = pageText();
+    if (!text) { status.textContent = 'Nothing to read on this page.'; return; }
+    const myGen = ++gen;
+    speechSynthesis.cancel();
+    const pieces = chunk(text);
+    const v = voices[parseInt(voiceSel.value, 10)];
+    pieces.forEach((c, i) => {
+      const u = new SpeechSynthesisUtterance(c);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = parseFloat(rateSel.value);
+      if (i === pieces.length - 1) {
+        u.onend = () => {
+          if (!listening || myGen !== gen) return;
+          if (autoChk.checked && current < PAGES.length - 1) { current++; render(); }
+          else setUi(false);
+        };
+      }
+      speechSynthesis.speak(u);
+    });
+    status.textContent = 'Reading page ' + (current + 1) + ' of ' + PAGES.length + '…';
+  }
+
+  function setUi(on){
+    listening = on;
+    paused = false;
+    playBtn.innerHTML = on ? '&#10074;&#10074; Pause' : '&#9654; Read aloud';
+    stopBtn.disabled = !on;
+    if (!on) status.textContent = 'Stopped.';
+  }
+
+  window.__afterRender = function(){
+    if (listening) speak();
+  };
+
+  setInterval(() => {
+    if (listening && !paused && speechSynthesis.speaking) speechSynthesis.resume();
+  }, 10000);
+
+  listenBtn.addEventListener('click', () => bar.classList.toggle('open'));
+  playBtn.addEventListener('click', () => {
+    if (!listening) { setUi(true); speak(); return; }
+    if (paused) { speechSynthesis.resume(); paused = false; playBtn.innerHTML = '&#10074;&#10074; Pause'; }
+    else { speechSynthesis.pause(); paused = true; playBtn.innerHTML = '&#9654; Resume'; }
+  });
+  stopBtn.addEventListener('click', () => { gen++; speechSynthesis.cancel(); setUi(false); });
+  voiceSel.addEventListener('change', () => { if (listening) speak(); });
+  rateSel.addEventListener('change', () => { if (listening) speak(); });
+})();
+
+</script>
+
+<script>
+(function(){
+  var NOTES = {};
+  var CHMAP = [];
+  try { NOTES = JSON.parse(document.getElementById('notes-data').textContent); } catch(e) {}
+  try { CHMAP = JSON.parse(document.getElementById('chapter-map').textContent); } catch(e) {}
+  var term = '', matchPages = [];
+
+  function esc(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+  function pageText(p){ var d=document.createElement('div'); d.innerHTML=p.html; return d.textContent || ''; }
+
+  // ---------- SEARCH ----------
+  var bar = document.getElementById('search-bar');
+  var input = document.getElementById('search-input');
+  var info = document.getElementById('search-info');
+
+  function clearMarks(){
+    var c = document.getElementById('content');
+    c.querySelectorAll('mark.search-hit').forEach(function(mk){
+      var t = document.createTextNode(mk.textContent);
+      mk.parentNode.replaceChild(t, mk);
+    });
+    c.normalize();
+  }
+  function highlight(){
+    clearMarks();
+    if (!term || term.length < 2) return;
+    var c = document.getElementById('content');
+    var walker = document.createTreeWalker(c, NodeFilter.SHOW_TEXT);
+    var nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    var t = term.toLowerCase();
+    nodes.forEach(function(n){
+      var txt = n.nodeValue, low = txt.toLowerCase(), idx = low.indexOf(t);
+      if (idx < 0) return;
+      var frag = document.createDocumentFragment(), pos = 0;
+      while (idx >= 0){
+        frag.appendChild(document.createTextNode(txt.slice(pos, idx)));
+        var mk = document.createElement('mark');
+        mk.className = 'search-hit';
+        mk.textContent = txt.slice(idx, idx + term.length);
+        frag.appendChild(mk);
+        pos = idx + term.length;
+        idx = low.indexOf(t, pos);
+      }
+      frag.appendChild(document.createTextNode(txt.slice(pos)));
+      n.parentNode.replaceChild(frag, n);
+    });
+  }
+  function infoText(){
+    if (!term || term.length < 2) { info.textContent = ''; return; }
+    if (!matchPages.length) { info.textContent = 'No matches'; return; }
+    var pos = matchPages.indexOf(current);
+    info.textContent = matchPages.length + (matchPages.length > 1 ? ' pages' : ' page') +
+      (pos >= 0 ? ' — match ' + (pos + 1) + ' of ' + matchPages.length : '');
+  }
+  function doSearch(){
+    term = input.value.trim();
+    matchPages = [];
+    if (term.length >= 2){
+      var t = term.toLowerCase();
+      PAGES.forEach(function(p, i){ if (pageText(p).toLowerCase().indexOf(t) >= 0) matchPages.push(i); });
+    }
+    if (matchPages.length){ current = matchPages[0]; render(); }
+    else { highlight(); infoText(); }
+  }
+  function step(d){
+    if (!matchPages.length) return;
+    var pos = matchPages.indexOf(current);
+    if (pos < 0) pos = 0;
+    pos = (pos + d + matchPages.length) % matchPages.length;
+    current = matchPages[pos];
+    render();
+  }
+  var searchT = null;
+  input.addEventListener('input', function(){ clearTimeout(searchT); searchT = setTimeout(doSearch, 350); });
+  input.addEventListener('keydown', function(e){ if (e.key === 'Enter'){ clearTimeout(searchT); doSearch(); } });
+  document.getElementById('search-prev').addEventListener('click', function(){ step(-1); });
+  document.getElementById('search-next').addEventListener('click', function(){ step(1); });
+  document.getElementById('search-close').addEventListener('click', function(){
+    bar.classList.remove('open'); term=''; matchPages=[]; highlight(); infoText();
+  });
+  document.getElementById('search-toggle').addEventListener('click', function(){
+    var open = bar.classList.toggle('open');
+    document.getElementById('notes-panel').classList.remove('open');
+    if (open) input.focus();
+  });
+
+  // ---------- NOTES ----------
+  var panel = document.getElementById('notes-panel');
+  var body = document.getElementById('notes-body');
+  function showNotes(){
+    var ch = null;
+    for (var i = current; i >= 0; i--){
+      if (CHMAP[i] && NOTES[CHMAP[i]]) { ch = CHMAP[i]; break; }
+    }
+    if (!ch){
+      for (var j = current; j < CHMAP.length; j++){
+        if (CHMAP[j] && NOTES[CHMAP[j]]) { ch = CHMAP[j]; break; }
+      }
+    }
+    if (!ch){
+      body.innerHTML = '<p class="notes-empty">No chapter notes available for this section.</p>';
+      return;
+    }
+    var n = NOTES[ch];
+    var h = '<h3>' + esc(ch) + '</h3><h4>Summary</h4><p>' + esc(n.s) + '</p>';
+    if (n.p && n.p.length){
+      h += '<h4>Key points</h4><ul>' + n.p.map(function(x){ return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>';
+    }
+    body.innerHTML = h;
+  }
+  document.getElementById('notes-toggle').addEventListener('click', function(){
+    var open = panel.classList.toggle('open');
+    bar.classList.remove('open');
+    if (open) showNotes();
+  });
+
+  // hooks after every render
+  var prevA = window.__afterRender;
+  window.__afterRender = function(){
+    if (prevA) prevA();
+    highlight();
+    infoText();
+    if (panel.classList.contains('open')) showNotes();
+  };
+})();
+</script>
+
+<style id="sel-search-css">
+#sel-search-tip{position:fixed;z-index:99999;display:none;background:#2E2A24;color:#F7F1E3;border-radius:10px;padding:6px 8px;box-shadow:0 6px 18px rgba(0,0,0,.28);font:13px/1.2 system-ui,-apple-system,sans-serif;transform:translateX(-50%)}
+#sel-search-tip.show{display:block}
+#sel-search-tip button{background:none;border:none;color:#ffd98a;cursor:pointer;font:inherit;padding:2px 6px;white-space:nowrap}
+#sel-search-tip button:hover{color:#ffe9b8}
+#sel-search-tip::after{content:"";position:absolute;top:100%;left:50%;margin-left:-6px;border:6px solid transparent;border-top-color:#2E2A24}
+#sel-search-bar{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:99999;display:none;align-items:center;gap:10px;background:#2E2A24;color:#F7F1E3;border-radius:12px;padding:9px 14px;box-shadow:0 8px 24px rgba(0,0,0,.32);font:13px system-ui,-apple-system,sans-serif;max-width:92vw}
+#sel-search-bar.show{display:flex}
+#sel-search-bar button{background:#b8893a;border:none;color:#fff;border-radius:8px;padding:5px 12px;cursor:pointer;font:inherit;white-space:nowrap}
+#sel-search-bar button:hover{background:#c99a48}
+#sel-search-bar a{color:#ffd98a}
+</style>
+
+<script>
+(function(){
+  if (window.__selSearch) return; window.__selSearch = true;
+  var tip = document.createElement('div');
+  tip.id = 'sel-search-tip';
+  tip.innerHTML = '<button id="sel-search-btn" type="button">&#128269; Search DuckDuckGo</button>';
+  document.body.appendChild(tip);
+  var bar = document.createElement('div');
+  bar.id = 'sel-search-bar';
+  bar.innerHTML = '<span id="sel-search-msg">Search opened in a popup window.</span>' +
+    '<button id="sel-search-close" type="button">&#10005; Close search window</button>';
+  document.body.appendChild(bar);
+  var popup = null, term = '', lastUrl = '';
+
+  function hideTip(){ tip.classList.remove('show'); }
+  function hideBar(){ bar.classList.remove('show'); }
+
+  function showTipForSelection(){
+    var sel = window.getSelection();
+    var txt = sel && !sel.isCollapsed ? sel.toString().trim() : '';
+    if (txt.length >= 2 && txt.length <= 160){
+      term = txt;
+      var r = sel.getRangeAt(0).getBoundingClientRect();
+      var top = r.top - 46;
+      if (top < 8) top = r.bottom + 10;
+      var left = r.left + r.width / 2;
+      left = Math.max(90, Math.min(window.innerWidth - 90, left));
+      tip.style.left = left + 'px';
+      tip.style.top = top + 'px';
+      tip.classList.add('show');
+    } else {
+      hideTip();
+    }
+  }
+
+  document.addEventListener('mouseup', function(e){
+    if (tip.contains(e.target) || bar.contains(e.target)) return;
+    setTimeout(showTipForSelection, 10);
+  });
+  document.addEventListener('keyup', function(e){
+    if (e.shiftKey) setTimeout(showTipForSelection, 10);
+  });
+  document.addEventListener('mousedown', function(e){
+    if (!tip.contains(e.target)) hideTip();
+  });
+  document.addEventListener('scroll', hideTip, true);
+
+  document.getElementById('sel-search-btn').addEventListener('click', function(){
+    if (!term) return;
+    lastUrl = 'https://duckduckgo.com/?q=' + encodeURIComponent(term);
+    popup = window.open(lastUrl, 'ddg_search_popup', 'width=920,height=700,menubar=no,toolbar=no,location=no,status=no');
+    hideTip();
+    var msg = document.getElementById('sel-search-msg');
+    if (popup){
+      msg.textContent = 'Search opened in a popup window.';
+    } else {
+      msg.innerHTML = 'Popup blocked — <a href="' + lastUrl.replace(/"/g, '&quot;') + '" target="_blank" rel="noopener">open the search in a new tab</a>.';
+    }
+    bar.classList.add('show');
+  });
+
+  document.getElementById('sel-search-close').addEventListener('click', function(){
+    if (popup && !popup.closed) popup.close();
+    popup = null;
+    hideBar();
+  });
+})();
+</script>
+
+<style id="sl-chat-css">
+#sl-chat-fab{position:fixed;right:18px;bottom:18px;z-index:99998;width:52px;height:52px;border-radius:50%;border:none;background:#2E2A24;color:#F7F1E3;font-size:22px;cursor:pointer;box-shadow:0 8px 22px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center}
+#sl-chat-fab:hover{background:#453e33}
+#sl-chat-panel{position:fixed;right:18px;bottom:82px;z-index:99998;width:380px;max-width:92vw;height:540px;max-height:72vh;display:none;flex-direction:column;background:#FDFAF3;border:1px solid #E3D9C6;border-radius:18px;box-shadow:0 16px 44px rgba(0,0,0,.3);overflow:hidden;font:14px/1.45 system-ui,-apple-system,sans-serif;color:#2E2A24}
+#sl-chat-panel.show{display:flex}
+#sl-chat-head{display:flex;align-items:center;justify-content:space-between;background:#2E2A24;color:#F7F1E3;padding:10px 14px;font-weight:600;font-size:13px;letter-spacing:.4px}
+#sl-chat-head button{background:none;border:none;color:#CBBEA6;cursor:pointer;font-size:15px;padding:2px 6px}
+#sl-chat-head button:hover{color:#fff}
+#sl-chat-settings{display:none;padding:10px 14px;background:#F6EEDC;border-bottom:1px solid #E3D9C6;font-size:12px}
+#sl-chat-settings.show{display:block}
+#sl-chat-settings input{width:100%;box-sizing:border-box;margin:3px 0;padding:6px 8px;border:1px solid #D8CCB2;border-radius:8px;font-size:12px;background:#fff}
+#sl-chat-settings .row{display:flex;gap:8px;align-items:center;margin-top:4px}
+#sl-chat-settings button{background:#2E2A24;color:#F7F1E3;border:none;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:12px}
+#sl-chat-settings .hint{color:#8A7F6A;font-size:11px;line-height:1.4;margin-top:4px}
+#sl-chat-body{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.sl-msg{max-width:88%;padding:9px 12px;border-radius:14px;font-size:13px;white-space:pre-wrap;word-wrap:break-word}
+.sl-msg.user{align-self:flex-end;background:#2E2A24;color:#F7F1E3;border-bottom-right-radius:4px}
+.sl-msg.bot{align-self:flex-start;background:#fff;border:1px solid #E7DECB;border-bottom-left-radius:4px}
+.sl-msg a{color:#A6743A}
+.sl-ref{display:block;margin-top:6px;padding:7px 9px;background:#F6EEDC;border-radius:10px;font-size:12px;cursor:pointer;border:none;width:100%;text-align:left}
+.sl-ref:hover{background:#EFE3CC}
+.sl-ref b{display:block;color:#2E2A24}
+.sl-ref span{color:#8A7F6A;font-size:11px}
+.sl-ref .go{color:#A6743A;font-weight:600}
+#sl-chat-inputrow{display:flex;gap:8px;padding:10px 12px;border-top:1px solid #E7DECB;background:#fff}
+#sl-chat-input{flex:1;border:none;outline:none;font-size:13px;background:transparent;color:#2E2A24}
+#sl-chat-send{background:#B8893A;border:none;color:#fff;border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+#sl-chat-send:disabled{opacity:.4}
+.sl-thinking{font-size:11px;color:#A99E88;font-style:italic}
+</style>
+
+<script>
+(function(){
+  if (window.__slChat) return; window.__slChat = true;
+  var CFG_KEY = 'sl_llm_config';
+  function loadCfg(){
+    try { var raw = localStorage.getItem(CFG_KEY); if (raw) return JSON.parse(raw); } catch(e){}
+    return { endpoint:'https://api.openai.com/v1/chat/completions', key:'', model:'gpt-4o-mini' };
+  }
+  var cfg = loadCfg();
+
+  var fab = document.createElement('button');
+  fab.id = 'sl-chat-fab'; fab.type = 'button'; fab.title = 'Library assistant';
+  fab.textContent = '\uD83D\uDCAC';
+  document.body.appendChild(fab);
+
+  var panel = document.createElement('div');
+  panel.id = 'sl-chat-panel';
+  panel.innerHTML =
+    '<div id="sl-chat-head"><span>\u2728 Library Assistant</span>' +
+    '<span><button id="sl-chat-clear" type="button" title="Clear chat">\uD83D\uDDD1</button>' +
+    '<button id="sl-chat-gear" type="button" title="LLM settings">\u2699</button>' +
+    '<button id="sl-chat-x" type="button" title="Close">\u2715</button></span></div>' +
+    '<div id="sl-chat-settings">' +
+    '<b>LLM configuration (any OpenAI-compatible API)</b>' +
+    '<input id="sl-cfg-endpoint" placeholder="Endpoint, e.g. https://api.openai.com/v1/chat/completions">' +
+    '<input id="sl-cfg-key" type="password" placeholder="API key (stored only in this browser)">' +
+    '<input id="sl-cfg-model" placeholder="Model, e.g. gpt-4o-mini">' +
+    '<div class="row"><button id="sl-cfg-save" type="button">Save</button>' +
+    '<button id="sl-cfg-test" type="button">Test</button><span id="sl-cfg-status"></span></div>' +
+    '<div class="hint">Works with OpenAI, OpenRouter, Groq, Mistral, Ollama (http://localhost:11434/v1/chat/completions), LM Studio. Without a key I search this book locally and DuckDuckGo externally.</div>' +
+    '</div>' +
+    '<div id="sl-chat-body"></div>' +
+    '<div id="sl-chat-inputrow"><input id="sl-chat-input" placeholder="Ask about this book, or the web\u2026">' +
+    '<button id="sl-chat-send" type="button" title="Send">\u27A4</button></div>';
+  document.body.appendChild(panel);
+
+  var body = panel.querySelector('#sl-chat-body');
+  var input = panel.querySelector('#sl-chat-input');
+  var sendBtn = panel.querySelector('#sl-chat-send');
+  var busy = false;
+
+  function scrollBody(){ body.scrollTop = body.scrollHeight; }
+  function addMsg(role, html){
+    var d = document.createElement('div');
+    d.className = 'sl-msg ' + role;
+    d.innerHTML = html;
+    body.appendChild(d); scrollBody();
+    return d;
+  }
+  function esc(t){ var d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+
+  addMsg('bot', 'Namaste. Ask me anything \u2014 I can search <b>this book</b> page by page, answer with your configured LLM, or run an external DuckDuckGo search.');
+
+  function pageText(p){
+    var d = document.createElement('div'); d.innerHTML = p.html; return d.textContent || '';
+  }
+
+  function searchBook(q){
+    var terms = q.toLowerCase().split(/[^a-z0-9]+/).filter(function(t){ return t.length > 2; });
+    if (!terms.length) return [];
+    var out = [];
+    for (var i = 0; i < PAGES.length; i++){
+      var txt = pageText(PAGES[i]).toLowerCase();
+      var score = 0;
+      for (var k = 0; k < terms.length; k++){
+        var hits = txt.split(terms[k]).length - 1;
+        if (hits) score += hits;
+      }
+      if (score) out.push({ i: i, score: score });
+    }
+    out.sort(function(a,b){ return b.score - a.score; });
+    return out.slice(0, 5);
+  }
+
+  function snippet(i, q){
+    var txt = pageText(PAGES[i]).replace(/\s+/g,' ');
+    var terms = q.toLowerCase().split(/[^a-z0-9]+/).filter(function(t){ return t.length > 2; });
+    var pos = -1;
+    for (var k = 0; k < terms.length; k++){ pos = txt.toLowerCase().indexOf(terms[k]); if (pos >= 0) break; }
+    if (pos < 0) pos = 0;
+    var start = Math.max(0, pos - 60);
+    return (start ? '\u2026' : '') + txt.slice(start, start + 170) + '\u2026';
+  }
+
+  function goToPage(i){
+    try { current = i; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    catch(e){ console.warn('jump failed', e); }
+  }
+
+  function callLlm(q, context){
+    return fetch(cfg.endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (cfg.key || '') },
+      body: JSON.stringify({
+        model: cfg.model,
+        messages: [
+          { role: 'system', content: 'You are the assistant inside a spiritual book reader. Answer concisely. When book excerpts are provided, ground the answer in them and cite the page labels. If the question needs current external facts, say so and suggest an external search.' },
+          { role: 'user', content: context ? 'Book excerpts:\n' + context + '\n\nQuestion: ' + q : q }
+        ],
+        temperature: 0.4
+      })
+    }).then(function(res){
+      if (!res.ok) return res.text().then(function(t){ throw new Error('LLM error ' + res.status + ': ' + t.slice(0,180)); });
+      return res.json();
+    }).then(function(data){
+      var c = data.choices && data.choices[0] && data.choices[0].message;
+      return (c && c.content || '(empty response)').trim();
+    });
+  }
+
+  function handleSend(){
+    var q = input.value.trim();
+    if (!q || busy) return;
+    input.value = '';
+    addMsg('user', esc(q));
+    busy = true; sendBtn.disabled = true;
+    var thinking = document.createElement('div');
+    thinking.className = 'sl-thinking'; thinking.textContent = 'Thinking\u2026';
+    body.appendChild(thinking); scrollBody();
+
+    var hits = searchBook(q);
+    var finish = function(){ busy = false; sendBtn.disabled = false; thinking.remove(); };
+
+    function renderRefs(){
+      if (!hits.length) return '';
+      var h = '';
+      hits.forEach(function(hit, n){
+        h += '<button class="sl-ref" data-page="' + hit.i + '" type="button"><b>' + esc(PAGES[hit.i].label) +
+             ' \u00b7 page ' + (hit.i + 1) + '</b><span>' + esc(snippet(hit.i, q)) + '</span>' +
+             '<span class="go">Go to page \u2192</span></button>';
+      });
+      return h;
+    }
+
+    var done = function(html){ finish(); var m = addMsg('bot', html);
+      m.querySelectorAll('.sl-ref').forEach(function(b){
+        b.addEventListener('click', function(){ goToPage(parseInt(b.getAttribute('data-page'), 10)); });
+      });
+    };
+
+    if (cfg.key){
+      var ctx = hits.slice(0,3).map(function(hit){
+        return '[' + PAGES[hit.i].label + ', page ' + (hit.i + 1) + '] ' + pageText(PAGES[hit.i]).replace(/\s+/g,' ').slice(0, 900);
+      }).join('\n');
+      callLlm(q, ctx).then(function(ans){ done(esc(ans) + renderRefs()); })
+      .catch(function(err){ done(esc(String(err.message || err)) + renderRefs()); });
+    } else if (hits.length){
+      done('I found ' + hits.length + ' relevant page' + (hits.length > 1 ? 's' : '') + ' in this book. Tap one to jump there, or add an LLM API key in \u2699 Settings for a synthesized answer.' + renderRefs());
+    } else {
+      var url = 'https://duckduckgo.com/?q=' + encodeURIComponent(q);
+      done('Nothing in this book matched. <a href="' + url + '" target="_blank" rel="noopener">Search the web for \u201c' + esc(q) + '\u201d on DuckDuckGo \u2197</a> \u2014 or add an LLM key in \u2699 Settings and I can answer directly.');
+    }
+  }
+
+  fab.addEventListener('click', function(){ panel.classList.toggle('show'); });
+  panel.querySelector('#sl-chat-x').addEventListener('click', function(){ panel.classList.remove('show'); });
+  panel.querySelector('#sl-chat-clear').addEventListener('click', function(){ body.innerHTML = ''; addMsg('bot', 'Chat cleared. Ask me anything.'); });
+  panel.querySelector('#sl-chat-gear').addEventListener('click', function(){
+    var st = panel.querySelector('#sl-chat-settings');
+    st.classList.toggle('show');
+    panel.querySelector('#sl-cfg-endpoint').value = cfg.endpoint || '';
+    panel.querySelector('#sl-cfg-key').value = cfg.key || '';
+    panel.querySelector('#sl-cfg-model').value = cfg.model || '';
+  });
+  panel.querySelector('#sl-cfg-save').addEventListener('click', function(){
+    cfg = {
+      endpoint: panel.querySelector('#sl-cfg-endpoint').value.trim(),
+      key: panel.querySelector('#sl-cfg-key').value.trim(),
+      model: panel.querySelector('#sl-cfg-model').value.trim()
+    };
+    localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
+    panel.querySelector('#sl-cfg-status').textContent = 'Saved.';
+  });
+  panel.querySelector('#sl-cfg-test').addEventListener('click', function(){
+    var status = panel.querySelector('#sl-cfg-status');
+    status.textContent = 'Testing\u2026';
+    cfg = {
+      endpoint: panel.querySelector('#sl-cfg-endpoint').value.trim(),
+      key: panel.querySelector('#sl-cfg-key').value.trim(),
+      model: panel.querySelector('#sl-cfg-model').value.trim()
+    };
+    fetch(cfg.endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (cfg.key || '') },
+      body: JSON.stringify({ model: cfg.model, messages: [{ role: 'user', content: 'Say OK' }], max_tokens: 5 })
+    }).then(function(res){ status.textContent = res.ok ? 'Connected.' : 'Failed: HTTP ' + res.status; })
+    .catch(function(err){ status.textContent = 'Failed: ' + err.message; });
+  });
+  sendBtn.addEventListener('click', handleSend);
+  input.addEventListener('keydown', function(e){ if (e.key === 'Enter') handleSend(); });
+})();
+</script>
+<style id="sl-sel-css">
+#sl-sel-tip{position:fixed;z-index:99999;display:none;align-items:center;gap:2px;padding:5px;background:#2E2A24;border-radius:12px;box-shadow:0 10px 28px rgba(0,0,0,.35);font:13px/1.2 system-ui,-apple-system,sans-serif}
+#sl-sel-tip.show{display:flex}
+#sl-sel-tip button{display:flex;align-items:center;gap:6px;border:none;background:transparent;color:#F7F1E3;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:12.5px;white-space:nowrap}
+#sl-sel-tip button:hover{background:#4A4234}
+#sl-sel-tip .sl-sep{width:1px;height:18px;background:#55493A;margin:0 2px}
+#sl-sel-toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(10px);background:#2E2A24;color:#F7F1E3;padding:10px 18px;border-radius:999px;font:13px system-ui,-apple-system,sans-serif;z-index:99999;opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease;box-shadow:0 8px 22px rgba(0,0,0,.3);max-width:90vw;text-align:center}
+#sl-sel-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+<script>
+(function(){
+  if (window.__slSelTools) return; window.__slSelTools = true;
+
+  /* Compatibility shim: topic-based readers (e.g. Ponder on This) expose
+     `topics` + `goTo(id)` instead of `PAGES` + `render()`. Build the PAGES
+     interface so the embedded assistant's search and page jumps work there too. */
+  try {
+    if (typeof PAGES === 'undefined' && typeof topics !== 'undefined' && Array.isArray(topics)) {
+      window.PAGES = topics.map(function(t){
+        return {
+          label: 'Topic ' + t.id + ' \u2014 ' + t.title,
+          html: '<div>' + (t.matter || []).map(function(m){ return '<p>' + m.text + '</p>'; }).join('') + '</div>'
+        };
+      });
+      window.render = function(){
+        try { if (typeof goTo === 'function') goTo(topics[window.current || 0].id); } catch(e){}
+      };
+    }
+  } catch(e){}
+
+  var NOTES_KEY = 'sl_my_notes';
+
+  var tip = document.createElement('div');
+  tip.id = 'sl-sel-tip';
+  tip.setAttribute('role', 'toolbar');
+  tip.setAttribute('aria-label', 'Selection actions');
+  tip.innerHTML =
+    '<button type="button" data-act="ask">\u2728 Ask AI</button>' +
+    '<span class="sl-sep"></span>' +
+    '<button type="button" data-act="note">\uD83D\uDCDD Add to my note</button>';
+  document.body.appendChild(tip);
+
+  var toast = document.createElement('div');
+  toast.id = 'sl-sel-toast';
+  document.body.appendChild(toast);
+  var toastTimer = null;
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2400);
+  }
+
+  var selText = '';
+
+  function hideTip(){ tip.classList.remove('show'); }
+
+  function insideUi(node){
+    var el = node && (node.nodeType === 1 ? node : node.parentElement);
+    while (el) {
+      if (el.id === 'sl-chat-panel' || el.id === 'sl-sel-tip' ||
+          el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') return true;
+      el = el.parentElement;
+    }
+    return false;
+  }
+
+  function showTip(){
+    var sel = window.getSelection();
+    var text = sel && !sel.isCollapsed ? sel.toString().replace(/\s+/g, ' ').trim() : '';
+    if (text.length < 3 || insideUi(sel.anchorNode)) { hideTip(); return; }
+    var rect;
+    try { rect = sel.getRangeAt(0).getBoundingClientRect(); } catch(e){ hideTip(); return; }
+    if (!rect || (rect.width === 0 && rect.height === 0)) { hideTip(); return; }
+    selText = text;
+    tip.classList.add('show');
+    var w = tip.offsetWidth, h = tip.offsetHeight;
+    var x = rect.left + rect.width / 2 - w / 2;
+    var y = rect.top - h - 8;
+    if (y < 6) y = Math.min(window.innerHeight - h - 6, rect.bottom + 8);
+    x = Math.max(6, Math.min(window.innerWidth - w - 6, x));
+    tip.style.left = x + 'px';
+    tip.style.top = y + 'px';
+  }
+
+  document.addEventListener('mouseup', function(){ setTimeout(showTip, 10); });
+  document.addEventListener('touchend', function(){ setTimeout(showTip, 350); });
+  document.addEventListener('mousedown', function(e){ if (!tip.contains(e.target)) hideTip(); });
+  document.addEventListener('scroll', hideTip, true);
+  window.addEventListener('resize', hideTip);
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') hideTip(); });
+
+  /* Keep the text selection alive when the user taps a tooltip button */
+  tip.addEventListener('mousedown', function(e){ e.preventDefault(); });
+  tip.addEventListener('touchend', function(e){ e.preventDefault(); }, { passive: false });
+
+  function askAi(text){
+    var panel = document.getElementById('sl-chat-panel');
+    var input = document.getElementById('sl-chat-input');
+    var send = document.getElementById('sl-chat-send');
+    if (!panel || !input || !send) return;
+    panel.classList.add('show');
+    var trimmed = text.length > 600 ? text.slice(0, 600) + '\u2026' : text;
+    input.value = 'Explain this passage: \u201C' + trimmed + '\u201D';
+    send.click();
+    input.focus();
+  }
+
+  function currentLocation(){
+    try {
+      if (typeof PAGES !== 'undefined' && typeof current !== 'undefined' && PAGES[current]) {
+        return PAGES[current].label || '';
+      }
+    } catch(e){}
+    try {
+      if (typeof topics !== 'undefined' && typeof currentId !== 'undefined') {
+        var t = topics.find(function(x){ return x.id === currentId; });
+        if (t) return 'Topic ' + t.id + ' \u2014 ' + t.title;
+      }
+    } catch(e){}
+    return '';
+  }
+
+  function addNote(text){
+    var notes = [];
+    try { notes = JSON.parse(localStorage.getItem(NOTES_KEY) || '[]'); } catch(e){}
+    if (!Array.isArray(notes)) notes = [];
+    notes.unshift({
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+      book: document.title,
+      page: currentLocation(),
+      text: text,
+      url: location.pathname.split('/').pop(),
+      ts: Date.now()
+    });
+    try { localStorage.setItem(NOTES_KEY, JSON.stringify(notes.slice(0, 500))); } catch(e){}
+    showToast('Saved to My Notes \u2014 view it on the library home page');
+  }
+
+  tip.addEventListener('click', function(e){
+    var btn = e.target && e.target.closest ? e.target.closest('button[data-act]') : null;
+    if (!btn) return;
+    var text = selText;
+    hideTip();
+    if (btn.getAttribute('data-act') === 'ask') askAi(text);
+    else addNote(text);
+  });
+})();
+</script>
+
+</body>
+</html>

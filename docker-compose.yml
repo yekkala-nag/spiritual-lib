@@ -1,0 +1,9 @@
+services:
+  spiritual-library:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spiritual-library
+    ports:
+      - "3000:80"
+    restart: unless-stopped

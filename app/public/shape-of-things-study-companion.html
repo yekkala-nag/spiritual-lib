@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Shape of Things to Come — Topic Consolidation</title>
+<style>
+/* ============ Design tokens ============
+   Palette: parchment cream #F7F1E3, ink #2E2A24, gilt gold #B8963E,
+            deep violet accent (devotion) #6B5691, rose accent (affection) #C1567B,
+            soft border #E4D9BE
+   Type: display "Cormorant Garamond" (Victorian book serif), body "EB Garamond",
+         utility/caption "Cormorant" small caps
+   Layout: single centered "book leaf" card, aurora/aura corner glow, page-turn transitions
+   Signature: an animated soft-glowing aura halo behind the folio number, echoing the
+   book's own theme of radiating thought-vibrations.
+*/
+:root{
+  --parchment:#F7F1E3;
+  --parchment-2:#EFE6CE;
+  --ink:#2E2A24;
+  --ink-soft:#5A5346;
+  --gold:#B8963E;
+  --gold-soft:#D8C186;
+  --violet:#6B5691;
+  --rose:#C1567B;
+  --border:#E1D3AA;
+  --card:#FFFDF6;
+  --shadow: 0 20px 60px -20px rgba(60,45,10,0.35), 0 2px 10px rgba(60,45,10,0.08);
+}
+*{box-sizing:border-box;}
+html,body{
+  margin:0; padding:0;
+  background:
+    radial-gradient(ellipse 900px 500px at 15% -10%, #f3e8c9 0%, transparent 60%),
+    radial-gradient(ellipse 900px 600px at 110% 110%, #ecdcc0 0%, transparent 55%),
+    var(--parchment);
+  color:var(--ink);
+  font-family: "EB Garamond", "Cormorant Garamond", Georgia, serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+@font-face{
+  font-family:'Cinzel-fallback'; src:local('Georgia');
+}
+.app{
+  max-width:980px;
+  margin:0 auto;
+  padding:28px 20px 60px;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ---------- Header ---------- */
+header.top{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:16px;
+  margin-bottom:18px;
+  flex-wrap:wrap;
+}
+.brand{
+  display:flex; align-items:center; gap:12px;
+}
+.brand .glyph{
+  width:40px;height:40px;border-radius:50%;
+  background: radial-gradient(circle at 35% 30%, #fff6df 0%, var(--gold-soft) 45%, var(--gold) 100%);
+  box-shadow: 0 0 18px 2px rgba(184,150,62,0.45), inset 0 0 6px rgba(255,255,255,0.6);
+  flex-shrink:0;
+}
+.brand h1{
+  font-family:"Cormorant Garamond", Georgia, serif;
+  font-weight:600;
+  font-size:1.35rem;
+  letter-spacing:0.04em;
+  margin:0;
+  color:var(--ink);
+}
+.brand p{
+  margin:0; font-size:0.8rem; letter-spacing:0.14em; text-transform:uppercase;
+  color:var(--ink-soft); font-family: Georgia, serif;
+}
+.progress-wrap{
+  display:flex; align-items:center; gap:10px;
+  font-size:0.82rem; color:var(--ink-soft); letter-spacing:0.04em;
+}
+.progress-bar{
+  width:150px; height:5px; border-radius:3px; background:var(--parchment-2);
+  overflow:hidden; box-shadow:inset 0 1px 2px rgba(0,0,0,0.08);
+}
+.progress-fill{
+  height:100%; border-radius:3px;
+  background:linear-gradient(90deg, var(--gold-soft), var(--gold));
+  transition:width .5s cubic-bezier(.4,0,.2,1);
+}
+
+/* ---------- Table of contents rail ---------- */
+.toc-toggle{
+  border:1px solid var(--border); background:var(--card); color:var(--ink);
+  border-radius:8px; padding:7px 14px; font-family:inherit; font-size:0.85rem;
+  letter-spacing:0.05em; cursor:pointer; box-shadow:var(--shadow);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.toc-toggle:hover{ transform: translateY(-1px); }
+.toc-panel{
+  position:fixed; top:0; right:-360px; width:340px; height:100%;
+  background:var(--card); border-left:1px solid var(--border);
+  box-shadow:-20px 0 50px rgba(60,45,10,0.18);
+  z-index:50; transition:right .35s cubic-bezier(.4,0,.2,1);
+  overflow-y:auto; padding:24px 18px 40px;
+}
+.toc-panel.open{ right:0; }
+.toc-panel h2{
+  font-family:"Cormorant Garamond",serif; font-size:1.1rem; letter-spacing:0.08em;
+  text-transform:uppercase; color:var(--gold); margin:0 0 14px;
+  border-bottom:1px solid var(--border); padding-bottom:10px;
+}
+.toc-close{
+  position:absolute; top:16px; right:16px; background:none; border:none;
+  font-size:1.3rem; color:var(--ink-soft); cursor:pointer; line-height:1;
+}
+.toc-section{
+  margin-bottom:6px;
+}
+.toc-section-title{
+  font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;
+  color:var(--violet); margin:16px 0 6px; font-weight:600;
+}
+.toc-item{
+  display:block; width:100%; text-align:left; background:none; border:none;
+  padding:6px 8px; font-family:"EB Garamond",serif; font-size:0.95rem;
+  color:var(--ink); cursor:pointer; border-radius:6px;
+  transition: background .15s ease;
+}
+.toc-item:hover{ background:var(--parchment-2); }
+.toc-item.active{
+  background: linear-gradient(90deg, rgba(184,150,62,0.16), transparent);
+  color:var(--gold); font-weight:600;
+}
+.scrim{
+  position:fixed; inset:0; background:rgba(40,30,10,0.25); z-index:40;
+  opacity:0; pointer-events:none; transition:opacity .3s ease;
+}
+.scrim.show{ opacity:1; pointer-events:auto; }
+
+/* ---------- The book leaf / page card ---------- */
+.stage{
+  flex:1;
+  display:flex; align-items:flex-start; justify-content:center;
+  position:relative;
+}
+.leaf{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  box-shadow:var(--shadow);
+  width:100%;
+  padding:46px 54px 40px;
+  position:relative;
+  min-height:420px;
+  animation: fadeIn .5s ease;
+}
+.leaf::before{
+  content:"";
+  position:absolute; inset:10px;
+  border:1px solid rgba(184,150,62,0.28);
+  border-radius:8px;
+  pointer-events:none;
+}
+@keyframes fadeIn{
+  from{opacity:0; transform:translateY(10px);}
+  to{opacity:1; transform:translateY(0);}
+}
+@media (max-width:700px){
+  .leaf{ padding:30px 20px 28px; }
+}
+
+.eyebrow{
+  font-size:0.72rem; letter-spacing:0.18em; text-transform:uppercase;
+  color:var(--violet); margin:0 0 6px; font-weight:600;
+}
+.leaf h2.page-title{
+  font-family:"Cormorant Garamond", Georgia, serif;
+  font-size:2rem; font-weight:600; margin:0 0 22px; color:var(--ink);
+  line-height:1.15; border-bottom:2px solid var(--gold-soft); padding-bottom:14px;
+}
+.leaf .content p{
+  font-size:1.09rem; line-height:1.75; margin:0 0 1.1em; color:var(--ink);
+  text-align:justify; hyphens:auto;
+}
+.leaf .content p.footnote{
+  font-size:0.92rem; color:var(--ink-soft); font-style:italic;
+  border-left:2px solid var(--gold-soft); padding-left:14px;
+}
+.leaf .content p.signature{
+  text-align:right; font-style:italic; letter-spacing:0.05em; color:var(--ink-soft);
+}
+.leaf .content p.printer-line{
+  text-align:center; font-size:0.85rem; color:var(--ink-soft); letter-spacing:0.06em;
+}
+.leaf .content h3.subhead{
+  font-family:"Cormorant Garamond",serif; font-size:1.15rem; color:var(--violet);
+  margin:22px 0 10px; letter-spacing:0.03em;
+}
+.leaf .content ol.principles{ padding-left:1.4em; }
+.leaf .content ol.principles li{ margin-bottom:6px; font-size:1.05rem; }
+
+/* Title page flourishes */
+.book-title{
+  font-family:"Cormorant Garamond",serif; text-align:center; font-size:2.6rem;
+  letter-spacing:0.12em; margin:18px 0 6px; color:var(--ink);
+}
+.book-authors{
+  text-align:center; font-size:1.05rem; letter-spacing:0.1em; font-weight:400;
+  color:var(--violet); margin:0 0 26px;
+}
+.pub-line{ text-align:center; font-size:0.78rem; color:var(--ink-soft); letter-spacing:0.04em; }
+.pub-house{ text-align:center; font-size:0.95rem; color:var(--ink-soft); margin:8px 0 26px; line-height:1.6; }
+.print-table{ margin:0 auto 26px; font-size:0.9rem; color:var(--ink-soft); border-collapse:collapse; }
+.print-table td{ padding:2px 10px; }
+.printer-line{ text-align:center; font-size:0.85rem; color:var(--ink-soft); margin-top:20px; line-height:1.6; }
+
+/* Colour key table */
+.key-table{ overflow-x:auto; margin:18px 0; }
+.key-table table{ border-collapse:collapse; width:100%; font-size:0.88rem; }
+.key-table th, .key-table td{ border:1px solid var(--border); padding:8px 10px; text-align:left; vertical-align:top; }
+.key-table th{ background:var(--parchment-2); color:var(--gold); width:28px; text-align:center; }
+.caption-label{ text-align:center; letter-spacing:0.1em; text-transform:uppercase; font-size:0.85rem; color:var(--ink-soft); }
+
+/* TOC / illustrations tables */
+.toc-table, .toc-table.small{ width:100%; border-collapse:collapse; font-size:0.98rem; }
+.toc-table td{ padding:5px 6px; border-bottom:1px dotted var(--border); }
+.toc-table td:last-child{ text-align:right; color:var(--ink-soft); width:80px; }
+.toc-table tr.indent td:first-child{ padding-left:22px; }
+.toc-table tr.indent2 td:first-child{ padding-left:44px; font-style:italic; }
+.toc-table.small td{ font-size:0.88rem; }
+.illus-note{ margin-bottom:14px; }
+.illus-note p{ font-size:0.85rem; color:var(--ink-soft); font-style:italic; }
+
+/* ---------- Images / figure gallery ---------- */
+.figures{
+  display:flex; flex-wrap:wrap; gap:22px; margin:26px 0 10px; justify-content:center;
+}
+.figure-card{
+  background:var(--parchment-2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:12px;
+  max-width:360px;
+  flex:1 1 260px;
+  text-align:center;
+  box-shadow: 0 8px 22px -12px rgba(60,45,10,0.25);
+}
+.figure-card img{
+  max-width:100%; height:auto; border-radius:5px;
+  border:1px solid rgba(0,0,0,0.08);
+  background:#111;
+  cursor:zoom-in;
+  transition: transform .25s ease;
+}
+.figure-card img:hover{ transform:scale(1.015); }
+.figure-cap{
+  margin-top:9px; font-size:0.85rem; color:var(--ink-soft);
+  font-style:italic; letter-spacing:0.02em;
+}
+
+/* Lightbox */
+.lightbox{
+  position:fixed; inset:0; background:rgba(20,15,5,0.82);
+  display:none; align-items:center; justify-content:center; z-index:100;
+  padding:30px;
+}
+.lightbox.open{ display:flex; }
+.lightbox img{ max-width:100%; max-height:85vh; border-radius:6px; box-shadow:0 20px 60px rgba(0,0,0,0.5); }
+.lightbox-close{
+  position:absolute; top:22px; right:28px; background:none; border:none;
+  color:#f6ecd2; font-size:2rem; cursor:pointer; line-height:1;
+}
+
+/* ---------- Footer nav ---------- */
+nav.pager{
+  position:sticky; bottom:0;
+  margin-top:26px;
+  display:flex; align-items:center; justify-content:space-between; gap:14px;
+  background:linear-gradient(180deg, rgba(247,241,227,0) 0%, var(--parchment) 30%);
+  padding-top:18px;
+}
+.pager-btn{
+  display:flex; align-items:center; gap:8px;
+  background:var(--card); border:1px solid var(--border); color:var(--ink);
+  padding:11px 20px; border-radius:10px; font-family:inherit; font-size:0.95rem;
+  cursor:pointer; box-shadow:var(--shadow); letter-spacing:0.02em;
+  transition: transform .15s ease, opacity .15s ease;
+}
+.pager-btn:hover:not(:disabled){ transform:translateY(-2px); }
+.pager-btn:disabled{ opacity:0.35; cursor:default; }
+.pager-btn.next{ background:linear-gradient(135deg, var(--gold-soft), var(--gold)); color:#3a2c08; border:none; }
+.folio{
+  position:relative;
+  font-family:"Cormorant Garamond",serif; font-size:0.95rem; color:var(--ink-soft);
+  text-align:center; letter-spacing:0.05em;
+}
+.folio .halo{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:70px; height:70px; border-radius:50%;
+  background: radial-gradient(circle, rgba(184,150,62,0.30) 0%, transparent 70%);
+  animation: pulse 3.2s ease-in-out infinite;
+  z-index:-1;
+}
+@keyframes pulse{
+  0%,100%{ transform:translate(-50%,-50%) scale(0.9); opacity:0.5; }
+  50%{ transform:translate(-50%,-50%) scale(1.25); opacity:0.9; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .leaf{ animation:none; }
+  .folio .halo{ animation:none; }
+}
+
+/* PDF-exact content classes */
+.leaf .content h3.pdf-heading{
+  font-family:"Cormorant Garamond",serif; font-size:1.2rem; letter-spacing:0.06em;
+  text-transform:uppercase; color:var(--violet); margin:20px 0 10px;
+}
+.leaf .content p.pdf-caption{
+  font-size:0.92rem; letter-spacing:0.05em; text-transform:uppercase;
+  color:var(--gold); text-align:center; font-weight:600; margin:16px 0 10px;
+}
+.leaf .content p.empty-note{
+  text-align:center; color:var(--ink-soft); font-size:1rem; padding:30px 0;
+}
+
+/* section pill on top of card */
+.section-pill{
+  position:absolute; top:-13px; left:50px;
+  background:linear-gradient(135deg, var(--violet), #8875ac);
+  color:#fff; font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase;
+  padding:5px 14px; border-radius:20px; box-shadow:0 6px 14px -6px rgba(107,86,145,0.6);
+}
+@media (max-width:700px){
+  .section-pill{ left:20px; }
+}
+
+/* ---------- Read aloud ---------- */
+.listen-bar{
+  display:none; align-items:center; gap:10px; flex-wrap:wrap;
+  padding:12px 18px; margin-bottom:16px;
+  background:var(--card); border:1px solid var(--border); border-radius:14px;
+  box-shadow:var(--shadow); font-family:Georgia, serif; font-size:0.85rem;
+}
+.listen-bar.open{ display:flex; }
+.listen-bar button{
+  font-family:inherit; font-size:0.85rem; padding:7px 14px; border-radius:999px;
+  border:1px solid var(--gold); background:linear-gradient(180deg,#fffdf6,#f3ead2);
+  color:var(--ink); cursor:pointer; letter-spacing:0.02em;
+}
+.listen-bar button:hover:not(:disabled){ background:var(--gold); color:#fff; }
+.listen-bar button:disabled{ opacity:0.45; cursor:default; }
+.listen-bar select{
+  font-family:inherit; font-size:0.82rem; padding:6px 8px; border-radius:8px;
+  border:1px solid var(--border); background:#fff; color:var(--ink);
+  max-width:230px;
+}
+.listen-bar label{ display:flex; align-items:center; gap:6px; color:var(--ink-soft); }
+.listen-bar .status{ color:var(--ink-soft); font-style:italic; flex-basis:100%; }
+
+.search-bar, .notes-panel { display:none; padding:10px 24px; background:#f8f3e7; border-bottom:1px solid #e3d8c3; align-items:center; gap:10px; flex-wrap:wrap; }
+.search-bar.open, .notes-panel.open { display:flex; }
+.search-bar input { flex:1; min-width:180px; padding:7px 12px; border:1px solid #d8cbb0; border-radius:8px; background:#fffdf7; font-family:inherit; font-size:14px; color:#3a3227; }
+.search-bar input:focus { outline:2px solid #b29a5b; }
+.search-bar .sbtn { padding:7px 12px; border:1px solid #d8cbb0; border-radius:8px; background:#fffdf7; cursor:pointer; font-family:inherit; font-size:13px; color:#3a3227; }
+.search-bar .sbtn:hover { background:#f0e7d3; }
+#search-info { font-size:13px; color:#7a6c50; white-space:nowrap; }
+mark.search-hit { background:#ffe9a8; color:inherit; padding:0 1px; border-radius:2px; }
+.notes-panel { display:none; }
+.notes-panel.open { display:block; }
+#notes-body { max-width:820px; margin:0 auto; font-size:14.5px; line-height:1.65; color:#3a3227; }
+#notes-body h3 { font-size:15px; margin:0 0 8px; color:#5c4a1e; letter-spacing:0.02em; }
+#notes-body h4 { font-size:13px; text-transform:uppercase; letter-spacing:0.08em; color:#8a744a; margin:14px 0 6px; }
+#notes-body p { margin:0 0 10px; }
+#notes-body ul { margin:0; padding-left:20px; }
+#notes-body li { margin-bottom:5px; }
+#notes-body .notes-empty { color:#8a7c62; font-style:italic; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <div class="glyph"></div>
+      <div>
+        <h1>The Shape of Things to Come — Topic Consolidation</h1>
+        <p>H. G. Wells &middot; 1933 &middot; study companion</p>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:14px;">
+      <div class="progress-wrap">
+        <span id="progress-label">Page 1 of 6</span>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:1.8%"></div></div>
+      </div>
+      <button class="toc-toggle" id="listen-toggle" style="margin-right:10px;" title="Read aloud">&#128266; Listen</button><a class="toc-toggle dl-btn" href="shape-of-things-study-companion.pdf" download title="Download this book as PDF" style="text-decoration:none;">&#10515; Download</a>
+      <button class="toc-toggle" id="search-toggle" title="Search this book">&#128269; Search</button>
+      <button class="toc-toggle" id="notes-toggle" title="Chapter summary and key points">&#128221; Notes</button>
+      <button class="toc-toggle" id="toc-toggle">&#9776; Contents</button>
+    </div>
+  </header>
+
+<div class="search-bar" id="search-bar">
+  <input type="text" id="search-input" placeholder="Search this book..." autocomplete="off">
+  <button class="sbtn" id="search-prev">&#8593; Prev</button>
+  <button class="sbtn" id="search-next">Next &#8595;</button>
+  <span id="search-info"></span>
+  <button class="sbtn" id="search-close" title="Close">&#10005;</button>
+</div>
+<div class="notes-panel" id="notes-panel">
+  <div id="notes-body"></div>
+</div>
+
+
+  <div class="listen-bar" id="listen-bar">
+    <button id="listen-play">&#9654; Read aloud</button>
+    <button id="listen-stop" disabled>&#9632; Stop</button>
+    <select id="voice-select" title="Voice"></select>
+    <select id="rate-select" title="Speed">
+      <option value="0.85">0.85&times;</option>
+      <option value="1" selected>1&times;</option>
+      <option value="1.15">1.15&times;</option>
+      <option value="1.3">1.3&times;</option>
+    </select>
+    <label><input type="checkbox" id="listen-auto" checked> Auto-advance pages</label>
+    <span class="status" id="listen-status"></span>
+  </div>
+
+
+  <div class="stage">
+    <div class="leaf" id="leaf">
+      <div class="section-pill" id="section-pill">PDF Page</div>
+      <div class="eyebrow" id="eyebrow"></div>
+      <h2 class="page-title" id="page-title"></h2>
+      <div class="content" id="content"></div>
+      <div class="figures" id="figures"></div>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <button class="pager-btn prev" id="prev-btn">&larr; Previous</button>
+    <div class="folio"><div class="halo"></div><span id="folio-label"></span></div>
+    <button class="pager-btn next" id="next-btn">Next &rarr;</button>
+  </nav>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="toc-panel" id="toc-panel">
+  <button class="toc-close" id="toc-close">&times;</button>
+  <h2>Contents</h2>
+  <div id="toc-list"></div>
+</aside>
+
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightbox-close">&times;</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<script id="pages-data" type="application/json">[{"pdf_page_index": 0, "pdf_page_number": 1, "html": "\n<h3 class=\"pdf-heading\">THE SHAPE OF THINGS TO COME -<\/h3>\n<h3 class=\"pdf-heading\">COMPLETE TOPIC CONSOLIDATION<\/h3>\n<p>by H.G. Wells (1933)<\/p>\n<p>---<\/p>\n<h3 class=\"pdf-heading\">\u0000*\u0000*<\/h3>\n<h3 class=\"pdf-heading\">COMPLETE STRUCTURE OVERVIEW<\/h3>\n<h3 class=\"pdf-heading\">INTRODUCTION: The Dream Book of Dr. Philip Raven<\/h3>\n<p>- Framing Device : Story of Dr. Raven who dreams of a history book from the future - Narrative Structure : Claims to be a \"Short History of the Future\" covering 1930-2106<\/p>\n<p>- Method : Raven transcribes his prophetic dreams about world history - Validation : The manuscript accurately predicts events of the early 1930s<\/p>\n<p>---<\/p>\n<h3 class=\"pdf-heading\">\u0000*\u0000*Ø&lt;ß<\/h3>\n<h3 class=\"pdf-heading\">BOOK ONE: TODAY AND TOMORROW - THE AGE OF<\/h3>\n<h3 class=\"pdf-heading\">FRUSTRATION (1930-1960)<\/h3>\n<h3 class=\"pdf-heading\">1. Historical Analysis &amp; Chronological Framework<\/h3>\n<p>- Phase Change : Humanity transitions from separate histories to unified world history - Mental Readjustment : Destruction of old beliefs, rise of uneasiness and cynicism - New Vision : Emergence of world community consciousness - Chronological Reform : Proposal to abandon Christian Era dating for Modern Era (M.E.)<\/p>\n<h3 class=\"pdf-heading\">2. The World State Concept<\/h3>\n<p>- Pre-War Timidity : Early visionaries lacked courage to advocate world government - Post-War Shift : Great War creates mass awareness of need for world order - Intellectual Movement : Growth of cosmopolitan thinking despite nationalist setbacks - Failure of Leadership : No single leader emerges - becomes widespread social movement<\/p>\n<h3 class=\"pdf-heading\">3. Economic Disproportions of the Old Order<\/h3>\n<p>- Financial Unity : London's global credit system and gold standard - Trade Integration : Reduced barriers, population movements, postal unions - Automatic Progress Myth : Belief that world state would emerge naturally - Technological vs. Social Lag : Mechanical advancement outpaces social institutions<\/p>\n<p>Generated with https://kome.ai<\/p>", "images": [], "label": "The Shape Of Things To Come"}, {"pdf_page_index": 1, "pdf_page_number": 2, "html": "<h3 class=\"pdf-heading\">4. Early Critics: Marx &amp; Henry George<\/h3>\n<p>- Marx's Analysis : - Correct: Economic forces drive history, capitalism's contradictions - Flawed: Oversimplified class conflict, hatred of bourgeoisie, no practical solutions - Henry George : Identified rent exploitation but offered inadequate taxation remedy - Common Failure : Neither provided workable transition plans<\/p>\n<h3 class=\"pdf-heading\">5. Competition &amp; Monetary Breakdown<\/h3>\n<p>- Currency Chaos : No world monetary system, falsified transactions - Competition's End : Natural tendency toward monopoly (Big Business) - Market Manipulation : 2,000+ cases of beneficial innovations suppressed - Gold Standard Failure : Hoarding by Americans/French accelerates collapse<\/p>\n<h3 class=\"pdf-heading\">6. Over-Production &amp; War Connection<\/h3>\n<p>- Employment Crisis : Efficiency gains reduce workforce faster than new jobs created - Militarism as Solution : War provides profit-yielding waste channels - Army Growth : Military uniforms become increasingly common in civilian life<\/p>\n<p>- System Requirement : Need for unproductive spending to maintain profits<\/p>\n<h3 class=\"pdf-heading\">7. The Great War (1914-1918)<\/h3>\n<p>- Catalyst Event : Demonstrates necessity of world government - Technological Horror : New weapons create unprecedented destruction - Economic Disruption : Ends first period of general prosperity - Psychological Impact : Destroys belief in progress through competition<\/p>\n<h3 class=\"pdf-heading\">8. Failed Peace Efforts<\/h3>\n<p>- Ford Peace Ship : Well-intentioned but naive attempt to stop WWI - Armament Industries : Actively work to maintain war tensions - Treaty of Versailles : Creates conditions for future conflicts - League of Nations : Too weak to prevent aggression, lacks enforcement power<\/p>\n<h3 class=\"pdf-heading\">9. Financial Collapse<\/h3>\n<p>- Post-War Economics : Debt burdens, reparations, unstable currencies - Social Morale Breakdown : Loss of confidence in institutions - 1933 Crisis : \"Progress\" officially halts, worldwide depression<\/p>\n<p>---<\/p>\n<h3 class=\"pdf-heading\">\u0000*\u0000*&amp;¡<\/h3>\n<h3 class=\"pdf-heading\">BOOK TWO: THE AGE OF FRUSTRATION (1960-1978)<\/h3>\n<h3 class=\"pdf-heading\">1. Governmental Failure<\/h3>\n<p>- London Conference (1933) : Final collapse of old diplomatic system - Dictatorship Spread : Fascist movements exploit chaos<\/p>\n<p>Generated with https://kome.ai<\/p>", "images": [], "label": "4. Early Critics: Marx & Henry George"}, {"pdf_page_index": 2, "pdf_page_number": 3, "html": "<p>- Democratic Breakdown : Traditional governments prove inadequate<\/p>\n<h3 class=\"pdf-heading\">2. Educational Revolution<\/h3>\n<p>- Old System Collapse : Classical education becomes irrelevant - New Learning Needs : Technical, scientific, world-oriented education - Knowledge Gap : Population unprepared for modern challenges<\/p>\n<h3 class=\"pdf-heading\">3. Social Disintegration<\/h3>\n<p>- Gangsterism Rise : Organized crime fills power vacuums - Militant Groups : Political extremism becomes mainstream - Social Crystallization : New rigid class structures emerge<\/p>\n<h3 class=\"pdf-heading\">4. Warfare Evolution<\/h3>\n<p>- Technological Advance : Air power, chemical weapons, mass destruction - Total War Concept : Civilian populations become targets - War as Policy : Nations accept perpetual conflict as normal<\/p>\n<h3 class=\"pdf-heading\">5. Asian Upheaval<\/h3>\n<p>- Japan's Reversion : Returns to aggressive expansion - Western Decline : European powers lose Asian control - Colonial Collapse : Imperial systems disintegrate<\/p>\n<h3 class=\"pdf-heading\">6. The Final War Cyclone (1940-1950)<\/h3>\n<p>- Decade of Devastation : Continuous worldwide conflict - Civilian Catastrophe : Massive population losses - Infrastructure Destruction : Cities, transport, industry ruined<\/p>\n<h3 class=\"pdf-heading\">7. Biological Warfare<\/h3>\n<p>- The Raid of the Germs : Deliberate disease outbreaks - Pandemic Spread : Global health crisis - Population Decimation : Billions die from manufactured diseases<\/p>\n<h3 class=\"pdf-heading\">8. Continental Breakdown<\/h3>\n<p>- Europe 1960 : Continent reduced to medieval conditions - America Liquidation : United States dissolves into chaos - Worldwide Collapse : Global civilization effectively ends<\/p>\n<p>---<\/p>\n<h3 class=\"pdf-heading\">\u0000*\u0000*Ø&lt;ß\u0005<\/h3>\n<h3 class=\"pdf-heading\">BOOK THREE: THE WORLD RENASCENCE<\/h3>\n<h3 class=\"pdf-heading\">(1978-2059)<\/h3>\n<h3 class=\"pdf-heading\">1. Modern State Planning<\/h3>\n<p>Generated with https://kome.ai<\/p>", "images": [], "label": "2. Educational Revolution"}, {"pdf_page_index": 3, "pdf_page_number": 4, "html": "<p>- Basra Conference (1965) : First serious world government planning - Technical Elite : Scientists/engineers take leadership role - Rational Design : Systematic planning replaces chaotic competition<\/p>\n<h3 class=\"pdf-heading\">2. Revolutionary Model<\/h3>\n<p>- Thought &amp; Action : Intellectual clarity drives practical change - Technical Revolution : Science becomes organizing principle - New Prophets : Visionaries advocate systematic world reconstruction<\/p>\n<h3 class=\"pdf-heading\">3. Resistance &amp; Opposition<\/h3>\n<p>- Sea/Air Control : Modern State gains transportation dominance - Intellectual Antagonism : Philosophical opposition to world state - Second Basra (1978) : Strengthened world government foundation<\/p>\n<h3 class=\"pdf-heading\">4. Government Struggle<\/h3>\n<p>- Three Courses : Various paths to world unification considered - Life-Time Plan : Long-term systematic approach adopted<\/p>\n<p>- Real Struggle : Final conflict between old/new orders begins<\/p>\n<p>---<\/p>\n<h3 class=\"pdf-heading\">\u0000*\u0000*&amp;”þ\u000f<\/h3>\n<h3 class=\"pdf-heading\">BOOK FOUR: THE MODERN STATE MILITANT<\/h3>\n<h3 class=\"pdf-heading\">(2059-2105)<\/h3>\n<h3 class=\"pdf-heading\">1. Military Phase<\/h3>\n<p>- Futile Insurrection : Last resistance movements crushed - Schooling of Mankind : Educational reform becomes compulsory - Second Council : Authoritarian phase of world government<\/p>\n<h3 class=\"pdf-heading\">2. Cultural Revolution<\/h3>\n<p>- Æsthetic Frustration : Artist notebooks show cultural suppression - Declaration of Mégève : Final world constitution established - Permanent Peace : War officially abolished globally<\/p>\n<p>---<\/p>\n<h3 class=\"pdf-heading\">\u0000*\u0000*Ø&lt;ß<\/h3>\n<h3 class=\"pdf-heading\">BOOK FIVE: THE MODERN STATE IN CONTROL OF<\/h3>\n<h3 class=\"pdf-heading\">LIFE (2105+)<\/h3>\n<h3 class=\"pdf-heading\">1. Planetary Reconstruction<\/h3>\n<p>- Monday Morning : New world begins operation - Keying Up Planet : Global infrastructure rebuilding<\/p>\n<p>Generated with https://kome.ai<\/p>", "images": [], "label": "2. Revolutionary Model"}, {"pdf_page_index": 4, "pdf_page_number": 5, "html": "<p>- Geogonic Planning : Earth itself becomes engineered system<\/p>\n<h3 class=\"pdf-heading\">2. Social Transformation<\/h3>\n<p>- Behavior Control : Scientific management of human behavior - Organization of Plenty : Abundance for all through planning - Human Development : Average person becomes wiser, healthier<\/p>\n<h3 class=\"pdf-heading\">3. Cultural Evolution<\/h3>\n<p>- Language Growth : New world language develops - Mental Expansion : Human intelligence systematically enhanced - Interest Sublimation : Violence/crime redirected to constructive ends<\/p>\n<h3 class=\"pdf-heading\">4. Historical Conclusion<\/h3>\n<p>- New Life Phase : Humanity enters post-historical period - End of Struggle : Competition replaced by cooperation - Final Achievement : Rational world order permanently established<\/p>\n<p>---<\/p>\n<h3 class=\"pdf-heading\">\u0000*\u0000*Ø=Ý.<\/h3>\n<h3 class=\"pdf-heading\">KEY PREDICTIONS &amp; THEMES<\/h3>\n<h3 class=\"pdf-heading\">Accurate Forecasts:<\/h3>\n<p>- World War II and devastating global conflict - Economic collapse and Great Depression - Rise of dictatorships and fascist movements - Technological warfare including aerial bombing - Global pandemics and biological weapons - Collapse of colonial empires - Development of world government movements<\/p>\n<h3 class=\"pdf-heading\">Failed Predictions:<\/h3>\n<p>- Timeline too compressed (events happened faster/slower) - Underestimated post-WWII recovery - Overestimated speed of world government adoption - Nuclear weapons not anticipated - Cold War bipolar structure missed<\/p>\n<h3 class=\"pdf-heading\">Core Arguments:<\/h3>\n<p>1. Capitalism Self-Destructs : Competition naturally leads to monopoly and collapse 2. Nationalism Obsolete : Sovereign states incompatible with modern technology 3. Science Must Rule : Technical experts should manage human affairs 4. Planning Essential : Uncontrolled development leads to catastrophe 5. Education Critical : Population must be scientifically educated<\/p>\n<p>Generated with https://kome.ai<\/p>", "images": [], "label": "2. Social Transformation"}, {"pdf_page_index": 5, "pdf_page_number": 6, "html": "<p>6. World Government Inevitable : Only question is how much suffering first<\/p>\n<h3 class=\"pdf-heading\">Philosophical Themes:<\/h3>\n<p>- Rationalism vs. Tradition : Reason must replace custom - Unity vs. Division : Human survival requires world cooperation - Progress Through Planning : Deliberate advancement vs. random evolution - Individual vs. Collective : Personal freedom subordinate to species survival - Technology as Liberator : Machines enable human perfection<\/p>\n<p>---<\/p>\n<h3 class=\"pdf-heading\">\u0000*\u0000*Ê<\/h3>\n<h3 class=\"pdf-heading\">DOCUMENT SPECIFICATIONS<\/h3>\n<p>Complete Work Statistics: - Total Length : ~150,000+ words - Time Span Covered : 1930-2106 (176 years)<\/p>\n<p>- Books : 5 major sections - Chapters : 50+ individual chapters - Pages : 326 (original publication) - Genre : Future history, prophetic fiction, social criticism<\/p>\n<p>Structure Hierarchy: ``` Complete Work % %\u0000%\u0000 Introduction (Framing Story) % %\u0000%\u0000 Book I: Age of Frustration Dawns (1930-1960) % \u0002 % %\u0000%\u0000 13 chapters on collapse origins % %\u0000%\u0000 Book II: Age of Frustration (1960-1978) % \u0002 % %\u0000%\u0000 12 chapters on global chaos % %\u0000%\u0000 Book III: World Renascence (1978-2059) % \u0002 % %\u0000%\u0000 11 chapters on reconstruction % %\u0000%\u0000 Book IV: Modern State Militant (2059-2105) % \u0002 % %\u0000%\u0000 7 chapters on final consolidation % \u0014%\u0000%\u0000 Book V: Modern State Control (2105+) % \u0014%\u0000%\u0000 9 chapters on perfected world order ```<\/p>\n<p>This consolidation provides the complete intellectual framework of Wells' vision - from the crisis of modern civilization through devastating wars and social collapse to the eventual triumph of rational world government. The work remains remarkably prescient in identifying the structural problems of uncontrolled capitalism and nationalism, even if specific timelines and solutions proved optimistic.<\/p>\n<p>Generated with https://kome.ai<\/p>", "images": [], "label": "Philosophical Themes:"}]</script>
+<script id="images-data" type="application/json">{}</script>
+<script id="notes-data" type="application/json">{"Complete Structure Overview": {"s": "An overview of the whole book’s structure — the five books of the future history and their periods.", "p": ["The work is framed as Dr. Raven’s dream book", "Five books carry the history from 1930 past 2105", "Each book marks a phase of the world-state’s coming"]}, "Book Two: The Age of Frustration (1960-1978)": {"s": "Book Two — the age of frustration at its depth: governmental failure, social disintegration, the final war cyclone, and biological warfare.", "p": ["Governments fail; education revolutionizes first", "The final wars devastate the old civilization", "Out of breakdown comes the will to world order"]}, "Book Three: The World Renascence (1978-2059)": {"s": "Book Three — the world renascence: modern state planning, the revolutionary model, and the struggle to found the new order.", "p": ["Planning replaces drift", "A competent minority leads the reconstruction", "Resistance is overcome by persistence and results"]}, "Book Four: The Modern State Militant (2059-2105)": {"s": "Book Four — the modern state militant: the phase of enforcement and the cultural revolution that secures the world-state.", "p": ["The world-state passes through a militant phase", "Enforcement gives way to cultural consolidation"]}, "Key Predictions & Themes": {"s": "A review of the book’s key predictions and themes — what Wells foresaw rightly, what he missed, and his core arguments.", "p": ["Some forecasts proved startlingly accurate", "Others missed the mark", "The core argument: world order or chaos"]}, "Document Specifications": {"s": "Notes on the consolidation document itself.", "p": ["Describes the scope and method of the study companion"]}}</script>
+<script id="chapter-map" type="application/json">["Complete Structure Overview", "Book Two: The Age of Frustration (1960-1978)", "Book Three: The World Renascence (1978-2059)", "Book Four: The Modern State Militant (2059-2105)", "Key Predictions & Themes", "Document Specifications"]</script>
+<script>
+const PAGES = JSON.parse(document.getElementById('pages-data').textContent);
+const IMAGES = JSON.parse(document.getElementById('images-data').textContent);
+
+let current = 0;
+
+function imgSrc(file){
+  return 'data:image/jpeg;base64,' + IMAGES[file];
+}
+
+function render(){
+  const p = PAGES[current];
+  document.getElementById('section-pill').textContent = 'Page ' + p.pdf_page_number;
+  document.getElementById('eyebrow').textContent = 'Source: page ' + p.pdf_page_number + ' of ' + PAGES.length;
+  document.getElementById('page-title').textContent = p.label;
+  document.getElementById('content').innerHTML = p.html;
+
+  const figWrap = document.getElementById('figures');
+  figWrap.innerHTML = '';
+  p.images.forEach(im => {
+    const card = document.createElement('div');
+    card.className = 'figure-card';
+    const img = document.createElement('img');
+    img.src = imgSrc(im.file);
+    img.alt = im.caption;
+    img.addEventListener('click', () => openLightbox(img.src, im.caption));
+    const cap = document.createElement('div');
+    cap.className = 'figure-cap';
+    cap.textContent = im.caption;
+    card.appendChild(img);
+    card.appendChild(cap);
+    figWrap.appendChild(card);
+  });
+
+  document.getElementById('folio-label').textContent = 'Page ' + p.pdf_page_number + ' / ' + PAGES.length;
+  document.getElementById('progress-label').textContent = 'Page ' + p.pdf_page_number + ' of ' + PAGES.length;
+  document.getElementById('progress-fill').style.width = (((current+1)/PAGES.length)*100).toFixed(1) + '%';
+
+  document.getElementById('prev-btn').disabled = current === 0;
+  document.getElementById('next-btn').disabled = current === PAGES.length - 1;
+  document.getElementById('next-btn').textContent = current === PAGES.length -1 ? 'End' : 'Next \u2192';
+
+  document.getElementById('leaf').style.animation = 'none';
+  void document.getElementById('leaf').offsetWidth;
+  document.getElementById('leaf').style.animation = '';
+
+  updateActiveTocItem();
+  window.scrollTo({top:0, behavior:'smooth'});
+  if (window.__afterRender) window.__afterRender();
+}
+
+function openLightbox(src, alt){
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox-img').alt = alt;
+  document.getElementById('lightbox').classList.add('open');
+}
+document.getElementById('lightbox-close').addEventListener('click', () => {
+  document.getElementById('lightbox').classList.remove('open');
+});
+document.getElementById('lightbox').addEventListener('click', (e) => {
+  if (e.target.id === 'lightbox') document.getElementById('lightbox').classList.remove('open');
+});
+
+document.getElementById('prev-btn').addEventListener('click', () => {
+  if (current > 0){ current--; render(); }
+});
+document.getElementById('next-btn').addEventListener('click', () => {
+  if (current < PAGES.length -1){ current++; render(); }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight') document.getElementById('next-btn').click();
+  if (e.key === 'ArrowLeft') document.getElementById('prev-btn').click();
+  if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('open');
+});
+
+// ---------- TOC ----------
+function buildToc(){
+  const list = document.getElementById('toc-list');
+  PAGES.forEach((p, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'toc-item';
+    btn.dataset.idx = idx;
+    btn.textContent = 'p.' + p.pdf_page_number + '  —  ' + p.label;
+    btn.addEventListener('click', () => {
+      current = idx;
+      render();
+      closeToc();
+    });
+    list.appendChild(btn);
+  });
+}
+function updateActiveTocItem(){
+  document.querySelectorAll('.toc-item').forEach(el => {
+    el.classList.toggle('active', parseInt(el.dataset.idx) === current);
+  });
+}
+function openToc(){
+  document.getElementById('toc-panel').classList.add('open');
+  document.getElementById('scrim').classList.add('show');
+}
+function closeToc(){
+  document.getElementById('toc-panel').classList.remove('open');
+  document.getElementById('scrim').classList.remove('show');
+}
+document.getElementById('toc-toggle').addEventListener('click', openToc);
+document.getElementById('toc-close').addEventListener('click', closeToc);
+document.getElementById('scrim').addEventListener('click', closeToc);
+
+buildToc();
+render();
+
+// ---------- Read aloud (prefers Indian English voices) ----------
+(function(){
+  const listenBtn = document.getElementById('listen-toggle');
+  const bar = document.getElementById('listen-bar');
+  const voiceSel = document.getElementById('voice-select');
+  const rateSel = document.getElementById('rate-select');
+  const playBtn = document.getElementById('listen-play');
+  const stopBtn = document.getElementById('listen-stop');
+  const autoChk = document.getElementById('listen-auto');
+  const status = document.getElementById('listen-status');
+
+  if (!('speechSynthesis' in window)) {
+    listenBtn.style.display = 'none';
+    return;
+  }
+
+  let voices = [];
+  let listening = false;
+  let paused = false;
+  let gen = 0;
+
+  function score(v){
+    const l = (v.lang || '').toLowerCase().replace('_', '-');
+    if (l.indexOf('en-in') === 0) return 3;
+    if (l === 'en-gb') return 2;
+    return 1;
+  }
+
+  function loadVoices(){
+    const all = speechSynthesis.getVoices();
+    const en = all.filter(v => v.lang && v.lang.toLowerCase().indexOf('en') === 0);
+    voices = (en.length ? en : all).slice().sort((a, b) => score(b) - score(a));
+    voiceSel.innerHTML = '';
+    voices.forEach((v, i) => {
+      const opt = document.createElement('option');
+      opt.value = i;
+      const isIndian = (v.lang || '').toLowerCase().replace('_', '-').indexOf('en-in') === 0;
+      opt.textContent = v.name + ' (' + v.lang + ')' + (isIndian ? ' — Indian accent' : '');
+      voiceSel.appendChild(opt);
+    });
+    const idx = voices.findIndex(v => (v.lang || '').toLowerCase().replace('_', '-').indexOf('en-in') === 0);
+    voiceSel.value = idx >= 0 ? idx : 0;
+    if (!listening) {
+      status.textContent = idx >= 0
+        ? 'Indian English voice ready.'
+        : 'No Indian English voice found on this device — closest English voice selected.';
+    }
+  }
+  speechSynthesis.onvoiceschanged = loadVoices;
+  loadVoices();
+
+  function pageText(){
+    const p = PAGES[current];
+    const div = document.createElement('div');
+    div.innerHTML = p.html;
+    let t = (div.textContent || '').replace(/\s+/g, ' ').trim();
+    (p.images || []).forEach(im => { t += ' Figure on this page: ' + im.caption + '.'; });
+    return t;
+  }
+
+  function chunk(text){
+    const parts = text.match(/[^.!?\u2026]+[.!?\u2026]+["')\]]*\s*/g) || [text];
+    const out = [];
+    let buf = '';
+    parts.forEach(s => {
+      if ((buf + s).length > 220) { if (buf) out.push(buf); buf = s; }
+      else buf += s;
+    });
+    if (buf) out.push(buf);
+    return out;
+  }
+
+  function speak(){
+    const text = pageText();
+    if (!text) { status.textContent = 'Nothing to read on this page.'; return; }
+    const myGen = ++gen;
+    speechSynthesis.cancel();
+    const pieces = chunk(text);
+    const v = voices[parseInt(voiceSel.value, 10)];
+    pieces.forEach((c, i) => {
+      const u = new SpeechSynthesisUtterance(c);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = parseFloat(rateSel.value);
+      if (i === pieces.length - 1) {
+        u.onend = () => {
+          if (!listening || myGen !== gen) return;
+          if (autoChk.checked && current < PAGES.length - 1) { current++; render(); }
+          else setUi(false);
+        };
+      }
+      speechSynthesis.speak(u);
+    });
+    status.textContent = 'Reading page ' + (current + 1) + ' of ' + PAGES.length + '…';
+  }
+
+  function setUi(on){
+    listening = on;
+    paused = false;
+    playBtn.innerHTML = on ? '&#10074;&#10074; Pause' : '&#9654; Read aloud';
+    stopBtn.disabled = !on;
+    if (!on) status.textContent = 'Stopped.';
+  }
+
+  window.__afterRender = function(){
+    if (listening) speak();
+  };
+
+  // Chrome desktop occasionally stalls long speech queues — nudge it.
+  setInterval(() => {
+    if (listening && !paused && speechSynthesis.speaking) speechSynthesis.resume();
+  }, 10000);
+
+  listenBtn.addEventListener('click', () => bar.classList.toggle('open'));
+  playBtn.addEventListener('click', () => {
+    if (!listening) { setUi(true); speak(); return; }
+    if (paused) { speechSynthesis.resume(); paused = false; playBtn.innerHTML = '&#10074;&#10074; Pause'; }
+    else { speechSynthesis.pause(); paused = true; playBtn.innerHTML = '&#9654; Resume'; }
+  });
+  stopBtn.addEventListener('click', () => { gen++; speechSynthesis.cancel(); setUi(false); });
+  voiceSel.addEventListener('change', () => { if (listening) speak(); });
+  rateSel.addEventListener('change', () => { if (listening) speak(); });
+})();
+
+</script>
+
+<script>
+(function(){
+  var NOTES = {};
+  var CHMAP = [];
+  try { NOTES = JSON.parse(document.getElementById('notes-data').textContent); } catch(e) {}
+  try { CHMAP = JSON.parse(document.getElementById('chapter-map').textContent); } catch(e) {}
+  var term = '', matchPages = [];
+
+  function esc(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+  function pageText(p){ var d=document.createElement('div'); d.innerHTML=p.html; return d.textContent || ''; }
+
+  // ---------- SEARCH ----------
+  var bar = document.getElementById('search-bar');
+  var input = document.getElementById('search-input');
+  var info = document.getElementById('search-info');
+
+  function clearMarks(){
+    var c = document.getElementById('content');
+    c.querySelectorAll('mark.search-hit').forEach(function(mk){
+      var t = document.createTextNode(mk.textContent);
+      mk.parentNode.replaceChild(t, mk);
+    });
+    c.normalize();
+  }
+  function highlight(){
+    clearMarks();
+    if (!term || term.length < 2) return;
+    var c = document.getElementById('content');
+    var walker = document.createTreeWalker(c, NodeFilter.SHOW_TEXT);
+    var nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    var t = term.toLowerCase();
+    nodes.forEach(function(n){
+      var txt = n.nodeValue, low = txt.toLowerCase(), idx = low.indexOf(t);
+      if (idx < 0) return;
+      var frag = document.createDocumentFragment(), pos = 0;
+      while (idx >= 0){
+        frag.appendChild(document.createTextNode(txt.slice(pos, idx)));
+        var mk = document.createElement('mark');
+        mk.className = 'search-hit';
+        mk.textContent = txt.slice(idx, idx + term.length);
+        frag.appendChild(mk);
+        pos = idx + term.length;
+        idx = low.indexOf(t, pos);
+      }
+      frag.appendChild(document.createTextNode(txt.slice(pos)));
+      n.parentNode.replaceChild(frag, n);
+    });
+  }
+  function infoText(){
+    if (!term || term.length < 2) { info.textContent = ''; return; }
+    if (!matchPages.length) { info.textContent = 'No matches'; return; }
+    var pos = matchPages.indexOf(current);
+    info.textContent = matchPages.length + (matchPages.length > 1 ? ' pages' : ' page') +
+      (pos >= 0 ? ' — match ' + (pos + 1) + ' of ' + matchPages.length : '');
+  }
+  function doSearch(){
+    term = input.value.trim();
+    matchPages = [];
+    if (term.length >= 2){
+      var t = term.toLowerCase();
+      PAGES.forEach(function(p, i){ if (pageText(p).toLowerCase().indexOf(t) >= 0) matchPages.push(i); });
+    }
+    if (matchPages.length){ current = matchPages[0]; render(); }
+    else { highlight(); infoText(); }
+  }
+  function step(d){
+    if (!matchPages.length) return;
+    var pos = matchPages.indexOf(current);
+    if (pos < 0) pos = 0;
+    pos = (pos + d + matchPages.length) % matchPages.length;
+    current = matchPages[pos];
+    render();
+  }
+  var searchT = null;
+  input.addEventListener('input', function(){ clearTimeout(searchT); searchT = setTimeout(doSearch, 350); });
+  input.addEventListener('keydown', function(e){ if (e.key === 'Enter'){ clearTimeout(searchT); doSearch(); } });
+  document.getElementById('search-prev').addEventListener('click', function(){ step(-1); });
+  document.getElementById('search-next').addEventListener('click', function(){ step(1); });
+  document.getElementById('search-close').addEventListener('click', function(){
+    bar.classList.remove('open'); term=''; matchPages=[]; highlight(); infoText();
+  });
+  document.getElementById('search-toggle').addEventListener('click', function(){
+    var open = bar.classList.toggle('open');
+    document.getElementById('notes-panel').classList.remove('open');
+    if (open) input.focus();
+  });
+
+  // ---------- NOTES ----------
+  var panel = document.getElementById('notes-panel');
+  var body = document.getElementById('notes-body');
+  function showNotes(){
+    var ch = null;
+    for (var i = current; i >= 0; i--){
+      if (CHMAP[i] && NOTES[CHMAP[i]]) { ch = CHMAP[i]; break; }
+    }
+    if (!ch){
+      for (var j = current; j < CHMAP.length; j++){
+        if (CHMAP[j] && NOTES[CHMAP[j]]) { ch = CHMAP[j]; break; }
+      }
+    }
+    if (!ch){
+      body.innerHTML = '<p class="notes-empty">No chapter notes available for this section.</p>';
+      return;
+    }
+    var n = NOTES[ch];
+    var h = '<h3>' + esc(ch) + '</h3><h4>Summary</h4><p>' + esc(n.s) + '</p>';
+    if (n.p && n.p.length){
+      h += '<h4>Key points</h4><ul>' + n.p.map(function(x){ return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>';
+    }
+    body.innerHTML = h;
+  }
+  document.getElementById('notes-toggle').addEventListener('click', function(){
+    var open = panel.classList.toggle('open');
+    bar.classList.remove('open');
+    if (open) showNotes();
+  });
+
+  // hooks after every render
+  var prevA = window.__afterRender;
+  window.__afterRender = function(){
+    if (prevA) prevA();
+    highlight();
+    infoText();
+    if (panel.classList.contains('open')) showNotes();
+  };
+})();
+</script>
+
+<style id="sel-search-css">
+#sel-search-tip{position:fixed;z-index:99999;display:none;background:#2E2A24;color:#F7F1E3;border-radius:10px;padding:6px 8px;box-shadow:0 6px 18px rgba(0,0,0,.28);font:13px/1.2 system-ui,-apple-system,sans-serif;transform:translateX(-50%)}
+#sel-search-tip.show{display:block}
+#sel-search-tip button{background:none;border:none;color:#ffd98a;cursor:pointer;font:inherit;padding:2px 6px;white-space:nowrap}
+#sel-search-tip button:hover{color:#ffe9b8}
+#sel-search-tip::after{content:"";position:absolute;top:100%;left:50%;margin-left:-6px;border:6px solid transparent;border-top-color:#2E2A24}
+#sel-search-bar{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:99999;display:none;align-items:center;gap:10px;background:#2E2A24;color:#F7F1E3;border-radius:12px;padding:9px 14px;box-shadow:0 8px 24px rgba(0,0,0,.32);font:13px system-ui,-apple-system,sans-serif;max-width:92vw}
+#sel-search-bar.show{display:flex}
+#sel-search-bar button{background:#b8893a;border:none;color:#fff;border-radius:8px;padding:5px 12px;cursor:pointer;font:inherit;white-space:nowrap}
+#sel-search-bar button:hover{background:#c99a48}
+#sel-search-bar a{color:#ffd98a}
+</style>
+
+<script>
+(function(){
+  if (window.__selSearch) return; window.__selSearch = true;
+  var tip = document.createElement('div');
+  tip.id = 'sel-search-tip';
+  tip.innerHTML = '<button id="sel-search-btn" type="button">&#128269; Search DuckDuckGo</button>';
+  document.body.appendChild(tip);
+  var bar = document.createElement('div');
+  bar.id = 'sel-search-bar';
+  bar.innerHTML = '<span id="sel-search-msg">Search opened in a popup window.</span>' +
+    '<button id="sel-search-close" type="button">&#10005; Close search window</button>';
+  document.body.appendChild(bar);
+  var popup = null, term = '', lastUrl = '';
+
+  function hideTip(){ tip.classList.remove('show'); }
+  function hideBar(){ bar.classList.remove('show'); }
+
+  function showTipForSelection(){
+    var sel = window.getSelection();
+    var txt = sel && !sel.isCollapsed ? sel.toString().trim() : '';
+    if (txt.length >= 2 && txt.length <= 160){
+      term = txt;
+      var r = sel.getRangeAt(0).getBoundingClientRect();
+      var top = r.top - 46;
+      if (top < 8) top = r.bottom + 10;
+      var left = r.left + r.width / 2;
+      left = Math.max(90, Math.min(window.innerWidth - 90, left));
+      tip.style.left = left + 'px';
+      tip.style.top = top + 'px';
+      tip.classList.add('show');
+    } else {
+      hideTip();
+    }
+  }
+
+  document.addEventListener('mouseup', function(e){
+    if (tip.contains(e.target) || bar.contains(e.target)) return;
+    setTimeout(showTipForSelection, 10);
+  });
+  document.addEventListener('keyup', function(e){
+    if (e.shiftKey) setTimeout(showTipForSelection, 10);
+  });
+  document.addEventListener('mousedown', function(e){
+    if (!tip.contains(e.target)) hideTip();
+  });
+  document.addEventListener('scroll', hideTip, true);
+
+  document.getElementById('sel-search-btn').addEventListener('click', function(){
+    if (!term) return;
+    lastUrl = 'https://duckduckgo.com/?q=' + encodeURIComponent(term);
+    popup = window.open(lastUrl, 'ddg_search_popup', 'width=920,height=700,menubar=no,toolbar=no,location=no,status=no');
+    hideTip();
+    var msg = document.getElementById('sel-search-msg');
+    if (popup){
+      msg.textContent = 'Search opened in a popup window.';
+    } else {
+      msg.innerHTML = 'Popup blocked — <a href="' + lastUrl.replace(/"/g, '&quot;') + '" target="_blank" rel="noopener">open the search in a new tab</a>.';
+    }
+    bar.classList.add('show');
+  });
+
+  document.getElementById('sel-search-close').addEventListener('click', function(){
+    if (popup && !popup.closed) popup.close();
+    popup = null;
+    hideBar();
+  });
+})();
+</script>
+
+<style id="sl-chat-css">
+#sl-chat-fab{position:fixed;right:18px;bottom:18px;z-index:99998;width:52px;height:52px;border-radius:50%;border:none;background:#2E2A24;color:#F7F1E3;font-size:22px;cursor:pointer;box-shadow:0 8px 22px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center}
+#sl-chat-fab:hover{background:#453e33}
+#sl-chat-panel{position:fixed;right:18px;bottom:82px;z-index:99998;width:380px;max-width:92vw;height:540px;max-height:72vh;display:none;flex-direction:column;background:#FDFAF3;border:1px solid #E3D9C6;border-radius:18px;box-shadow:0 16px 44px rgba(0,0,0,.3);overflow:hidden;font:14px/1.45 system-ui,-apple-system,sans-serif;color:#2E2A24}
+#sl-chat-panel.show{display:flex}
+#sl-chat-head{display:flex;align-items:center;justify-content:space-between;background:#2E2A24;color:#F7F1E3;padding:10px 14px;font-weight:600;font-size:13px;letter-spacing:.4px}
+#sl-chat-head button{background:none;border:none;color:#CBBEA6;cursor:pointer;font-size:15px;padding:2px 6px}
+#sl-chat-head button:hover{color:#fff}
+#sl-chat-settings{display:none;padding:10px 14px;background:#F6EEDC;border-bottom:1px solid #E3D9C6;font-size:12px}
+#sl-chat-settings.show{display:block}
+#sl-chat-settings input{width:100%;box-sizing:border-box;margin:3px 0;padding:6px 8px;border:1px solid #D8CCB2;border-radius:8px;font-size:12px;background:#fff}
+#sl-chat-settings .row{display:flex;gap:8px;align-items:center;margin-top:4px}
+#sl-chat-settings button{background:#2E2A24;color:#F7F1E3;border:none;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:12px}
+#sl-chat-settings .hint{color:#8A7F6A;font-size:11px;line-height:1.4;margin-top:4px}
+#sl-chat-body{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.sl-msg{max-width:88%;padding:9px 12px;border-radius:14px;font-size:13px;white-space:pre-wrap;word-wrap:break-word}
+.sl-msg.user{align-self:flex-end;background:#2E2A24;color:#F7F1E3;border-bottom-right-radius:4px}
+.sl-msg.bot{align-self:flex-start;background:#fff;border:1px solid #E7DECB;border-bottom-left-radius:4px}
+.sl-msg a{color:#A6743A}
+.sl-ref{display:block;margin-top:6px;padding:7px 9px;background:#F6EEDC;border-radius:10px;font-size:12px;cursor:pointer;border:none;width:100%;text-align:left}
+.sl-ref:hover{background:#EFE3CC}
+.sl-ref b{display:block;color:#2E2A24}
+.sl-ref span{color:#8A7F6A;font-size:11px}
+.sl-ref .go{color:#A6743A;font-weight:600}
+#sl-chat-inputrow{display:flex;gap:8px;padding:10px 12px;border-top:1px solid #E7DECB;background:#fff}
+#sl-chat-input{flex:1;border:none;outline:none;font-size:13px;background:transparent;color:#2E2A24}
+#sl-chat-send{background:#B8893A;border:none;color:#fff;border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+#sl-chat-send:disabled{opacity:.4}
+.sl-thinking{font-size:11px;color:#A99E88;font-style:italic}
+</style>
+
+<script>
+(function(){
+  if (window.__slChat) return; window.__slChat = true;
+  var CFG_KEY = 'sl_llm_config';
+  function loadCfg(){
+    try { var raw = localStorage.getItem(CFG_KEY); if (raw) return JSON.parse(raw); } catch(e){}
+    return { endpoint:'https://api.openai.com/v1/chat/completions', key:'', model:'gpt-4o-mini' };
+  }
+  var cfg = loadCfg();
+
+  var fab = document.createElement('button');
+  fab.id = 'sl-chat-fab'; fab.type = 'button'; fab.title = 'Library assistant';
+  fab.textContent = '\uD83D\uDCAC';
+  document.body.appendChild(fab);
+
+  var panel = document.createElement('div');
+  panel.id = 'sl-chat-panel';
+  panel.innerHTML =
+    '<div id="sl-chat-head"><span>\u2728 Library Assistant</span>' +
+    '<span><button id="sl-chat-clear" type="button" title="Clear chat">\uD83D\uDDD1</button>' +
+    '<button id="sl-chat-gear" type="button" title="LLM settings">\u2699</button>' +
+    '<button id="sl-chat-x" type="button" title="Close">\u2715</button></span></div>' +
+    '<div id="sl-chat-settings">' +
+    '<b>LLM configuration (any OpenAI-compatible API)</b>' +
+    '<input id="sl-cfg-endpoint" placeholder="Endpoint, e.g. https://api.openai.com/v1/chat/completions">' +
+    '<input id="sl-cfg-key" type="password" placeholder="API key (stored only in this browser)">' +
+    '<input id="sl-cfg-model" placeholder="Model, e.g. gpt-4o-mini">' +
+    '<div class="row"><button id="sl-cfg-save" type="button">Save</button>' +
+    '<button id="sl-cfg-test" type="button">Test</button><span id="sl-cfg-status"></span></div>' +
+    '<div class="hint">Works with OpenAI, OpenRouter, Groq, Mistral, Ollama (http://localhost:11434/v1/chat/completions), LM Studio. Without a key I search this book locally and DuckDuckGo externally.</div>' +
+    '</div>' +
+    '<div id="sl-chat-body"></div>' +
+    '<div id="sl-chat-inputrow"><input id="sl-chat-input" placeholder="Ask about this book, or the web\u2026">' +
+    '<button id="sl-chat-send" type="button" title="Send">\u27A4</button></div>';
+  document.body.appendChild(panel);
+
+  var body = panel.querySelector('#sl-chat-body');
+  var input = panel.querySelector('#sl-chat-input');
+  var sendBtn = panel.querySelector('#sl-chat-send');
+  var busy = false;
+
+  function scrollBody(){ body.scrollTop = body.scrollHeight; }
+  function addMsg(role, html){
+    var d = document.createElement('div');
+    d.className = 'sl-msg ' + role;
+    d.innerHTML = html;
+    body.appendChild(d); scrollBody();
+    return d;
+  }
+  function esc(t){ var d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+
+  addMsg('bot', 'Namaste. Ask me anything \u2014 I can search <b>this book</b> page by page, answer with your configured LLM, or run an external DuckDuckGo search.');
+
+  function pageText(p){
+    var d = document.createElement('div'); d.innerHTML = p.html; return d.textContent || '';
+  }
+
+  function searchBook(q){
+    var terms = q.toLowerCase().split(/[^a-z0-9]+/).filter(function(t){ return t.length > 2; });
+    if (!terms.length) return [];
+    var out = [];
+    for (var i = 0; i < PAGES.length; i++){
+      var txt = pageText(PAGES[i]).toLowerCase();
+      var score = 0;
+      for (var k = 0; k < terms.length; k++){
+        var hits = txt.split(terms[k]).length - 1;
+        if (hits) score += hits;
+      }
+      if (score) out.push({ i: i, score: score });
+    }
+    out.sort(function(a,b){ return b.score - a.score; });
+    return out.slice(0, 5);
+  }
+
+  function snippet(i, q){
+    var txt = pageText(PAGES[i]).replace(/\s+/g,' ');
+    var terms = q.toLowerCase().split(/[^a-z0-9]+/).filter(function(t){ return t.length > 2; });
+    var pos = -1;
+    for (var k = 0; k < terms.length; k++){ pos = txt.toLowerCase().indexOf(terms[k]); if (pos >= 0) break; }
+    if (pos < 0) pos = 0;
+    var start = Math.max(0, pos - 60);
+    return (start ? '\u2026' : '') + txt.slice(start, start + 170) + '\u2026';
+  }
+
+  function goToPage(i){
+    try { current = i; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    catch(e){ console.warn('jump failed', e); }
+  }
+
+  function callLlm(q, context){
+    return fetch(cfg.endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (cfg.key || '') },
+      body: JSON.stringify({
+        model: cfg.model,
+        messages: [
+          { role: 'system', content: 'You are the assistant inside a spiritual book reader. Answer concisely. When book excerpts are provided, ground the answer in them and cite the page labels. If the question needs current external facts, say so and suggest an external search.' },
+          { role: 'user', content: context ? 'Book excerpts:\n' + context + '\n\nQuestion: ' + q : q }
+        ],
+        temperature: 0.4
+      })
+    }).then(function(res){
+      if (!res.ok) return res.text().then(function(t){ throw new Error('LLM error ' + res.status + ': ' + t.slice(0,180)); });
+      return res.json();
+    }).then(function(data){
+      var c = data.choices && data.choices[0] && data.choices[0].message;
+      return (c && c.content || '(empty response)').trim();
+    });
+  }
+
+  function handleSend(){
+    var q = input.value.trim();
+    if (!q || busy) return;
+    input.value = '';
+    addMsg('user', esc(q));
+    busy = true; sendBtn.disabled = true;
+    var thinking = document.createElement('div');
+    thinking.className = 'sl-thinking'; thinking.textContent = 'Thinking\u2026';
+    body.appendChild(thinking); scrollBody();
+
+    var hits = searchBook(q);
+    var finish = function(){ busy = false; sendBtn.disabled = false; thinking.remove(); };
+
+    function renderRefs(){
+      if (!hits.length) return '';
+      var h = '';
+      hits.forEach(function(hit, n){
+        h += '<button class="sl-ref" data-page="' + hit.i + '" type="button"><b>' + esc(PAGES[hit.i].label) +
+             ' \u00b7 page ' + (hit.i + 1) + '</b><span>' + esc(snippet(hit.i, q)) + '</span>' +
+             '<span class="go">Go to page \u2192</span></button>';
+      });
+      return h;
+    }
+
+    var done = function(html){ finish(); var m = addMsg('bot', html);
+      m.querySelectorAll('.sl-ref').forEach(function(b){
+        b.addEventListener('click', function(){ goToPage(parseInt(b.getAttribute('data-page'), 10)); });
+      });
+    };
+
+    if (cfg.key){
+      var ctx = hits.slice(0,3).map(function(hit){
+        return '[' + PAGES[hit.i].label + ', page ' + (hit.i + 1) + '] ' + pageText(PAGES[hit.i]).replace(/\s+/g,' ').slice(0, 900);
+      }).join('\n');
+      callLlm(q, ctx).then(function(ans){ done(esc(ans) + renderRefs()); })
+      .catch(function(err){ done(esc(String(err.message || err)) + renderRefs()); });
+    } else if (hits.length){
+      done('I found ' + hits.length + ' relevant page' + (hits.length > 1 ? 's' : '') + ' in this book. Tap one to jump there, or add an LLM API key in \u2699 Settings for a synthesized answer.' + renderRefs());
+    } else {
+      var url = 'https://duckduckgo.com/?q=' + encodeURIComponent(q);
+      done('Nothing in this book matched. <a href="' + url + '" target="_blank" rel="noopener">Search the web for \u201c' + esc(q) + '\u201d on DuckDuckGo \u2197</a> \u2014 or add an LLM key in \u2699 Settings and I can answer directly.');
+    }
+  }
+
+  fab.addEventListener('click', function(){ panel.classList.toggle('show'); });
+  panel.querySelector('#sl-chat-x').addEventListener('click', function(){ panel.classList.remove('show'); });
+  panel.querySelector('#sl-chat-clear').addEventListener('click', function(){ body.innerHTML = ''; addMsg('bot', 'Chat cleared. Ask me anything.'); });
+  panel.querySelector('#sl-chat-gear').addEventListener('click', function(){
+    var st = panel.querySelector('#sl-chat-settings');
+    st.classList.toggle('show');
+    panel.querySelector('#sl-cfg-endpoint').value = cfg.endpoint || '';
+    panel.querySelector('#sl-cfg-key').value = cfg.key || '';
+    panel.querySelector('#sl-cfg-model').value = cfg.model || '';
+  });
+  panel.querySelector('#sl-cfg-save').addEventListener('click', function(){
+    cfg = {
+      endpoint: panel.querySelector('#sl-cfg-endpoint').value.trim(),
+      key: panel.querySelector('#sl-cfg-key').value.trim(),
+      model: panel.querySelector('#sl-cfg-model').value.trim()
+    };
+    localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
+    panel.querySelector('#sl-cfg-status').textContent = 'Saved.';
+  });
+  panel.querySelector('#sl-cfg-test').addEventListener('click', function(){
+    var status = panel.querySelector('#sl-cfg-status');
+    status.textContent = 'Testing\u2026';
+    cfg = {
+      endpoint: panel.querySelector('#sl-cfg-endpoint').value.trim(),
+      key: panel.querySelector('#sl-cfg-key').value.trim(),
+      model: panel.querySelector('#sl-cfg-model').value.trim()
+    };
+    fetch(cfg.endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (cfg.key || '') },
+      body: JSON.stringify({ model: cfg.model, messages: [{ role: 'user', content: 'Say OK' }], max_tokens: 5 })
+    }).then(function(res){ status.textContent = res.ok ? 'Connected.' : 'Failed: HTTP ' + res.status; })
+    .catch(function(err){ status.textContent = 'Failed: ' + err.message; });
+  });
+  sendBtn.addEventListener('click', handleSend);
+  input.addEventListener('keydown', function(e){ if (e.key === 'Enter') handleSend(); });
+})();
+</script>
+<style id="sl-sel-css">
+#sl-sel-tip{position:fixed;z-index:99999;display:none;align-items:center;gap:2px;padding:5px;background:#2E2A24;border-radius:12px;box-shadow:0 10px 28px rgba(0,0,0,.35);font:13px/1.2 system-ui,-apple-system,sans-serif}
+#sl-sel-tip.show{display:flex}
+#sl-sel-tip button{display:flex;align-items:center;gap:6px;border:none;background:transparent;color:#F7F1E3;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:12.5px;white-space:nowrap}
+#sl-sel-tip button:hover{background:#4A4234}
+#sl-sel-tip .sl-sep{width:1px;height:18px;background:#55493A;margin:0 2px}
+#sl-sel-toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(10px);background:#2E2A24;color:#F7F1E3;padding:10px 18px;border-radius:999px;font:13px system-ui,-apple-system,sans-serif;z-index:99999;opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease;box-shadow:0 8px 22px rgba(0,0,0,.3);max-width:90vw;text-align:center}
+#sl-sel-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+<script>
+(function(){
+  if (window.__slSelTools) return; window.__slSelTools = true;
+
+  /* Compatibility shim: topic-based readers (e.g. Ponder on This) expose
+     `topics` + `goTo(id)` instead of `PAGES` + `render()`. Build the PAGES
+     interface so the embedded assistant's search and page jumps work there too. */
+  try {
+    if (typeof PAGES === 'undefined' && typeof topics !== 'undefined' && Array.isArray(topics)) {
+      window.PAGES = topics.map(function(t){
+        return {
+          label: 'Topic ' + t.id + ' \u2014 ' + t.title,
+          html: '<div>' + (t.matter || []).map(function(m){ return '<p>' + m.text + '</p>'; }).join('') + '</div>'
+        };
+      });
+      window.render = function(){
+        try { if (typeof goTo === 'function') goTo(topics[window.current || 0].id); } catch(e){}
+      };
+    }
+  } catch(e){}
+
+  var NOTES_KEY = 'sl_my_notes';
+
+  var tip = document.createElement('div');
+  tip.id = 'sl-sel-tip';
+  tip.setAttribute('role', 'toolbar');
+  tip.setAttribute('aria-label', 'Selection actions');
+  tip.innerHTML =
+    '<button type="button" data-act="ask">\u2728 Ask AI</button>' +
+    '<span class="sl-sep"></span>' +
+    '<button type="button" data-act="note">\uD83D\uDCDD Add to my note</button>';
+  document.body.appendChild(tip);
+
+  var toast = document.createElement('div');
+  toast.id = 'sl-sel-toast';
+  document.body.appendChild(toast);
+  var toastTimer = null;
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2400);
+  }
+
+  var selText = '';
+
+  function hideTip(){ tip.classList.remove('show'); }
+
+  function insideUi(node){
+    var el = node && (node.nodeType === 1 ? node : node.parentElement);
+    while (el) {
+      if (el.id === 'sl-chat-panel' || el.id === 'sl-sel-tip' ||
+          el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') return true;
+      el = el.parentElement;
+    }
+    return false;
+  }
+
+  function showTip(){
+    var sel = window.getSelection();
+    var text = sel && !sel.isCollapsed ? sel.toString().replace(/\s+/g, ' ').trim() : '';
+    if (text.length < 3 || insideUi(sel.anchorNode)) { hideTip(); return; }
+    var rect;
+    try { rect = sel.getRangeAt(0).getBoundingClientRect(); } catch(e){ hideTip(); return; }
+    if (!rect || (rect.width === 0 && rect.height === 0)) { hideTip(); return; }
+    selText = text;
+    tip.classList.add('show');
+    var w = tip.offsetWidth, h = tip.offsetHeight;
+    var x = rect.left + rect.width / 2 - w / 2;
+    var y = rect.top - h - 8;
+    if (y < 6) y = Math.min(window.innerHeight - h - 6, rect.bottom + 8);
+    x = Math.max(6, Math.min(window.innerWidth - w - 6, x));
+    tip.style.left = x + 'px';
+    tip.style.top = y + 'px';
+  }
+
+  document.addEventListener('mouseup', function(){ setTimeout(showTip, 10); });
+  document.addEventListener('touchend', function(){ setTimeout(showTip, 350); });
+  document.addEventListener('mousedown', function(e){ if (!tip.contains(e.target)) hideTip(); });
+  document.addEventListener('scroll', hideTip, true);
+  window.addEventListener('resize', hideTip);
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') hideTip(); });
+
+  /* Keep the text selection alive when the user taps a tooltip button */
+  tip.addEventListener('mousedown', function(e){ e.preventDefault(); });
+  tip.addEventListener('touchend', function(e){ e.preventDefault(); }, { passive: false });
+
+  function askAi(text){
+    var panel = document.getElementById('sl-chat-panel');
+    var input = document.getElementById('sl-chat-input');
+    var send = document.getElementById('sl-chat-send');
+    if (!panel || !input || !send) return;
+    panel.classList.add('show');
+    var trimmed = text.length > 600 ? text.slice(0, 600) + '\u2026' : text;
+    input.value = 'Explain this passage: \u201C' + trimmed + '\u201D';
+    send.click();
+    input.focus();
+  }
+
+  function currentLocation(){
+    try {
+      if (typeof PAGES !== 'undefined' && typeof current !== 'undefined' && PAGES[current]) {
+        return PAGES[current].label || '';
+      }
+    } catch(e){}
+    try {
+      if (typeof topics !== 'undefined' && typeof currentId !== 'undefined') {
+        var t = topics.find(function(x){ return x.id === currentId; });
+        if (t) return 'Topic ' + t.id + ' \u2014 ' + t.title;
+      }
+    } catch(e){}
+    return '';
+  }
+
+  function addNote(text){
+    var notes = [];
+    try { notes = JSON.parse(localStorage.getItem(NOTES_KEY) || '[]'); } catch(e){}
+    if (!Array.isArray(notes)) notes = [];
+    notes.unshift({
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+      book: document.title,
+      page: currentLocation(),
+      text: text,
+      url: location.pathname.split('/').pop(),
+      ts: Date.now()
+    });
+    try { localStorage.setItem(NOTES_KEY, JSON.stringify(notes.slice(0, 500))); } catch(e){}
+    showToast('Saved to My Notes \u2014 view it on the library home page');
+  }
+
+  tip.addEventListener('click', function(e){
+    var btn = e.target && e.target.closest ? e.target.closest('button[data-act]') : null;
+    if (!btn) return;
+    var text = selText;
+    hideTip();
+    if (btn.getAttribute('data-act') === 'ask') askAi(text);
+    else addNote(text);
+  });
+})();
+</script>
+
+</body>
+</html>

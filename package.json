@@ -1,0 +1,13 @@
+{
+  "name": "spiritual-library-root",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Spiritual Library — Curated theosophical and spiritual digital library",
+  "scripts": {
+    "dev": "npm --prefix app run dev",
+    "build": "npm --prefix app run build",
+    "preview": "npm --prefix app run preview",
+    "lint": "npm --prefix app run lint",
+    "start": "npm --prefix app run preview"
+  }
+}
