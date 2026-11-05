@@ -477,30 +477,72 @@ function Home() {
   const readerIframeRef = useRef<HTMLIFrameElement>(null)
 
   const handlePrevPage = () => {
-    readerIframeRef.current?.contentWindow?.postMessage({ type: 'NAV_PREV' }, '*')
+    try {
+      const win = readerIframeRef.current?.contentWindow
+      if (win) {
+        win.postMessage({ type: 'NAV_PREV' }, '*')
+        win.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }))
+      }
+      const doc = readerIframeRef.current?.contentDocument
+      doc?.getElementById('prev-btn')?.click()
+      doc?.getElementById('prevBtn')?.click()
+      doc?.getElementById('prev')?.click()
+      doc?.getElementById('float-prev')?.click()
+    } catch (_) {}
   }
 
   const handleNextPage = () => {
-    readerIframeRef.current?.contentWindow?.postMessage({ type: 'NAV_NEXT' }, '*')
+    try {
+      const win = readerIframeRef.current?.contentWindow
+      if (win) {
+        win.postMessage({ type: 'NAV_NEXT' }, '*')
+        win.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }))
+      }
+      const doc = readerIframeRef.current?.contentDocument
+      doc?.getElementById('next-btn')?.click()
+      doc?.getElementById('nextBtn')?.click()
+      doc?.getElementById('next')?.click()
+      doc?.getElementById('float-next')?.click()
+    } catch (_) {}
   }
 
   const handleOpenReaderSearch = () => {
-    readerIframeRef.current?.contentWindow?.postMessage({ type: 'OPEN_SEARCH' }, '*')
+    try {
+      const win = readerIframeRef.current?.contentWindow
+      if (win) {
+        win.postMessage({ type: 'OPEN_SEARCH' }, '*')
+      }
+      const doc = readerIframeRef.current?.contentDocument
+      doc?.getElementById('search-toggle')?.click()
+      doc?.getElementById('searchBtn')?.click()
+      doc?.getElementById('search-btn')?.click()
+    } catch (_) {}
   }
 
   const toggleFullWindow = () => {
-    const nextState = !isFullWindow
-    setIsFullWindow(nextState)
-    if (nextState) {
-      if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(() => {})
-      }
-    } else {
-      if (document.fullscreenElement && document.exitFullscreen) {
-        document.exitFullscreen().catch(() => {})
+    setIsFullWindow((prev) => {
+      const next = !prev
+      try {
+        const win = readerIframeRef.current?.contentWindow
+        win?.postMessage({ type: 'SET_FULL_WINDOW', isFullWindow: next }, '*')
+        const doc = readerIframeRef.current?.contentDocument
+        if (doc) {
+          doc.body.classList.toggle('full-window', next)
+        }
+      } catch (_) {}
+      return next
+    })
+  }
+
+  useEffect(() => {
+    const handleMessage = (e: MessageEvent) => {
+      if (e.data?.type === 'TOGGLE_FULL_WINDOW') {
+        toggleFullWindow()
       }
     }
-  }
+    window.addEventListener('message', handleMessage)
+    return () => window.removeEventListener('message', handleMessage)
+  }, [])
 
   useEffect(() => {
     if (!readingBookId) return
@@ -1116,17 +1158,20 @@ function Home() {
           if (!open) {
             setReadingBookId(null)
             setIsFullWindow(false)
-            if (document.fullscreenElement && document.exitFullscreen) {
-              document.exitFullscreen().catch(() => {})
-            }
             setNotes(readStoredNotes())
           }
         }}
       >
         <DialogContent
+          onEscapeKeyDown={(e) => {
+            if (isFullWindow) {
+              e.preventDefault()
+              toggleFullWindow()
+            }
+          }}
           className={
             isFullWindow
-              ? '!fixed !inset-0 !h-screen !w-screen !max-w-none !rounded-none !border-0 bg-stone-900 p-0 flex flex-col'
+              ? '!fixed !inset-0 !h-screen !w-screen !max-w-none !rounded-none !border-0 bg-white p-0 flex flex-col z-[100]'
               : 'h-[92vh] max-w-6xl gap-0 overflow-hidden rounded-[28px] border-stone-200 bg-white p-0 sm:max-w-6xl flex flex-col'
           }
         >
@@ -1229,6 +1274,17 @@ function Home() {
               src={readingBook?.readerUrl ?? '/the-serpent-power.html'}
               title={readingBook ? `${readingBook.title} reader` : 'Book reader'}
               className="block h-full w-full border-0"
+              allow="fullscreen"
+              onLoad={() => {
+                try {
+                  const win = readerIframeRef.current?.contentWindow
+                  win?.postMessage({ type: 'SET_FULL_WINDOW', isFullWindow }, '*')
+                  const doc = readerIframeRef.current?.contentDocument
+                  if (doc) {
+                    doc.body.classList.toggle('full-window', isFullWindow)
+                  }
+                } catch (_) {}
+              }}
             />
           </div>
         </DialogContent>

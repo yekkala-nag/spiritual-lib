@@ -50,6 +50,17 @@ html,body{
   min-height:100vh;
   display:flex;
   flex-direction:column;
+  transition:max-width 0.3s ease;
+}
+
+/* Full window mode */
+body.full-window .app{
+  max-width:100%;
+  padding:16px 36px 60px;
+}
+body.full-window .leaf{
+  max-width:1200px;
+  margin:0 auto;
 }
 
 /* ---------- Header ---------- */
@@ -573,16 +584,12 @@ if (floatN) floatN.addEventListener('click', () => { if (current < PAGES.length 
 const fsBtn = document.getElementById('fullscreen-toggle');
 if (fsBtn) {
   fsBtn.addEventListener('click', () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(()=>{});
-      fsBtn.textContent = '✕ Exit Full';
-    } else {
-      document.exitFullscreen().catch(()=>{});
-      fsBtn.textContent = '⛶ Fullscreen';
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: 'TOGGLE_FULL_WINDOW' }, '*');
+      return;
     }
-  });
-  document.addEventListener('fullscreenchange', () => {
-    fsBtn.textContent = document.fullscreenElement ? '✕ Exit Full' : '⛶ Fullscreen';
+    const isFull = document.body.classList.toggle('full-window');
+    fsBtn.textContent = isFull ? '✕ Exit Full' : '⛶ Fullscreen';
   });
 }
 
@@ -597,6 +604,11 @@ window.addEventListener('message', (e) => {
   if (e.data && e.data.type === 'OPEN_SEARCH') {
     const s = document.getElementById('search-toggle');
     if (s) s.click();
+  }
+  if (e.data && e.data.type === 'SET_FULL_WINDOW') {
+    const isFull = !!e.data.isFullWindow;
+    document.body.classList.toggle('full-window', isFull);
+    if (fsBtn) fsBtn.textContent = isFull ? '✕ Exit Full' : '⛶ Fullscreen';
   }
 });
 

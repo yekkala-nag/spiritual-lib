@@ -800,20 +800,18 @@ nav.pager {
 
   // Full Window / Fullscreen toggle
   const fsBtn = document.getElementById('fullscreen-toggle');
-  fsBtn.onclick = () => {
-    const isFull = document.body.classList.toggle('full-window');
-    document.getElementById('full-label').textContent = isFull ? 'Exit Full' : 'Full Window';
-    if (!document.fullscreenElement && isFull) {
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().catch(()=>{});
+  if (fsBtn) {
+    fsBtn.onclick = () => {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'TOGGLE_FULL_WINDOW' }, '*');
+        return;
       }
-    } else if (document.fullscreenElement && !isFull) {
-      if (document.exitFullscreen) {
-        document.exitFullscreen().catch(()=>{});
-      }
-    }
-    showToast(isFull ? 'Expanded to Full Window' : 'Returned to Standard View');
-  };
+      const isFull = document.body.classList.toggle('full-window');
+      const lbl = document.getElementById('full-label');
+      if (lbl) lbl.textContent = isFull ? 'Exit Full' : 'Full Window';
+      showToast(isFull ? 'Expanded to Full Window' : 'Returned to Standard View');
+    };
+  }
 
   // Table of Contents
   const tocPanel = document.getElementById('toc-panel');
@@ -1043,6 +1041,12 @@ nav.pager {
     if (e.data?.type === 'OPEN_SEARCH') {
       const searchToggle = document.getElementById('search-toggle');
       if (searchToggle) searchToggle.click();
+    }
+    if (e.data?.type === 'SET_FULL_WINDOW') {
+      const isFull = !!e.data.isFullWindow;
+      document.body.classList.toggle('full-window', isFull);
+      const lbl = document.getElementById('full-label');
+      if (lbl) lbl.textContent = isFull ? 'Exit Full' : 'Full Window';
     }
   });
 
