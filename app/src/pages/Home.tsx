@@ -43,6 +43,19 @@ type SortOption = 'featured' | 'rating' | 'title' | 'newest' | 'oldest'
 
 const BOOKS: Book[] = [
   {
+    id: 'the-serpent-power',
+    title: 'The Serpent Power',
+    author: 'Arthur Avalon (Sir John Woodroffe)',
+    genre: 'Spirituality',
+    year: 1924,
+    pages: 740,
+    rating: 4.9,
+    description: 'The seminal treatise on Kundalini Yoga, translating the Sat-Chakra-Nirupana and Paduka-Panchaka with rich commentaries and inline sacred plates.',
+    cover: 'linear-gradient(145deg, #042f2e 0%, #0d9488 48%, #99f6e4 100%)',
+    accent: '#0d9488',
+    readerUrl: '/the-serpent-power.html',
+  },
+  {
     id: 'ponder-on-this',
     title: 'Ponder on This',
     author: 'Alice A. Bailey & The Tibetan',

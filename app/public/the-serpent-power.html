@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0d9488">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="description" content="The Serpent Power — Arthur Avalon (Sir John Woodroffe) on Kundalini Yoga and the Six Centres">
+    <title>The Serpent Power — Arthur Avalon</title>
+    <style>
+        :root {
+            --spring: cubic-bezier(0.32, 0.72, 0, 1);
+            --teal: #0d9488;
+            --teal-dark: #0f766e;
+            --teal-light: #ccfbf1;
+            --gold: #b45309;
+            --gold-light: #fef3c7;
+            --cream: #faf7f2;
+            --card: #ffffff;
+            --border: #e6dfd5;
+            --text: #1e293b;
+            --text2: #475569;
+            --text3: #94a3b8;
+            --rose: #e11d48;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+            --shadow: 0 6px 20px rgba(13, 148, 136, 0.08);
+            --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.12);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent }
+        html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--cream); color: var(--text); overflow: hidden; -webkit-font-smoothing: antialiased }
+        button, input, textarea { font: inherit; color: inherit }
+
+        /* Progress track */
+        .progress-track { height: 3px; background: rgba(13,148,136,0.15); position: fixed; top: 0; left: 0; right: 0; z-index: 100 }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--teal), #14b8a6); width: 0%; transition: width 0.4s var(--spring) }
+
+        /* App Header */
+        .app-header { height: 54px; padding: 0 16px; display: flex; align-items: center; gap: 10px; background: rgba(250,247,242,0.94); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); z-index: 50; position: sticky; top: 0 }
+        .header-btn { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border); background: var(--card); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text2); transition: all 0.2s var(--spring); flex-shrink: 0 }
+        .header-btn:hover { background: var(--teal-light); color: var(--teal); border-color: var(--teal) }
+        .header-btn:active { transform: scale(0.92) }
+        .header-btn.active { background: var(--teal-light); color: var(--teal); border-color: var(--teal) }
+        .header-title { display: flex; flex: 1; min-width: 0; align-items: center; gap: 10px; overflow: hidden }
+        .topic-pill { font-size: 11px; font-weight: 700; color: var(--teal-dark); background: var(--teal-light); padding: 4px 10px; border-radius: 8px; white-space: nowrap; flex-shrink: 0; border: 1px solid rgba(13,148,136,0.2) }
+        .topic-name-header { font-family: Georgia, serif; font-size: 15px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+        .header-actions { display: flex; align-items: center; gap: 6px }
+
+        /* App Body & Layout */
+        .app-body { display: flex; flex: 1; height: calc(100% - 54px); position: relative; overflow: hidden }
+
+        /* Topic Drawer */
+        .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 60; opacity: 0; pointer-events: none; transition: opacity 0.3s ease }
+        .drawer-overlay.open { opacity: 1; pointer-events: auto }
+        .topic-drawer { width: 320px; background: var(--card); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 70; transition: transform 0.3s var(--spring) }
+        @media (max-width: 768px) {
+            .topic-drawer { position: fixed; top: 0; bottom: 0; left: 0; transform: translateX(-100%); box-shadow: var(--shadow-lg) }
+            .topic-drawer.open { transform: translateX(0) }
+        }
+        .drawer-header { height: 54px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border) }
+        .drawer-header h2 { font-family: Georgia, serif; font-size: 16px; font-weight: 700; color: var(--text) }
+        .drawer-count { font-size: 11px; font-weight: 700; color: var(--teal); background: var(--teal-light); padding: 2px 8px; border-radius: 10px }
+        .drawer-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text3); line-height: 1 }
+        .drawer-search { padding: 10px 16px; border-bottom: 1px solid var(--border) }
+        .drawer-search input { width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--cream); font-size: 13px; outline: none }
+        .drawer-search input:focus { border-color: var(--teal); background: #fff }
+        .drawer-list { flex: 1; overflow-y: auto; padding: 8px }
+        .drawer-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; cursor: pointer; margin-bottom: 4px; transition: all 0.2s }
+        .drawer-item:hover { background: var(--teal-light) }
+        .drawer-item.active { background: var(--teal); color: #fff }
+        .drawer-item.active .d-num { color: rgba(255,255,255,0.85) }
+        .drawer-item.active .d-name { color: #fff; font-weight: 600 }
+        .drawer-item.active .d-chevron { stroke: #fff }
+        .d-num { font-size: 11px; font-weight: 700; color: var(--teal); width: 24px }
+        .d-name { flex: 1; font-size: 13px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+        .d-bookmark { width: 6px; height: 6px; border-radius: 50%; background: var(--rose); display: none }
+        .drawer-item.bookmarked .d-bookmark { display: block }
+
+        /* Reading Area */
+        .reading-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--cream) }
+        .context-bar { height: 38px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--text3); border-bottom: 1px solid var(--border); background: rgba(250,247,242,0.6) }
+        .segmented { display: flex; margin: 12px 20px; background: #ece5d8; padding: 3px; border-radius: 12px; gap: 3px; max-width: 480px }
+        .segment { flex: 1; padding: 6px 14px; border: none; background: transparent; border-radius: 9px; font-size: 12px; font-weight: 600; color: var(--text2); cursor: pointer; transition: all 0.2s }
+        .segment.active { background: #fff; color: var(--teal-dark); box-shadow: var(--shadow-sm) }
+
+        /* Content Scroll */
+        .content-scroll { flex: 1; overflow-y: auto; padding: 8px 20px 40px; scroll-behavior: smooth }
+        .content-container { max-width: 780px; margin: 0 auto }
+
+        /* Cards */
+        .matter-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 22px; margin-bottom: 14px; box-shadow: var(--shadow-sm); transition: transform 0.2s var(--spring), box-shadow 0.2s var(--spring) }
+        .matter-card:hover { transform: translateY(-1px); box-shadow: var(--shadow) }
+        .matter-num { font-size: 11px; font-weight: 800; color: var(--teal); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px }
+        .matter-text { font-family: Georgia, serif; font-size: 16px; line-height: 1.8; color: var(--text) }
+        .matter-ref { font-size: 11px; color: var(--text3); margin-top: 12px; font-style: italic; padding-top: 10px; border-top: 1px dashed var(--border) }
+
+        /* Plate Card (Inline Plate Illustrations) */
+        .plate-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 16px; box-shadow: var(--shadow-sm); text-align: center }
+        .plate-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px }
+        .plate-badge { font-size: 10px; font-weight: 800; color: var(--teal); background: var(--teal-light); padding: 4px 10px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px }
+        .plate-zoom-hint { font-size: 11px; color: var(--text3); display: flex; align-items: center; gap: 4px }
+        .plate-img-wrap { width: 100%; max-height: 480px; overflow: hidden; border-radius: 12px; background: #121417; display: flex; align-items: center; justify-content: center; cursor: zoom-in; position: relative }
+        .plate-inline-img { max-width: 100%; max-height: 480px; object-fit: contain; transition: transform 0.35s var(--spring) }
+        .plate-img-wrap:hover .plate-inline-img { transform: scale(1.02) }
+        .plate-caption { font-family: Georgia, serif; font-size: 13px; color: var(--text2); font-style: italic; margin-top: 12px; line-height: 1.5; padding: 0 8px }
+
+        /* Keypoints */
+        .keypoint-row { display: flex; gap: 14px; padding: 16px 18px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 10px; align-items: flex-start }
+        .keypoint-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); margin-top: 7px; flex-shrink: 0 }
+        .keypoint-text { font-family: Georgia, serif; font-size: 15px; line-height: 1.7; color: var(--text) }
+
+        /* Summary */
+        .summary-card { background: linear-gradient(145deg, #e6f7f5 0%, #f0fdfa 100%); border: 1px solid #bbf0ea; border-radius: 18px; padding: 24px; box-shadow: var(--shadow-sm) }
+        .summary-label { font-size: 11px; font-weight: 800; color: var(--teal-dark); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px }
+        .summary-text { font-family: Georgia, serif; font-size: 16px; line-height: 1.85; color: var(--text) }
+
+        /* Lightbox Modal */
+        .lightbox-modal { position: fixed; inset: 0; background: rgba(10,15,20,0.92); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(8px) }
+        .lightbox-modal.open { display: flex }
+        .lightbox-img { max-width: 95vw; max-height: 88vh; object-fit: contain; border-radius: 8px; box-shadow: 0 20px 50px rgba(0,0,0,0.5) }
+        .lightbox-close { position: absolute; top: 16px; right: 20px; background: rgba(255,255,255,0.15); border: none; color: #fff; width: 40px; height: 40px; border-radius: 50%; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s }
+        .lightbox-close:hover { background: rgba(255,255,255,0.3) }
+        .lightbox-caption { position: absolute; bottom: 20px; left: 20px; right: 20px; color: #fff; text-align: center; font-family: Georgia, serif; font-size: 14px; text-shadow: 0 2px 4px rgba(0,0,0,0.8) }
+
+        /* Animations */
+        .fade-up { animation: fadeUp 0.35s var(--spring) forwards }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px) } to { opacity: 1; transform: translateY(0) } }
+
+        /* Toast */
+        .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1e293b; color: #fff; padding: 10px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none; transition: all 0.3s var(--spring); z-index: 300 }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0) }
+    </style>
+</head>
+<body style="display:flex;flex-direction:column;height:100vh;">
+
+    <!-- Progress track -->
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+    <!-- Header -->
+    <header class="app-header">
+        <button class="header-btn" id="menuBtn" title="Table of Contents"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+        <div class="header-title">
+            <span class="topic-pill" id="topicPill">001</span>
+            <span class="topic-name-header" id="topicNameHeader">Introductory &amp; Kundalini Yoga</span>
+        </div>
+        <div class="header-actions">
+            <button class="header-btn" id="prevBtn" title="Previous Chapter (←)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></button>
+            <button class="header-btn" id="bookmarkBtn" title="Bookmark (B)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg></button>
+            <button class="header-btn" id="listenBtn" title="Read Aloud (TTS)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>
+            <button class="header-btn" id="nextBtn" title="Next Chapter (→)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></button>
+        </div>
+    </header>
+
+    <div class="app-body">
+        <!-- Drawer Overlay -->
+        <div class="drawer-overlay" id="drawerOverlay"></div>
+
+        <!-- Topic Drawer -->
+        <aside class="topic-drawer" id="topicDrawer">
+            <div class="drawer-header">
+                <h2>The Serpent Power</h2>
+                <span class="drawer-count" id="drawerCount">10</span>
+                <button class="drawer-close" id="closeDrawer">&times;</button>
+            </div>
+            <div class="drawer-search">
+                <input type="text" id="drawerSearch" placeholder="Filter chapters or topics...">
+            </div>
+            <div class="drawer-list" id="drawerList"></div>
+        </aside>
+
+        <!-- Reading Area -->
+        <main class="reading-area">
+            <div class="context-bar">
+                <span id="contextPos">Chapter 1 of 10</span>
+                <span id="contextSaved" style="color:var(--rose);font-size:11px;opacity:0;font-weight:600;">● Saved</span>
+            </div>
+            <div class="segmented">
+                <button class="segment active" data-view="matter">Full matter</button>
+                <button class="segment" data-view="keypoints">Key points</button>
+                <button class="segment" data-view="summary">Summarise</button>
+            </div>
+            <div class="content-scroll" id="contentScroll">
+                <div class="content-container" id="contentBody"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Lightbox Modal for Full Plate Inspection -->
+    <div class="lightbox-modal" id="lightboxModal" onclick="closeLightbox()">
+        <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+        <img src="" alt="" class="lightbox-img" id="lightboxImg" onclick="event.stopPropagation()">
+        <div class="lightbox-caption" id="lightboxCaption"></div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const topics = [
+  {
+    "id": 1,
+    "title": "Introductory & Kundalini Yoga",
+    "image": "images/serpent-power/15_0.jpg",
+    "imageCaption": "Frontispiece: The Six Centres (Chakras) and Kundalini Shakti in the Human Body",
+    "matter": [
+      {
+        "num": 1,
+        "text": "The two Sanskrit works here translated \u2014 Shatchakranirupana (\"Description of the Six Centres\") and Paduka-Panchaka (\"Fivefold Footstool\") \u2014 deal with a particular form of Tantrik Yoga named Kundali Yoga, or Bhuta-shuddhi (purification of elements).",
+        "ref": "Introduction, p. 1"
+      },
+      {
+        "num": 2,
+        "text": "Kundalini is the Primordial Energy (Para-Shakti) in the human body. It is conceived as a serpent lying asleep and coiled three and a half times around the Svayambhu-Linga in the Muladhara centre at the base of the spinal column.",
+        "ref": "Introduction, p. 7"
+      },
+      {
+        "num": 3,
+        "text": "The object of Kundalini Yoga is to arouse this slumbering serpent-force, lead Her through the central canal (Sushumna Nadi) piercing each of the six bodily centres (Chakras), until She unites with Shiva in the thousand-petalled lotus (Sahasrara) at the crown of the head.",
+        "ref": "Introduction, p. 12"
+      },
+      {
+        "num": 4,
+        "text": "Yoga is union \u2014 the merger of individual consciousness (Jivatma) with Supreme Cosmic Consciousness (Paramatma). In Kundalini Yoga, this spiritual union is realized bodily through the ascension of vital and conscious energy.",
+        "ref": "Introduction, p. 18"
+      },
+      {
+        "num": 5,
+        "text": "The Tantras are neither mere sorcery nor debased ritual; they constitute a profound practical psychology and metaphysics grounded in the non-dual truth that Shiva and Shakti are one.",
+        "ref": "Introduction, p. 23"
+      }
+    ],
+    "keypoints": [
+      "Two foundational texts translated: Shatchakra-nirupana and Paduka-Panchaka",
+      "Kundalini is the slumbering divine cosmic energy at the base of the spine",
+      "The practice pierces the six bodily centres along the Sushumna nadi",
+      "The culmination is union of Shiva and Shakti in the Sahasrara",
+      "Tantra represents a practical experiential path of transformation"
+    ],
+    "summary": "Sir John Woodroffe introduces Kundalini Yoga as the supreme science of internal energy and spiritual awakening. Rooted in the Shakta Tantras, it provides a rigorous physiological and metaphysical methodology to arouse the latent divine power within the human body."
+  },
+  {
+    "id": 2,
+    "title": "Consciousness and Its Power (Sarva-Shaktiman)",
+    "image": "images/serpent-power/38_0.jpg",
+    "imageCaption": "Plate II: Consciousness and Its Power \u2014 The Static and Dynamic Polarities of the Supreme",
+    "matter": [
+      {
+        "num": 1,
+        "text": "The ultimate Reality is Chit \u2014 Pure Consciousness, which is changeless, eternal, and transcendent. Yet it possesses inherent Power (Shakti) through which the infinite cosmos manifests.",
+        "ref": "Chapter II, p. 24"
+      },
+      {
+        "num": 2,
+        "text": "Shiva represents the static, unchanging aspect of consciousness; Shakti represents the dynamic, kinetic aspect of the same reality. There is no Shiva without Shakti, nor Shakti without Shiva.",
+        "ref": "Chapter II, p. 29"
+      },
+      {
+        "num": 3,
+        "text": "Maya in Tantra is not mere illusion or non-existence, but the actual power of Consciousness to limit and measure itself (Miyate anena iti Maya), giving birth to form, name, and multiplicity.",
+        "ref": "Chapter II, p. 35"
+      },
+      {
+        "num": 4,
+        "text": "The human body is an epitome of the universe \u2014 whatever exists in the macrocosm (Brahmanda) exists in the microcosm (Kshudrabrahmanda or Pinda).",
+        "ref": "Chapter II, p. 42"
+      }
+    ],
+    "keypoints": [
+      "Pure Consciousness (Chit) is the unconditioned foundational reality",
+      "Shiva and Shakti are inseparable polarities: static and kinetic",
+      "Maya is the creative measuring power of divine consciousness",
+      "The microcosm mirrors the macrocosm in every detail"
+    ],
+    "summary": "This chapter examines the Shakta metaphysical framework: Consciousness is not static abstraction, but dynamic energy. Shiva is Being, Shakti is Becoming; their union is the living reality of all experience."
+  },
+  {
+    "id": 3,
+    "title": "Embodied Consciousness & The Nadis",
+    "image": "images/serpent-power/65_0.jpg",
+    "imageCaption": "Plate III: The Spinal Column, the Three Great Nadis (Ida, Pingala, Sushumna), and the Prana Sheaths",
+    "matter": [
+      {
+        "num": 1,
+        "text": "The Jiva is the individual soul, which is none other than Brahman conditioned by ignorance (Avidya) and clothed in the five sheaths (Koshas): Annamaya, Pranamaya, Manomaya, Vijnanamaya, and Anandamaya.",
+        "ref": "Chapter III, p. 49"
+      },
+      {
+        "num": 2,
+        "text": "The vital force (Prana) circulates through subtle channels called Nadis, numbered at 72,000. Among these, fourteen are primary, and three are supreme: Ida, Pingala, and Sushumna.",
+        "ref": "Chapter III, p. 58"
+      },
+      {
+        "num": 3,
+        "text": "Ida is on the left side, feminine, white, lunar in nature, connected with the left nostril. Pingala is on the right, masculine, red, solar, connected with the right nostril.",
+        "ref": "Chapter III, p. 64"
+      },
+      {
+        "num": 4,
+        "text": "Sushumna runs through the interior of the cerebrospinal axis from Muladhara to the crown. Inside Sushumna is the Vajra Nadi, within Vajra is Chitrini, and within Chitrini is the Brahma Nadi \u2014 the royal highway of liberation.",
+        "ref": "Chapter III, p. 72"
+      }
+    ],
+    "keypoints": [
+      "The embodied soul (Jiva) is encased within five concentric sheaths",
+      "72,000 subtle Nadis conduct vital energy through the system",
+      "Ida (lunar) and Pingala (solar) govern ordinary cyclic breathing",
+      "Sushumna contains Brahma Nadi, through which Kundalini travels to freedom"
+    ],
+    "summary": "Arthur Avalon provides a masterly anatomical and esoteric correlation of the subtle body, detailing the three principal currents of Prana and the central axis that leads from mortal fragmentation to immortal wholeness."
+  },
+  {
+    "id": 4,
+    "title": "The Garland of Letters (Varnamala & Mantra)",
+    "image": "images/serpent-power/105_0.jpg",
+    "imageCaption": "Plate IV: The Garland of Letters \u2014 The Fifty Sanskrit Matrikas and the Creative Cosmic Sound",
+    "matter": [
+      {
+        "num": 1,
+        "text": "All creation is sound (Shabda). The Supreme Reality in its creative readiness is Shabda-Brahman \u2014 Cosmic Sound Vibration, the primordial causal pulsation (Spanda).",
+        "ref": "Chapter IV, p. 84"
+      },
+      {
+        "num": 2,
+        "text": "Sound unfolds in four evolutionary stages: Para (transcendent unmanifest), Pashyanti (visualized/nascent), Madhyama (interior mental), and Vaikhari (audible vocalized speech).",
+        "ref": "Chapter IV, p. 91"
+      },
+      {
+        "num": 3,
+        "text": "The fifty letters (Varnas) of the Sanskrit alphabet constitute the Matrika \u2014 the Garland of Letters worn by the Goddess. Each letter is a specific sonic vibration pattern of divine power.",
+        "ref": "Chapter IV, p. 98"
+      },
+      {
+        "num": 4,
+        "text": "The letters are distributed among the petals of the six chakras: 4 on Muladhara, 6 on Svadhishthana, 10 on Manipura, 12 on Anahata, 16 on Vishuddha, and 2 on Ajna (totalling 50).",
+        "ref": "Chapter IV, p. 102"
+      }
+    ],
+    "keypoints": [
+      "Cosmic manifestation originates from Shabda-Brahman (Cosmic Sound)",
+      "Sound manifests through four tiers: Para, Pashyanti, Madhyama, and Vaikhari",
+      "The 50 Sanskrit letters form the Garland worn by the Divine Mother",
+      "The 50 letters correspond precisely to the 50 petals across the six chakras"
+    ],
+    "summary": "The Garland of Letters establishes the sacred linguistic science of Tantra. Sound is the vibration of divine consciousness, and mantras are not arbitrary words but exact vibrational keys that awaken subtle energies."
+  },
+  {
+    "id": 5,
+    "title": "The Centres or Lotuses (The Six Chakras)",
+    "image": "images/serpent-power/155_0.jpg",
+    "imageCaption": "Plate V: The Six Bodily Centres from Muladhara to Ajna with their Bija Mantras and Tattvas",
+    "matter": [
+      {
+        "num": 1,
+        "text": "Muladhara (Root Centre, pelvic plexus): Red lotus of 4 petals (Vam, Sham, Sham, Sam). Tattva: Earth (Prithvi). Bija: LAM on Airavata elephant. Presiding Deity: Brahma & Dakini.",
+        "ref": "Chapter V, p. 106"
+      },
+      {
+        "num": 2,
+        "text": "Svadhishthana (Sacral Centre, genital region): Vermilion lotus of 6 petals (Bam, Bham, Mam, Yam, Ram, Lam). Tattva: Water (Apas). Bija: VAM on Makara (crocodile). Presiding Deity: Vishnu & Rakini.",
+        "ref": "Chapter V, p. 116"
+      },
+      {
+        "num": 3,
+        "text": "Manipura (Navel Centre, solar plexus): Blue lotus of 10 petals (Dam to Pham). Tattva: Fire (Tejas). Bija: RAM on a ram. Presiding Deity: Rudra & Lakini.",
+        "ref": "Chapter V, p. 124"
+      },
+      {
+        "num": 4,
+        "text": "Anahata (Heart Centre, cardiac plexus): Deep red lotus of 12 petals (Kam to Tham). Tattva: Air (Vayu). Bija: YAM on a black antelope. Dwelling of the Jivatma as an un-flickering flame; Bana Linga.",
+        "ref": "Chapter V, p. 132"
+      },
+      {
+        "num": 5,
+        "text": "Vishuddha (Throat Centre, laryngeal plexus): Smoky purple lotus of 16 vowels (Am to Ah). Tattva: Ether (Akasha). Bija: HAM on a white elephant. Presiding Deity: Sadashiva & Shakini.",
+        "ref": "Chapter V, p. 141"
+      },
+      {
+        "num": 6,
+        "text": "Ajna (Eyebrow Centre, cavernous plexus): White lotus of 2 petals (Ham, Ksham). Tattva: Manas (Mind). Bija: Pranava (OM). Itara Linga and Hakini Shakti. The seat of the Guru.",
+        "ref": "Chapter V, p. 148"
+      },
+      {
+        "num": 7,
+        "text": "Sahasrara (Crown of the Head): The thousand-petalled lotus containing all sounds and colours, transcending the elements. The eternal abode of Parama-Shiva and Parama-Shakti in supreme bliss.",
+        "ref": "Chapter V, p. 152"
+      }
+    ],
+    "keypoints": [
+      "Six centres govern the evolution of matter from Earth to Mind",
+      "Each lotus possesses specific petals, root letters, animal vahanas, and deities",
+      "The Heart Centre (Anahata) contains the steady flame of the soul (Jivatma)",
+      "The Ajna Centre is the seat of the inner Guru and intuitive vision",
+      "Sahasrara transcends the six centres as the ocean of unconditioned light"
+    ],
+    "summary": "The definitive anatomical and esoteric exposition of the Six Chakras. Avalon explains the elemental significance, subtle geometry, seed sounds, and psychological functions of each lotus along the axis of ascension."
+  },
+  {
+    "id": 6,
+    "title": "Practice (Kundalini Awakening & Laya-Krama)",
+    "image": "images/serpent-power/207_0.jpg",
+    "imageCaption": "Plate VI: The Method of Practice \u2014 Piercing the Six Centres and Arousing the Sleeping Serpent",
+    "matter": [
+      {
+        "num": 1,
+        "text": "Sadhana requires ethical purification (Yama, Niyama), proper posture (Padmasana or Siddhasana), and control of vital breath through Kumbhaka (breath retention).",
+        "ref": "Chapter VI, p. 184"
+      },
+      {
+        "num": 2,
+        "text": "The practitioner contracts the perineum with Mula Bandha, directs Prana downwards and Apana upwards, generating a vital heat (Agni) that strikes upon the slumbering Kundalini.",
+        "ref": "Chapter VI, p. 195"
+      },
+      {
+        "num": 3,
+        "text": "Aroused from sleep, the Devi uncoils, hisses like a serpent, enters the royal highway of the Brahma Nadi, and ascends through the spinal column.",
+        "ref": "Chapter VI, p. 208"
+      },
+      {
+        "num": 4,
+        "text": "As She pierces each lotus (Chakra-Bheda), the faculties and elements of that centre are dissolved into Her subtle essence: Earth into Water, Water into Fire, Fire into Air, Air into Ether, and Ether into Mind.",
+        "ref": "Chapter VI, p. 222"
+      },
+      {
+        "num": 5,
+        "text": "The lower body of the yogi becomes cold as a corpse as Kundalini ascends, while the crown of the head radiates intense heat and luminous spiritual bliss.",
+        "ref": "Chapter VI, p. 240"
+      }
+    ],
+    "keypoints": [
+      "Awakening requires mastery of breath, bandhas, and concentrated intention",
+      "Kundalini is awakened by uniting Prana and Apana in the fire of Muladhara",
+      "Ascent dissolves lower elemental principles into higher causal states",
+      "The body cools below the level of the ascending Shakti as consciousness withdraws",
+      "The process is fully scientific and repeatable by qualified adepts"
+    ],
+    "summary": "Avalon details the exact experiential mechanics of Laya-Yoga (Absorption Yoga). By systematically withdrawing energy and consciousness from physical channels into Sushumna, the yogi dissolves the material universe within the body."
+  },
+  {
+    "id": 7,
+    "title": "Theoretical Bases of the Yoga & Liberation",
+    "image": "images/serpent-power/285_0.jpg",
+    "imageCaption": "Plate VII: The Descent of Amrita (Nectar) and the Return of Consciousness to the World",
+    "matter": [
+      {
+        "num": 1,
+        "text": "When Kundalini enters the Sahasrara, She unites with the Supreme Shiva. This celestial marriage (Samarasya) produces an outpouring of red-and-white divine nectar (Amrita).",
+        "ref": "Chapter VII, p. 261"
+      },
+      {
+        "num": 2,
+        "text": "The yogi drinks this nectar of immortality, experiencing nirvikalpa samadhi \u2014 the state of unconditioned awareness wherein all duality of subject and object vanishes.",
+        "ref": "Chapter VII, p. 278"
+      },
+      {
+        "num": 3,
+        "text": "Yet Kundalini must return: She is guided back down through Sushumna to the Muladhara, revitalizing every lotus and restoring the physical body with divine grace and vitality.",
+        "ref": "Chapter VII, p. 296"
+      },
+      {
+        "num": 4,
+        "text": "The Jivanmukta (liberated while living) sees the world not as a snare of illusion, but as the playful dance (Lila) of the Divine Mother Herself. Samsara is experienced as Nirvana.",
+        "ref": "Chapter VII, p. 315"
+      }
+    ],
+    "keypoints": [
+      "Union in Sahasrara releases the divine nectar of immortality (Amrita)",
+      "The yogi experiences absolute identity with transcendent Consciousness",
+      "The return descent of Kundalini revitalizes and divinizes the body",
+      "The liberated sage lives in the world perceiving all phenomena as divine play"
+    ],
+    "summary": "The culmination of Kundalini Yoga is not world-denial, but world-divinization. The yogi who unites Shiva and Shakti returns with an enlightened perspective, viewing all life as the radiant embodiment of Divine Power."
+  },
+  {
+    "id": 8,
+    "title": "Sat-Chakra-Nirupana (Description of the Six Centres)",
+    "image": "images/serpent-power/349_0.jpg",
+    "imageCaption": "Plate VIII: Purnananda Swami\u2019s Sat-Chakra-Nirupana \u2014 Root Sanskrit Verses and Commentary",
+    "matter": [
+      {
+        "num": 1,
+        "text": "Purnananda Svami describes the Adhara (Muladhara) lotus: Attached to the mouth of Sushumna, having four petals of crimson hue. In its pericarp is the luminous square region of Earth with eight spears, enclosing the golden Bija LAM.",
+        "ref": "Sat-Chakra-Nirupana, Verse 4-8"
+      },
+      {
+        "num": 2,
+        "text": "Within the Linga is the Devi Kundalini: finer than the fibre of a lotus stalk, luminous as lightning, sleeping coiled upon the Svayambhu-Linga, closing the entrance to the Brahma-dvara.",
+        "ref": "Sat-Chakra-Nirupana, Verse 10-11"
+      },
+      {
+        "num": 3,
+        "text": "In the Anahata lotus resides the Swan of the Heart (Hamsa): like a lamp in a windless place, untroubled by any breath. There is the Wish-Fulfilling Tree (Kalpa-Vriksha) and the altar of jewels.",
+        "ref": "Sat-Chakra-Nirupana, Verse 22-26"
+      },
+      {
+        "num": 4,
+        "text": "In the Ajna lotus is the Supreme Guru: between the eyebrows shines the moon-white lotus with two petals. Within it is the subtle Mind, the golden Itara-Linga, and the lightning-like flash of Hakini.",
+        "ref": "Sat-Chakra-Nirupana, Verse 32-38"
+      }
+    ],
+    "keypoints": [
+      "Purnananda Swami provides precise visualization details for every chakra",
+      "Kundalini is described as finer than a lotus fibre and brilliant as lightning",
+      "The Heart Centre is the quiet sanctum of the inner light (Hamsa)",
+      "The Ajna is the doorway to the unmanifest and the light of intuition"
+    ],
+    "summary": "The root translation of Purnananda Swami\u2019s 16th-century classic, accompanied by Kalicharana\u2019s commentary. It contains the exact classical formulas, seed-syllables, and contemplative imagery for each chakra."
+  },
+  {
+    "id": 9,
+    "title": "Paduka-Panchaka (The Fivefold Footstool)",
+    "image": "images/serpent-power/543_0.jpg",
+    "imageCaption": "Plate IX: Paduka-Panchaka \u2014 The Fivefold Footstool of the Guru within the Pericarp of Sahasrara",
+    "matter": [
+      {
+        "num": 1,
+        "text": "The Paduka-Panchaka consists of five esoteric levels within the thousand-petalled lotus: the twelve-petalled lotus, the triangle A-Ka-Tha, the region of the Moon, the seat of the Guru, and the lotus-feet of the Divine.",
+        "ref": "Paduka-Panchaka, Verse 1-3"
+      },
+      {
+        "num": 2,
+        "text": "The Guru is not the physical mortal teacher alone, but the divine principle of illumination operating through human form. By meditating upon the Guru\u2019s lotus-feet, the disciple\u2019s mind is cleansed of all egoic stain.",
+        "ref": "Paduka-Panchaka, Verse 4"
+      },
+      {
+        "num": 3,
+        "text": "In that celestial seat radiates the luminous jewel of consciousness (Mani-Pitha), bathing the aspirant in a downpour of immortal nectar and awakening the highest bliss.",
+        "ref": "Paduka-Panchaka, Verse 5-7"
+      }
+    ],
+    "keypoints": [
+      "The fivefold footstool symbolizes the progressive ascension into divine grace",
+      "The Guru is meditated upon in the crown lotus as the living embodiment of Chit",
+      "Inner surrender dissolves the illusions of personal limitation and fear",
+      "The jewel-seat (Mani-Pitha) radiates the light of supreme realization"
+    ],
+    "summary": "The Paduka-Panchaka text reveals the sacred Tantric rite of Guru-Dhyana. Situated in the pericarp of the thousand-petalled lotus, the fivefold footstool is the sanctum where individual ego dissolves into universal awareness."
+  },
+  {
+    "id": 10,
+    "title": "The Sanskrit Text & Stanzas (Mula-Grantha)",
+    "image": "images/serpent-power/567_0.jpg",
+    "imageCaption": "Plate X: The Sacred Sanskrit Text \u2014 Shatchakra-Nirupana Mula Slokas and Devanagari Script",
+    "matter": [
+      {
+        "num": 1,
+        "text": "The preservation of the original Sanskrit text is essential: each Devanagari character carries a specific acoustic frequency that resonates with the corresponding chakra petal in the human nervous system.",
+        "ref": "Sanskrit Text, Folio 1"
+      },
+      {
+        "num": 2,
+        "text": "The classical commentary of Kalicharana unravels grammatical, phonetic, and yogic subtleties, ensuring that the oral lineage of the Tantras is faithfully transmitted to posterity.",
+        "ref": "Commentary, Folio 45"
+      },
+      {
+        "num": 3,
+        "text": "Arthur Avalon\u2019s pioneering edition bridged the gap between Eastern esoteric science and Western scholarship, demonstrating that the Tantras contain a rational, empirical technology of consciousness.",
+        "ref": "Critical Apparatus, p. 567"
+      }
+    ],
+    "keypoints": [
+      "Sanskrit letters are resonant acoustic frequencies linked to nerve plexuses",
+      "Kalicharana\u2019s commentary preserves centuries of oral guru-disciple lineage",
+      "Arthur Avalon\u2019s scholarship established Tantra as an authentic spiritual discipline"
+    ],
+    "summary": "This section honors the classical Sanskrit roots of Kundalini Yoga. The original stanzas of Purnananda Svami stand as an enduring monument to India\u2019s ancient psycho-physiological science of spiritual awakening."
+  }
+];
+
+        let currentId = parseInt(localStorage.getItem('serpent_last_topic')) || 1;
+        let currentView = localStorage.getItem('serpent_last_view') || 'matter';
+        let bookmarks = JSON.parse(localStorage.getItem('serpent_bookmarks') || '[]');
+        let isSpeaking = false;
+
+        function pad(n) { return String(n).padStart(3, '0'); }
+
+        function showToast(msg) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 2000);
+        }
+
+        function updateProgress() {
+            const pct = (currentId / topics.length) * 100;
+            document.getElementById('progressFill').style.width = pct + '%';
+            document.getElementById('contextPos').textContent = `Chapter ${currentId} of ${topics.length}`;
+        }
+
+        function updateBookmarkState() {
+            const saved = bookmarks.includes(currentId);
+            document.getElementById('contextSaved').style.opacity = saved ? '1' : '0';
+            const bmBtn = document.getElementById('bookmarkBtn');
+            bmBtn.innerHTML = saved
+                ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="#e11d48" stroke="#e11d48" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>'
+                : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>';
+        }
+
+        function renderDrawer() {
+            const filter = document.getElementById('drawerSearch').value.toLowerCase();
+            const filtered = topics.filter(t => t.title.toLowerCase().includes(filter) || String(t.id).includes(filter));
+            document.getElementById('drawerCount').textContent = filtered.length;
+
+            const list = document.getElementById('drawerList');
+            list.innerHTML = filtered.map(t => {
+                const isActive = t.id === currentId;
+                const isSaved = bookmarks.includes(t.id);
+                return `<div class="drawer-item${isActive ? ' active' : ''}${isSaved ? ' bookmarked' : ''}" data-id="${t.id}">
+                    <span class="d-num">${pad(t.id)}</span>
+                    <span class="d-name">${t.title}</span>
+                    <span class="d-bookmark"></span>
+                    <svg class="d-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                </div>`;
+            }).join('');
+
+            list.querySelectorAll('.drawer-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    currentId = parseInt(item.dataset.id);
+                    localStorage.setItem('serpent_last_topic', currentId);
+                    renderDrawer();
+                    renderContent();
+                    closeDrawer();
+                });
+            });
+        }
+
+        function renderContent() {
+            const topic = topics.find(t => t.id === currentId);
+            if (!topic) return;
+
+            document.getElementById('topicPill').textContent = pad(topic.id);
+            document.getElementById('topicNameHeader').textContent = topic.title;
+            updateProgress();
+            updateBookmarkState();
+
+            // Segments
+            document.querySelectorAll('.segment').forEach(s => {
+                s.classList.toggle('active', s.dataset.view === currentView);
+            });
+
+            let html = '';
+            const anim = 'fade-up';
+
+            if (currentView === 'matter') {
+                if (topic.image) {
+                    html += `<div class="plate-card ${anim}">
+                        <div class="plate-header">
+                            <span class="plate-badge">Arthur Avalon Sacred Plate</span>
+                            <span class="plate-zoom-hint"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg> Tap to inspect</span>
+                        </div>
+                        <div class="plate-img-wrap" onclick="openLightbox('${topic.image}', '${topic.imageCaption.replace(/'/g, "\\'")}')">
+                            <img src="${topic.image}" alt="${topic.title}" class="plate-inline-img" loading="lazy" />
+                        </div>
+                        <div class="plate-caption">${topic.imageCaption}</div>
+                    </div>`;
+                }
+
+                if (!topic.matter || topic.matter.length === 0) {
+                    html += `<div class="matter-card ${anim}"><div class="matter-text" style="color:var(--text3);font-style:italic">Content available in the full edition.</div></div>`;
+                } else {
+                    topic.matter.forEach((m, i) => {
+                        html += `<div class="matter-card ${anim}" style="animation-delay:${i * 0.04}s">
+                            <div class="matter-num">Point ${m.num}</div>
+                            <div class="matter-text">${m.text}</div>
+                            <div class="matter-ref">Reference: ${m.ref}</div>
+                        </div>`;
+                    });
+                }
+            } else if (currentView === 'keypoints') {
+                if (topic.image) {
+                    html += `<div class="plate-card ${anim}" style="max-height:220px;padding:10px;">
+                        <div class="plate-img-wrap" style="max-height:160px" onclick="openLightbox('${topic.image}', '${topic.imageCaption.replace(/'/g, "\\'")}')">
+                            <img src="${topic.image}" alt="${topic.title}" class="plate-inline-img" style="max-height:160px;" loading="lazy" />
+                        </div>
+                        <div class="plate-caption" style="font-size:11px;margin-top:6px;">${topic.imageCaption}</div>
+                    </div>`;
+                }
+                if (!topic.keypoints || topic.keypoints.length === 0) {
+                    html += `<div class="matter-card ${anim}"><div class="matter-text" style="color:var(--text3);font-style:italic">Key points available in the full edition.</div></div>`;
+                } else {
+                    topic.keypoints.forEach((kp, i) => {
+                        html += `<div class="keypoint-row ${anim}" style="animation-delay:${i * 0.04}s">
+                            <span class="keypoint-dot"></span>
+                            <span class="keypoint-text">${kp}</span>
+                        </div>`;
+                    });
+                }
+            } else if (currentView === 'summary') {
+                html = `<div class="summary-card ${anim}">
+                    <div class="summary-label">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        Essential Wisdom Summary
+                    </div>
+                    <div class="summary-text">${topic.summary || 'Summary coming soon.'}</div>
+                </div>`;
+            }
+
+            document.getElementById('contentBody').innerHTML = html;
+            document.getElementById('contentScroll').scrollTop = 0;
+        }
+
+        function openDrawer() {
+            document.getElementById('topicDrawer').classList.add('open');
+            document.getElementById('drawerOverlay').classList.add('open');
+        }
+
+        function closeDrawer() {
+            document.getElementById('topicDrawer').classList.remove('open');
+            document.getElementById('drawerOverlay').classList.remove('open');
+        }
+
+        function openLightbox(src, cap) {
+            const modal = document.getElementById('lightboxModal');
+            document.getElementById('lightboxImg').src = src;
+            document.getElementById('lightboxCaption').textContent = cap;
+            modal.classList.add('open');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightboxModal').classList.remove('open');
+        }
+
+        function toggleBookmark() {
+            const idx = bookmarks.indexOf(currentId);
+            if (idx > -1) {
+                bookmarks.splice(idx, 1);
+                showToast('Bookmark removed');
+            } else {
+                bookmarks.push(currentId);
+                showToast('Chapter bookmarked');
+            }
+            localStorage.setItem('serpent_bookmarks', JSON.stringify(bookmarks));
+            updateBookmarkState();
+            renderDrawer();
+        }
+
+        function toggleReadAloud() {
+            if (!('speechSynthesis' in window)) {
+                showToast('Speech synthesis not supported on this device');
+                return;
+            }
+            if (isSpeaking) {
+                window.speechSynthesis.cancel();
+                isSpeaking = false;
+                document.getElementById('listenBtn').classList.remove('active');
+                showToast('Audio stopped');
+                return;
+            }
+
+            const topic = topics.find(t => t.id === currentId);
+            if (!topic) return;
+
+            let speakText = topic.title + '. ';
+            if (currentView === 'matter' && topic.matter) {
+                topic.matter.forEach(m => { speakText += 'Point ' + m.num + '. ' + m.text + '. '; });
+            } else if (currentView === 'keypoints' && topic.keypoints) {
+                speakText += topic.keypoints.join('. ');
+            } else if (currentView === 'summary') {
+                speakText += topic.summary || '';
+            }
+
+            const utter = new SpeechSynthesisUtterance(speakText);
+            utter.rate = 0.95;
+            utter.pitch = 1.0;
+            utter.onend = () => {
+                isSpeaking = false;
+                document.getElementById('listenBtn').classList.remove('active');
+            };
+            utter.onerror = () => {
+                isSpeaking = false;
+                document.getElementById('listenBtn').classList.remove('active');
+            };
+
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(utter);
+            isSpeaking = true;
+            document.getElementById('listenBtn').classList.add('active');
+            showToast('Reading chapter aloud...');
+        }
+
+        // Event Listeners
+        document.getElementById('menuBtn').onclick = openDrawer;
+        document.getElementById('closeDrawer').onclick = closeDrawer;
+        document.getElementById('drawerOverlay').onclick = closeDrawer;
+        document.getElementById('bookmarkBtn').onclick = toggleBookmark;
+        document.getElementById('listenBtn').onclick = toggleReadAloud;
+
+        document.getElementById('prevBtn').onclick = () => {
+            if (currentId > 1) {
+                currentId--;
+                localStorage.setItem('serpent_last_topic', currentId);
+                renderDrawer();
+                renderContent();
+            }
+        };
+
+        document.getElementById('nextBtn').onclick = () => {
+            if (currentId < topics.length) {
+                currentId++;
+                localStorage.setItem('serpent_last_topic', currentId);
+                renderDrawer();
+                renderContent();
+            }
+        };
+
+        document.querySelectorAll('.segment').forEach(btn => {
+            btn.onclick = () => {
+                currentView = btn.dataset.view;
+                localStorage.setItem('serpent_last_view', currentView);
+                renderContent();
+            };
+        });
+
+        document.getElementById('drawerSearch').oninput = renderDrawer;
+
+        // Keyboard navigation
+        window.onkeydown = (e) => {
+            if (e.target.tagName === 'INPUT') return;
+            if (e.key === 'ArrowLeft') document.getElementById('prevBtn').click();
+            if (e.key === 'ArrowRight') document.getElementById('nextBtn').click();
+            if (e.key === 'b' || e.key === 'B') toggleBookmark();
+            if (e.key === 'Escape') { closeDrawer(); closeLightbox(); }
+        };
+
+        // Initialize
+        renderDrawer();
+        renderContent();
+    </script>
+</body>
+</html>
