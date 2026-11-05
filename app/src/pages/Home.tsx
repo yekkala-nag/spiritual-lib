@@ -15,6 +15,9 @@ import {
   Star,
   Trash2,
   Undo2,
+  ExternalLink,
+  Maximize2,
+  Minimize2,
 } from 'lucide-react'
 
 import { fetchRemoteBooks, fetchRemoteShelf, syncRemoteShelf } from '@/lib/library-store'
@@ -466,6 +469,7 @@ function Home() {
   const [remoteReady, setRemoteReady] = useState(false)
   const [syncing, setSyncing] = useState(false)
   const [readingBookId, setReadingBookId] = useState<string | null>(null)
+  const [isFullWindow, setIsFullWindow] = useState(false)
   const [notes, setNotes] = useState<NoteItem[]>(readStoredNotes)
   const syncTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -1064,16 +1068,42 @@ function Home() {
         onOpenChange={(open) => {
           if (!open) {
             setReadingBookId(null)
+            setIsFullWindow(false)
             setNotes(readStoredNotes())
           }
         }}
       >
-        <DialogContent className="h-[90vh] max-w-6xl gap-0 overflow-hidden rounded-[28px] border-stone-200 bg-white p-0 sm:max-w-6xl">
+        <DialogContent
+          className={
+            isFullWindow
+              ? '!fixed !inset-0 !h-screen !w-screen !max-w-none !rounded-none !border-0 bg-white p-0'
+              : 'h-[92vh] max-w-6xl gap-0 overflow-hidden rounded-[28px] border-stone-200 bg-white p-0 sm:max-w-6xl'
+          }
+        >
+          <div className="absolute right-12 top-3 z-50 flex items-center gap-2">
+            <button
+              onClick={() => setIsFullWindow(!isFullWindow)}
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-stone-200 bg-white/90 text-stone-600 shadow-sm backdrop-blur transition hover:bg-stone-100 hover:text-stone-900"
+              title={isFullWindow ? 'Exit full window' : 'Expand to full window'}
+              type="button"
+            >
+              {isFullWindow ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+            </button>
+            <a
+              href={readingBook?.readerUrl ?? '/the-serpent-power.html'}
+              target="_blank"
+              rel="noreferrer"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-stone-200 bg-white/90 text-stone-600 shadow-sm backdrop-blur transition hover:bg-stone-100 hover:text-stone-900"
+              title="Open reader in new tab"
+            >
+              <ExternalLink className="h-4 w-4" />
+            </a>
+          </div>
           <DialogHeader className="sr-only">
             <DialogTitle>{readingBook ? `Read ${readingBook.title}` : 'Read book'}</DialogTitle>
           </DialogHeader>
           <iframe
-            src={readingBook?.readerUrl ?? '/ponder-on-this.html'}
+            src={readingBook?.readerUrl ?? '/the-serpent-power.html'}
             title={readingBook ? `${readingBook.title} reader` : 'Book reader'}
             className="block h-full w-full border-0"
           />
