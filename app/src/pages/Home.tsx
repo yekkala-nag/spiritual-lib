@@ -20,6 +20,7 @@ import {
   Minimize2,
   ChevronLeft,
   ChevronRight,
+  X,
 } from 'lucide-react'
 
 import { fetchRemoteBooks, fetchRemoteShelf, syncRemoteShelf } from '@/lib/library-store'
@@ -1163,6 +1164,8 @@ function Home() {
         }}
       >
         <DialogContent
+          fullWindow={isFullWindow}
+          showCloseButton={false}
           onEscapeKeyDown={(e) => {
             if (isFullWindow) {
               e.preventDefault()
@@ -1171,7 +1174,7 @@ function Home() {
           }}
           className={
             isFullWindow
-              ? '!fixed !inset-0 !h-screen !w-screen !max-w-none !rounded-none !border-0 bg-white p-0 flex flex-col z-[100]'
+              ? '!fixed !inset-0 !top-0 !left-0 !right-0 !bottom-0 !translate-x-0 !translate-y-0 !transform-none !h-screen !w-screen !max-w-none !rounded-none !border-0 bg-white p-0 gap-0 flex flex-col z-[100]'
               : 'h-[92vh] max-w-6xl gap-0 overflow-hidden rounded-[28px] border-stone-200 bg-white p-0 sm:max-w-6xl flex flex-col'
           }
         >
@@ -1242,6 +1245,19 @@ function Home() {
               >
                 <ExternalLink className="h-3.5 w-3.5" />
               </a>
+
+              {/* Close reader button */}
+              <button
+                onClick={() => {
+                  setReadingBookId(null)
+                  setIsFullWindow(false)
+                }}
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-stone-200 bg-white text-stone-600 shadow-sm transition hover:bg-stone-100 hover:text-stone-900"
+                title="Close reader (Esc)"
+                type="button"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
             </div>
           </div>
 
