@@ -1036,6 +1036,16 @@ nav.pager {
     }
   };
 
+  // Parent frame message handler
+  window.addEventListener('message', (e) => {
+    if (e.data?.type === 'NAV_PREV') goTo(current - 1);
+    if (e.data?.type === 'NAV_NEXT') goTo(current + 1);
+    if (e.data?.type === 'OPEN_SEARCH') {
+      const searchToggle = document.getElementById('search-toggle');
+      if (searchToggle) searchToggle.click();
+    }
+  });
+
   // Initialize
   renderToc();
   render();

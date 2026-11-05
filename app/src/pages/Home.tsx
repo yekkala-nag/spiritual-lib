@@ -18,6 +18,8 @@ import {
   ExternalLink,
   Maximize2,
   Minimize2,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react'
 
 import { fetchRemoteBooks, fetchRemoteShelf, syncRemoteShelf } from '@/lib/library-store'
@@ -472,6 +474,51 @@ function Home() {
   const [isFullWindow, setIsFullWindow] = useState(false)
   const [notes, setNotes] = useState<NoteItem[]>(readStoredNotes)
   const syncTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const readerIframeRef = useRef<HTMLIFrameElement>(null)
+
+  const handlePrevPage = () => {
+    readerIframeRef.current?.contentWindow?.postMessage({ type: 'NAV_PREV' }, '*')
+  }
+
+  const handleNextPage = () => {
+    readerIframeRef.current?.contentWindow?.postMessage({ type: 'NAV_NEXT' }, '*')
+  }
+
+  const handleOpenReaderSearch = () => {
+    readerIframeRef.current?.contentWindow?.postMessage({ type: 'OPEN_SEARCH' }, '*')
+  }
+
+  const toggleFullWindow = () => {
+    const nextState = !isFullWindow
+    setIsFullWindow(nextState)
+    if (nextState) {
+      if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {})
+      }
+    } else {
+      if (document.fullscreenElement && document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {})
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (!readingBookId) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
+      if (e.key === 'ArrowLeft') handlePrevPage()
+      if (e.key === 'ArrowRight') handleNextPage()
+      if ((e.metaKey || e.ctrlKey) && (e.key === 'f' || e.key === 'F')) {
+        e.preventDefault()
+        handleOpenReaderSearch()
+      }
+      if (e.key === 'Escape' && isFullWindow) {
+        toggleFullWindow()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [readingBookId, isFullWindow])
 
   useEffect(() => {
     function refreshNotes() {
@@ -1069,6 +1116,9 @@ function Home() {
           if (!open) {
             setReadingBookId(null)
             setIsFullWindow(false)
+            if (document.fullscreenElement && document.exitFullscreen) {
+              document.exitFullscreen().catch(() => {})
+            }
             setNotes(readStoredNotes())
           }
         }}
@@ -1076,37 +1126,111 @@ function Home() {
         <DialogContent
           className={
             isFullWindow
-              ? '!fixed !inset-0 !h-screen !w-screen !max-w-none !rounded-none !border-0 bg-white p-0'
-              : 'h-[92vh] max-w-6xl gap-0 overflow-hidden rounded-[28px] border-stone-200 bg-white p-0 sm:max-w-6xl'
+              ? '!fixed !inset-0 !h-screen !w-screen !max-w-none !rounded-none !border-0 bg-stone-900 p-0 flex flex-col'
+              : 'h-[92vh] max-w-6xl gap-0 overflow-hidden rounded-[28px] border-stone-200 bg-white p-0 sm:max-w-6xl flex flex-col'
           }
         >
-          <div className="absolute right-12 top-3 z-50 flex items-center gap-2">
-            <button
-              onClick={() => setIsFullWindow(!isFullWindow)}
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-stone-200 bg-white/90 text-stone-600 shadow-sm backdrop-blur transition hover:bg-stone-100 hover:text-stone-900"
-              title={isFullWindow ? 'Exit full window' : 'Expand to full window'}
-              type="button"
-            >
-              {isFullWindow ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-            </button>
-            <a
-              href={readingBook?.readerUrl ?? '/the-serpent-power.html'}
-              target="_blank"
-              rel="noreferrer"
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-stone-200 bg-white/90 text-stone-600 shadow-sm backdrop-blur transition hover:bg-stone-100 hover:text-stone-900"
-              title="Open reader in new tab"
-            >
-              <ExternalLink className="h-4 w-4" />
-            </a>
+          {/* Universal Reader Top Toolbar */}
+          <div className="flex h-12 shrink-0 items-center justify-between border-b border-stone-200/80 bg-stone-50/95 px-4 backdrop-blur z-50">
+            <div className="flex items-center gap-3 min-w-0 pr-2">
+              <span className="truncate font-semibold text-stone-900 text-sm">
+                {readingBook?.title}
+              </span>
+              <span className="hidden text-xs text-stone-500 sm:inline truncate">
+                {readingBook?.author}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {/* Previous / Next chapter navigation */}
+              <div className="flex items-center rounded-lg border border-stone-200 bg-white p-0.5 shadow-sm">
+                <button
+                  onClick={handlePrevPage}
+                  className="flex h-7 items-center gap-1 rounded-md px-2 text-xs font-medium text-stone-600 transition hover:bg-stone-100 hover:text-stone-900"
+                  title="Previous Page / Chapter (←)"
+                  type="button"
+                >
+                  <ChevronLeft className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Prev</span>
+                </button>
+                <div className="h-3.5 w-px bg-stone-200" />
+                <button
+                  onClick={handleNextPage}
+                  className="flex h-7 items-center gap-1 rounded-md px-2 text-xs font-medium text-stone-600 transition hover:bg-stone-100 hover:text-stone-900"
+                  title="Next Page / Chapter (→)"
+                  type="button"
+                >
+                  <span className="hidden sm:inline">Next</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </button>
+              </div>
+
+              {/* In-page / In-book search button */}
+              <button
+                onClick={handleOpenReaderSearch}
+                className="flex h-8 items-center gap-1.5 rounded-lg border border-stone-200 bg-white px-2.5 text-xs font-medium text-stone-700 shadow-sm transition hover:bg-stone-100 hover:text-teal-900"
+                title="Search inside book (⌘F)"
+                type="button"
+              >
+                <Search className="h-3.5 w-3.5 text-teal-700" />
+                <span className="hidden sm:inline">Search</span>
+              </button>
+
+              {/* Full-window toggle button */}
+              <button
+                onClick={toggleFullWindow}
+                className="flex h-8 items-center gap-1.5 rounded-lg border border-stone-200 bg-white px-2.5 text-xs font-medium text-stone-700 shadow-sm transition hover:bg-stone-100 hover:text-stone-900"
+                title={isFullWindow ? 'Exit full window (Esc)' : 'Read in full window'}
+                type="button"
+              >
+                {isFullWindow ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
+                <span className="hidden sm:inline">{isFullWindow ? 'Exit Full' : 'Full Window'}</span>
+              </button>
+
+              {/* Open in new tab link */}
+              <a
+                href={readingBook?.readerUrl ?? '/the-serpent-power.html'}
+                target="_blank"
+                rel="noreferrer"
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-stone-200 bg-white text-stone-600 shadow-sm transition hover:bg-stone-100 hover:text-stone-900"
+                title="Open reader in standalone tab"
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+              </a>
+            </div>
           </div>
+
           <DialogHeader className="sr-only">
             <DialogTitle>{readingBook ? `Read ${readingBook.title}` : 'Read book'}</DialogTitle>
           </DialogHeader>
-          <iframe
-            src={readingBook?.readerUrl ?? '/the-serpent-power.html'}
-            title={readingBook ? `${readingBook.title} reader` : 'Book reader'}
-            className="block h-full w-full border-0"
-          />
+
+          {/* Reader container with floating side navigation chevrons */}
+          <div className="relative flex-1 w-full overflow-hidden bg-white">
+            <button
+              onClick={handlePrevPage}
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-40 hidden md:flex h-11 w-11 items-center justify-center rounded-full border border-stone-300/80 bg-white/90 text-stone-700 shadow-xl backdrop-blur transition hover:scale-110 hover:bg-white hover:text-teal-900"
+              title="Previous Page (←)"
+              type="button"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+
+            <button
+              onClick={handleNextPage}
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-40 hidden md:flex h-11 w-11 items-center justify-center rounded-full border border-stone-300/80 bg-white/90 text-stone-700 shadow-xl backdrop-blur transition hover:scale-110 hover:bg-white hover:text-teal-900"
+              title="Next Page (→)"
+              type="button"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+
+            <iframe
+              ref={readerIframeRef}
+              src={readingBook?.readerUrl ?? '/the-serpent-power.html'}
+              title={readingBook ? `${readingBook.title} reader` : 'Book reader'}
+              className="block h-full w-full border-0"
+            />
+          </div>
         </DialogContent>
       </Dialog>
     </main>

@@ -381,9 +381,31 @@ mark.search-hit { background:#ffe9a8; color:inherit; padding:0 1px; border-radiu
 #notes-body ul { margin:0; padding-left:20px; }
 #notes-body li { margin-bottom:5px; }
 #notes-body .notes-empty { color:#8a7c62; font-style:italic; }
+
+/* Floating side navigation buttons */
+.float-nav {
+  position: fixed; top: 50%; transform: translateY(-50%);
+  width: 48px; height: 48px; border-radius: 50%;
+  background: rgba(255, 253, 246, 0.94); border: 1px solid var(--border);
+  box-shadow: 0 4px 18px rgba(60,45,10,0.18);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; color: var(--ink); cursor: pointer; z-index: 40;
+  transition: all .2s ease;
+}
+.float-nav:hover:not(:disabled) { background: #fff; border-color: var(--gold); transform: translateY(-50%) scale(1.08); box-shadow: 0 6px 22px rgba(60,45,10,0.22); }
+.float-nav:disabled { opacity: 0.25; cursor: default; }
+.float-nav.prev { left: 16px; }
+.float-nav.next { right: 16px; background: linear-gradient(135deg, rgba(255,253,246,0.92), rgba(216,193,134,0.35)); border-color: var(--gold); }
+@media (max-width: 1100px) {
+  .float-nav { display: none; }
+}
 </style>
 </head>
 <body>
+
+<!-- Floating side navigation buttons -->
+<button class="float-nav prev" id="float-prev" title="Previous page (ArrowLeft)">&larr;</button>
+<button class="float-nav next" id="float-next" title="Next page (ArrowRight)">&rarr;</button>
 
 <div class="app">
   <header class="top">
@@ -400,6 +422,7 @@ mark.search-hit { background:#ffe9a8; color:inherit; padding:0 1px; border-radiu
         <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:1.8%"></div></div>
       </div>
       <button class="toc-toggle" id="listen-toggle" style="margin-right:10px;" title="Read aloud">&#128266; Listen</button><a class="toc-toggle dl-btn" href="thought-forms.pdf" download title="Download this book as PDF" style="text-decoration:none;">&#10515; Download</a>
+      <button class="toc-toggle" id="fullscreen-toggle" title="Full window reading mode">⛶ Fullscreen</button>
       <button class="toc-toggle" id="search-toggle" title="Search this book">&#128269; Search</button>
       <button class="toc-toggle" id="notes-toggle" title="Chapter summary and key points">&#128221; Notes</button>
       <button class="toc-toggle" id="toc-toggle">&#9776; Contents</button>
@@ -508,6 +531,11 @@ function render(){
   document.getElementById('next-btn').disabled = current === PAGES.length - 1;
   document.getElementById('next-btn').textContent = current === PAGES.length -1 ? 'End' : 'Next \u2192';
 
+  const fp = document.getElementById('float-prev');
+  const fn = document.getElementById('float-next');
+  if (fp) fp.disabled = current === 0;
+  if (fn) fn.disabled = current === PAGES.length - 1;
+
   document.getElementById('leaf').style.animation = 'none';
   void document.getElementById('leaf').offsetWidth;
   document.getElementById('leaf').style.animation = '';
@@ -534,6 +562,42 @@ document.getElementById('prev-btn').addEventListener('click', () => {
 });
 document.getElementById('next-btn').addEventListener('click', () => {
   if (current < PAGES.length -1){ current++; render(); }
+});
+
+const floatP = document.getElementById('float-prev');
+if (floatP) floatP.addEventListener('click', () => { if (current > 0) { current--; render(); } });
+const floatN = document.getElementById('float-next');
+if (floatN) floatN.addEventListener('click', () => { if (current < PAGES.length - 1) { current++; render(); } });
+
+// Fullscreen toggle
+const fsBtn = document.getElementById('fullscreen-toggle');
+if (fsBtn) {
+  fsBtn.addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(()=>{});
+      fsBtn.textContent = '✕ Exit Full';
+    } else {
+      document.exitFullscreen().catch(()=>{});
+      fsBtn.textContent = '⛶ Fullscreen';
+    }
+  });
+  document.addEventListener('fullscreenchange', () => {
+    fsBtn.textContent = document.fullscreenElement ? '✕ Exit Full' : '⛶ Fullscreen';
+  });
+}
+
+// Parent frame message handler
+window.addEventListener('message', (e) => {
+  if (e.data && e.data.type === 'NAV_PREV') {
+    if (current > 0) { current--; render(); }
+  }
+  if (e.data && e.data.type === 'NAV_NEXT') {
+    if (current < PAGES.length - 1) { current++; render(); }
+  }
+  if (e.data && e.data.type === 'OPEN_SEARCH') {
+    const s = document.getElementById('search-toggle');
+    if (s) s.click();
+  }
 });
 
 document.addEventListener('keydown', (e) => {
